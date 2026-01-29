@@ -1,0 +1,104 @@
+# Changelog - SocialBluePro
+
+Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
+
+## [1.2.0] - 2026-01-21
+
+### Adicionado
+- Sistema de notificações com dropdown no header
+- Console de diagnóstico SMTP em tempo real
+- Sistema de remarketing com segmentação pré-definida
+- Campanhas agendadas em lote com limite de emails por dia
+- Pixel de tracking para Google Analytics, Ads, Facebook, TikTok
+- Configuração de reCAPTCHA (Google v2/v3, Cloudflare Turnstile, hCaptcha)
+
+### Corrigido
+- **Email Channels - Falha ao salvar configuração:** Campo `encryption` como enum TypeScript causava erro de serialização. Mudado para tipo `string`.
+- **Email Channels - Erro em teste de diagnóstico:** Mapeamento incorreto entre `username`/`password` e `user`/`pass`.
+- **Remarketing - Failed to load data:** `getLeads()` retorna objeto `{ success, data }` mas código esperava array.
+- **Login - Email real como placeholder:** Placeholder mudado de `admin@socialbluepro.com` para `user@domain.com`.
+- **Admin Users - UI não atualizava:** `createAdminUser` agora retorna `{ success: boolean, user?, error? }`.
+- **SMTP Delete - Sem confirmação:** Adicionado modal de confirmação com warning.
+- **Bell Icon - Não funcional:** Sistema de notificações implementado com dropdown.
+- **Login Cooldown - Fixo 15 minutos:** Sistema progressivo com tiers de lockout (1m, 5m, 15m, 30m, 1h) e recuperação automática após 24h.
+
+ ### Mudanças
+ - Sistema de toast redesenhado com design moderno (`rounded-3xl`, `shadow-2xl`)
+ - Remoção de emojis dos toasts (usando ícones coloridos)
+ - Interface de administração atualizada com indicadores visuais
+ - Melhoria no sistema de validação de formulários
+
+## [1.2.1] - 2026-01-23
+
+### Adicionado
+ - **Sistema de debug para diagnóstico de segurança:** Logs detalhados no fluxo de alteração de senha
+ - **Documentação de troubleshooting:** Guia para problema de link "Update Password" quebrado
+ - **Documentação de deploy com systemd:** Configuração completa do serviço systemd para produção
+
+### Corrigido
+ - **Link "Update Password" retorna 404:** Adicionados logs de debug em `DefaultPasswordWarning.tsx` e `SettingsPage` para identificar causas
+ - **Melhoria na documentação:** Seções detalhadas sobre arquitetura e fluxo de segurança
+ - **Problema de deploy - serviço não reinicia após reboot:** Corrigida configuração do systemd service (modo produção, usuário dedicado, dependência PostgreSQL)
+
+### Mudanças
+- **Documentação expandida:** Adicionadas seções "Arquitetura do Sistema", "Fluxo de Segurança Detalhado" e "Debug & Troubleshooting"
+- **Logs de debug:** Console logs com prefixos `[DefaultPasswordWarning]` e `[SettingsPage]` para diagnóstico
+
+## [1.1.0] - 2025-XX-XX
+
+### Adicionado
+- Sistema de polling em tempo real (30 segundos)
+- Indicador Live/Offline em painéis administrativos
+- Sistema de notificações toast com animações
+- Detecção de senha padrão (admin123)
+- Recuperação de senha por email
+- Contador de tentativas de login visível
+- Botão de visualizar senha em todos os campos
+- Lockout progressivo após tentativas falhas
+
+### Corrigido
+- Gerenciamento SMTP - Remoção de "Example SMTP" hardcodido
+- Remarketing - Erro de autenticação ao carregar dados
+- Campaigns/Analytics - Falta de autenticação nas ações
+- User Management - Queries não otimizadas e mensagens de erro genéricas
+
+### Mudanças
+- Reescrito `src/actions/users.ts` com queries otimizadas
+- Sistema de autenticação reescrito em `src/actions/auth.ts`
+- Adicionado hook `useRealTimePoll.ts` para polling automático
+
+## [1.0.0] - 2025-XX-XX
+
+### Lançamento Inicial
+- Sistema de gestão de leads completo
+- Campanhas de email marketing
+- Dashboard com métricas
+- Configurações SMTP múltiplas
+- Rastreamento de aberturas e cliques
+- Painel administrativo
+- Formulário de solicitação de serviço público
+- Login de administradores
+- Sistema de autenticação com NextAuth.js
+
+---
+
+## Versão
+
+Versão atual: **1.2.1**
+
+## Próximas Lançamentos
+
+### [1.3.0] - Planejado
+- Integração WebSocket para updates em tempo real
+- API REST completa documentada com Swagger
+- Testes automatizados com Jest
+- CI/CD com GitHub Actions
+- Multi-tenancy
+- Exportação de leads em CSV/Excel
+
+### [1.4.0] - Futuro
+- Mobile app (React Native)
+- Integração com WhatsApp Business API
+- Automação de campanhas com triggers
+- AI-powered lead scoring
+- Dashboard de clientes (portal para leads)

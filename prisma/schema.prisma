@@ -1,0 +1,297 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String    @id @default("main")
+  name           String?
+  email          String    @unique
+  email_verified DateTime?
+  image          String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                  String   @id @default(uuid())
+  user_id             String
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          BigInt?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  user                User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_account_id])
+  @@map("accounts")
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  session_token String   @unique
+  user_id       String
+  expires       DateTime
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  created_at DateTime @default(now())
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model AdminUser {
+  id                   String     @id @default(uuid())
+  name                 String
+  email                String     @unique
+  password_hash        String
+  failed_attempts      Int        @default(0)
+  locked_until         DateTime?
+  last_failed_attempt  DateTime?
+  role                 String     @default("admin")
+  is_active            Boolean    @default(true)
+  is_default_password   Boolean    @default(false)
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+  campaigns            Campaign[] @relation("AdminCampaigns")
+  createdCampaigns     Campaign[] @relation("CreatedCampaigns")
+  leadNotes            LeadNote[]
+  leadsAssigned        Lead[]     @relation("AssignedLeads")
+
+  @@map("admin_users")
+}
+
+model SmtpAccount {
+  id         String   @id @default(uuid())
+  name       String
+  host       String
+  port       Int
+  username   String
+  password   String
+  from_email String
+  from_name  String?
+  is_default Boolean  @default(false)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  encryption String   @default("auto")
+  purposes   String[] @default(["general"])
+  reply_to   String?
+  secure     Boolean  @default(false)
+
+  @@map("smtp_accounts")
+}
+
+model Lead {
+  id               String          @id @default(uuid())
+  name             String
+  email            String
+  phone            String
+  address_line1    String?
+  city             String?
+  state            String?
+  zip_code         String
+  service_interest String?
+  description      String?
+  notes            String?
+  status           String          @default("new")
+  assigned_to      String?
+  assigned_at      DateTime?
+  attachments      Json            @default("[]")
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+  emailTrackings   EmailTracking[]
+  leadNotes        LeadNote[]
+  assignedToUser   AdminUser?      @relation("AssignedLeads", fields: [assigned_to], references: [id])
+
+  @@index([status])
+  @@index([created_at(sort: Desc)])
+  @@index([assigned_to])
+  @@map("leads")
+}
+
+model Campaign {
+  id               String              @id @default(uuid())
+  name             String
+  subject          String
+  content          String
+  target_audience  String
+  status           String              @default("draft")
+  sent_count       Int                 @default(0)
+  opened_count     Int                 @default(0)
+  clicked_count    Int                 @default(0)
+  total_recipients Int                 @default(0)
+  total_opens      Int                 @default(0)
+  total_clicks     Int                 @default(0)
+  open_rate        Float?              @default(0)
+  click_rate       Float?              @default(0)
+  archived         Boolean             @default(false)
+  created_by       String?
+  admin_id         String?
+  created_at       DateTime            @default(now())
+  updated_at       DateTime            @updatedAt
+  sent_at          DateTime?
+  analytics        CampaignAnalytics[]
+  admin            AdminUser?          @relation("AdminCampaigns", fields: [admin_id], references: [id])
+  createdByAdmin   AdminUser?          @relation("CreatedCampaigns", fields: [created_by], references: [id])
+  emailTrackings   EmailTracking[]
+
+  @@map("campaigns")
+}
+
+model CampaignAnalytics {
+  id           String   @id @default(uuid())
+  campaign_id  String
+  metric_type  String
+  metric_value Int
+  metadata     Json     @default("{}")
+  recorded_at  DateTime @default(now())
+  campaign     Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+
+  @@index([campaign_id])
+  @@map("campaign_analytics")
+}
+
+model EmailTracking {
+  id              String               @id @default(uuid())
+  lead_id         String?
+  campaign_id     String?
+  recipient_email String
+  tracking_id     String               @unique
+  purpose         String
+  sent_at         DateTime             @default(now())
+  opened_at       DateTime?
+  clicked_at      DateTime?
+  delivery_status String?              @default("sent")
+  delivery_error  String?
+  subject         String?
+  device_type     String?
+  client_type     String?
+  campaign        Campaign?            @relation(fields: [campaign_id], references: [id])
+  lead            Lead?                @relation(fields: [lead_id], references: [id])
+  events          EmailTrackingEvent[]
+
+  @@index([tracking_id])
+  @@map("email_tracking")
+}
+
+model EmailTrackingEvent {
+  id            String        @id @default(uuid())
+  tracking_id   String
+  event_type    String
+  event_data    Json          @default("{}")
+  ip_address    String?
+  user_agent    String?
+  created_at    DateTime      @default(now())
+  emailTracking EmailTracking @relation(fields: [tracking_id], references: [tracking_id], onDelete: Cascade)
+
+  @@index([tracking_id])
+  @@map("email_tracking_events")
+}
+
+model LeadNote {
+  id         String     @id @default(uuid())
+  lead_id    String
+  author_id  String?
+  content    String
+  type       String     @default("note")
+  metadata   Json       @default("{}")
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  author     AdminUser? @relation(fields: [author_id], references: [id])
+  lead       Lead       @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  @@index([lead_id])
+  @@index([author_id])
+  @@map("lead_notes")
+}
+
+model EmailLog {
+  id           String   @id @default(uuid())
+  recipient    String
+  subject      String
+  status       String
+  message_id   String
+  response_log Json?
+  created_at   DateTime @default(now())
+
+  @@index([created_at])
+  @@map("email_log")
+}
+
+model RecaptchaSetting {
+  id         String   @id @default(uuid())
+  provider   String
+  site_key   String
+  secret_key String
+  is_enabled Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("recaptcha_setting")
+}
+
+model TrackingPixel {
+  id         String   @id @default(uuid())
+  name       String
+  type       String
+  code       String
+  is_enabled Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("tracking_pixel")
+}
+
+model RemarketingSegment {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  criteria    Json     @default("{}")
+  lead_count  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("remarketing_segment")
+}
+
+model ScheduledCampaign {
+  id               String   @id @default(uuid())
+  name             String
+  subject          String
+  body             String
+  audience_segment String
+  custom_audience  Json     @default("[]")
+  schedule_type    String
+  scheduled_at     DateTime
+  emails_per_day   Int      @default(100)
+  total_count      Int      @default(1000)
+  status           String   @default("scheduled")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("scheduled_campaign")
+}

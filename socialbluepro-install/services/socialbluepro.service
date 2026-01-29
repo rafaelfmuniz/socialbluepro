@@ -1,0 +1,41 @@
+[Unit]
+Description=SocialBluePro - Lead Management Platform
+Documentation=https://github.com/yourusername/socialbluepro
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=socialbluepro
+Group=socialbluepro
+WorkingDirectory=/opt/socialbluepro
+Environment="NODE_ENV=production"
+EnvironmentFile=/opt/socialbluepro/.env
+
+# Main process
+ExecStart=/usr/bin/npm start
+
+# Auto-restart configuration
+Restart=always
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/socialbluepro
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=socialbluepro
+
+[Install]
+WantedBy=multi-user.target
