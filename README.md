@@ -129,7 +129,27 @@ Client Component → Server Action → Prisma ORM → PostgreSQL
 
 ```
 socialbluepro/
-├── 📁 src/
+│
+├── 📁 .github/                          # GitHub Actions e workflows
+│   └── 📁 workflows/
+│       └── 📄 ci-cd.yml                 # Configuração CI/CD
+│
+├── 📁 prisma/                           # Schema e migrations do Prisma
+│   └── 📄 schema.prisma                 # Definição do banco de dados
+│
+├── 📁 public/                           # Assets estáticos
+│   ├── 📄 favicon.ico                   # Ícone do site
+│   └── 📁 imgs/                         # Imagens otimizadas
+│       └── 📁 Imgs_WEBP/               # Imagens em formato WebP
+│
+├── 📁 scripts/                          # Scripts de deploy
+│   └── 📁 deploy/
+│       ├── 📄 install.sh               # Instalação automatizada
+│       ├── 📄 update.sh                # Atualização rápida
+│       └── 📄 backup.sh                # Backup manual
+│
+├── 📁 src/                              # Código fonte principal
+│   │
 │   ├── 📁 app/                          # Next.js App Router
 │   │   ├── 📄 page.tsx                  # Homepage (Landing)
 │   │   ├── 📄 layout.tsx                # Root layout
@@ -142,9 +162,10 @@ socialbluepro/
 │   │   │   ├── 📄 page.tsx              # Dashboard
 │   │   │   ├── 📄 layout.tsx            # Layout protegido
 │   │   │   ├── 📄 AdminNavigation.tsx   # Navegação admin
-│   │   │   ├── 📁 leads/                # CRM Leads
-│   │   │   ├── 📁 campaigns/            # Email Marketing
 │   │   │   ├── 📁 analytics/            # Analytics
+│   │   │   ├── 📁 campaigns/            # Email Marketing
+│   │   │   ├── 📁 dashboard/            # Dashboard page
+│   │   │   ├── 📁 leads/                # CRM Leads
 │   │   │   ├── 📁 remarketing/          # Automação Remarketing
 │   │   │   └── 📁 settings/             # Configurações
 │   │   └── 📁 api/                      # API Routes
@@ -153,75 +174,91 @@ socialbluepro/
 │   │       ├── 📁 track/                # Tracking pixel/click
 │   │       └── 📁 uploads/              # Upload de arquivos
 │   │
-│   ├── 📁 components/
-│   │   ├── 📁 ui/                       # Componentes reutilizáveis
-│   │   │   ├── 📄 Button.tsx
-│   │   │   ├── 📄 Card.tsx
-│   │   │   ├── 📄 Table.tsx
-│   │   │   ├── 📄 QuoteModal.tsx
-│   │   │   ├── 📄 LeadDetailModal.tsx
-│   │   │   ├── 📄 PageContainer.tsx
-│   │   │   ├── 📄 Toast.tsx
-│   │   │   ├── 📄 ConfirmModal.tsx
-│   │   │   └── 📄 BackToTop.tsx
-│   │   ├── 📁 providers/                # Providers React
-│   │   │   └── 📄 ToastProvider.tsx
+│   ├── 📁 components/                   # Componentes React
 │   │   ├── 📁 admin/                    # Componentes admin
 │   │   │   └── 📄 DefaultPasswordWarning.tsx
+│   │   ├── 📁 providers/                # Providers React
+│   │   │   └── 📄 ToastProvider.tsx
 │   │   ├── 📁 sections/                 # Seções da landing
 │   │   │   └── 📄 AboutSection.tsx
-│   │   ├── 📄 Hero.tsx                  # Hero section
-│   │   ├── 📄 Services.tsx              # Grid de serviços
-│   │   ├── 📄 Navbar.tsx                # Navegação
+│   │   ├── 📁 ui/                       # Componentes reutilizáveis (Design System)
+│   │   │   ├── 📄 BackToTop.tsx
+│   │   │   ├── 📄 BackgroundImage.tsx
+│   │   │   ├── 📄 Button.tsx
+│   │   │   ├── 📄 Card.tsx
+│   │   │   ├── 📄 ConfirmModal.tsx
+│   │   │   ├── 📄 DesktopImage.tsx
+│   │   │   ├── 📄 ErrorBoundary.tsx
+│   │   │   ├── 📄 LeadDetailModal.tsx
+│   │   │   ├── 📄 PageContainer.tsx
+│   │   │   ├── 📄 ProgressiveImage.tsx
+│   │   │   ├── 📄 QuoteModal.tsx
+│   │   │   ├── 📄 Table.tsx
+│   │   │   └── 📄 Toast.tsx
 │   │   ├── 📄 Footer.tsx                # Rodapé
+│   │   ├── 📄 Hero.tsx                  # Hero section
 │   │   ├── 📄 LeadMagnet.tsx            # Captura de leads
+│   │   ├── 📄 Navbar.tsx                # Navegação principal
+│   │   ├── 📄 NavbarLayout.tsx          # Layout com navbar
+│   │   ├── 📄 ProjectRecap.tsx          # Recap do projeto
 │   │   ├── 📄 ServiceArea.tsx           # Área de atuação
+│   │   ├── 📄 Services.tsx              # Grid de serviços
+│   │   ├── 📄 SimpleFooter.tsx          # Rodapé simples
 │   │   └── 📄 Testimonials.tsx          # Depoimentos
 │   │
 │   ├── 📁 actions/                      # Server Actions
 │   │   ├── 📄 auth.ts                   # Autenticação
-│   │   ├── 📄 leads.ts                  # Gestão de leads
-│   │   ├── 📄 campaigns.ts              # Campanhas
+│   │   ├── 📄 campaign-analytics.ts     # Analytics de campanhas
+│   │   ├── 📄 campaigns.ts              # Campanhas de email
+│   │   ├── 📄 email-tracking.ts         # Tracking de emails
 │   │   ├── 📄 email.ts                  # Envio de emails
-│   │   ├── 📄 email-tracking.ts         # Tracking
-│   │   ├── 📄 campaign-analytics.ts     # Analytics
-│   │   ├── 📄 remarketing.ts            # Remarketing
-│   │   ├── 📄 users.ts                  # Usuários
+│   │   ├── 📄 lead-notes.ts             # Notas de leads
+│   │   ├── 📄 leads.ts                  # Gestão de leads
+│   │   ├── 📄 remarketing.ts            # Remarketing automation
 │   │   ├── 📄 settings.ts               # Configurações
-│   │   └── 📄 lead-notes.ts             # Notas de leads
+│   │   └── 📄 users.ts                  # Gestão de usuários
 │   │
 │   ├── 📁 lib/                          # Bibliotecas e utilitários
-│   │   ├── 📁 hooks/
-│   │   │   └── 📄 useRealTimePoll.ts    # Polling 30s
-│   │   ├── 📁 validation/
+│   │   ├── 📁 hooks/                    # Custom hooks
+│   │   │   └── 📄 useRealTimePoll.ts    # Polling a cada 30s
+│   │   ├── 📁 validation/               # Dados de validação
 │   │   │   ├── 📄 address-suffixes.ts
 │   │   │   ├── 📄 colorado-data.ts
 │   │   │   └── 📄 disposable-email-list.ts
-│   │   ├── 📄 prisma.ts                 # Cliente Prisma
-│   │   ├── 📄 toast.tsx                 # Sistema de toast
-│   │   ├── 📄 validators.ts             # Validações
-│   │   ├── 📄 client-validation.ts      # Validações client-side
-│   │   ├── 📄 mail.ts                   # Configuração SMTP
 │   │   ├── 📄 attachments.ts            # Gerenciamento de anexos
-│   │   └── 📄 utils.ts                  # Utilitários
+│   │   ├── 📄 auth-helpers.ts           # Helpers de autenticação
+│   │   ├── 📄 client-validation.ts      # Validações client-side
+│   │   ├── 📄 constants.ts              # Constantes do projeto
+│   │   ├── 📄 mail.ts                   # Configuração SMTP
+│   │   ├── 📄 prisma-init.ts            # Inicialização Prisma
+│   │   ├── 📄 prisma.ts                 # Cliente Prisma
+│   │   ├── 📄 supabase-ssr.ts           # Supabase SSR (legado)
+│   │   ├── 📄 toast.tsx                 # Sistema de toast
+│   │   ├── 📄 utils.ts                  # Utilitários
+│   │   ├── 📄 validators.ts             # Funções de validação
+│   │   └── 📄 websocket.ts              # WebSocket (preparado)
+│   │
+│   ├── 📁 types/                        # Tipos TypeScript
 │   │
 │   ├── 📄 auth.ts                       # Configuração NextAuth
 │   └── 📄 middleware.ts                 # Middleware de proteção
 │
-├── 📁 prisma/
-│   └── 📄 schema.prisma                 # Schema do banco de dados
-│
-├── 📁 public/                           # Assets estáticos
-│   └── 📁 imgs/                         # Imagens otimizadas
-│
-├── 📄 package.json                      # Dependências
-├── 📄 next.config.ts                    # Configuração Next.js
-├── 📄 tailwind.config.js                # Configuração Tailwind
-├── 📄 tsconfig.json                     # Configuração TypeScript
-├── 📄 .env                              # Variáveis de ambiente
-├── 📄 init.sh                           # Script de setup/deploy
+├── 📄 .env                              # Variáveis de ambiente (não vai pro GitHub)
+├── 📄 .env.example                      # Exemplo de variáveis
+├── 📄 .gitignore                        # Arquivos ignorados pelo Git
+├── 📄 AGENTS.md                         # Guidelines para AI agents
+├── 📄 CHANGELOG.md                      # Histórico de mudanças
 ├── 📄 README.md                         # Este arquivo
-└── 📄 AGENTS.md                         # Guidelines para agents
+├── 📄 init.sh                           # Script de setup local
+├── 📄 install.sh                        # Script de instalação produção
+├── 📄 next-env.d.ts                     # Tipos TypeScript do Next.js
+├── 📄 next.config.ts                    # Configuração Next.js
+├── 📄 package-lock.json                 # Lock das dependências
+├── 📄 package.json                      # Dependências npm
+├── 📄 postcss.config.mjs                # Configuração PostCSS
+├── 📄 prisma.config.ts                  # Configuração Prisma
+├── 📄 tailwind.config.js                # Configuração Tailwind CSS
+└── 📄 tsconfig.json                     # Configuração TypeScript
 ```
 
 ---
