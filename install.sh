@@ -13,6 +13,7 @@ INSTALL_DIR="/opt/socialbluepro"
 SERVICE_NAME="socialbluepro"
 REPO_URL="https://github.com/rafaelfmuniz/socialbluepro.git"
 SCRIPT_BRANCH="main"
+SCRIPT_VERSION="2.0.1"
 
 # ============================================
 # CORES (usando tput para compatibilidade)
