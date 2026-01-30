@@ -602,7 +602,6 @@ Este projeto é privado e proprietário.
 
 Para dúvidas ou suporte:
 - Email: suporte@socialbluepro.com
-- Telefone: (720) 555-0123
 
 ---
 
