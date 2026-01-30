@@ -421,7 +421,7 @@ main() {
         
         cd "$INSTALL_DIR" 2>/dev/null || true
         local CURRENT_VERSION
-        CURRENT_VERSION=$(git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "desconhecida")
+        CURRENT_VERSION=$(git describe --tags 2>/dev/null || echo "v2.0.0")
         
         echo "Versão atual: $CURRENT_VERSION"
         echo "Nova versão: $SCRIPT_BRANCH"
