@@ -13,6 +13,7 @@
 
 ## 📋 Índice
 
+- [Instalação Rápida](#instalação-rápida)
 - [Visão Geral](#visão-geral)
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
@@ -22,7 +23,6 @@
 - [Banco de Dados](#banco-de-dados)
 - [Design System](#design-system)
 - [Comandos](#comandos)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
 - [Desenvolvimento](#desenvolvimento)
 - [Deploy](#deploy)
 - [Contribuição](#contribuição)
@@ -39,6 +39,42 @@
 - **Analytics**: Dashboard de métricas de email em tempo real
 - **Remarketing Automation**: Segmentação automática e campanhas agendadas
 - **Sistema Multi-usuário**: Autenticação segura com proteção brute-force
+
+---
+
+## 🚀 Instalação Rápida
+
+### Instalação Automatizada (Ubuntu/Debian)
+
+Execute em seu servidor:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
+```
+
+**O que o script faz:**
+- Instala Node.js 18+, PostgreSQL e dependências
+- Cria banco de dados e usuário dedicado
+- Gera credenciais de admin **aleatórias e seguras**
+- Configura e inicia o serviço automaticamente
+- Roda em `localhost:3000` (acessível via IP:3000)
+
+**Credenciais serão mostradas no terminal ao final da instalação.**
+
+### Acesso Após Instalação
+
+- **Local**: http://localhost:3000
+- **Rede**: http://SEU-IP:3000
+- **Credenciais**: Mostradas no terminal (ex: `admin-a3f5@local.system` / `xK9mP2nQ7rT5vWjL`)
+- **Arquivo de credenciais**: `/root/.socialbluepro-credentials`
+
+### Comandos do Sistema
+
+```bash
+sudo systemctl start socialbluepro   # Iniciar
+sudo systemctl stop socialbluepro    # Parar
+sudo systemctl status socialbluepro  # Status
+```
 
 ---
 
@@ -397,27 +433,34 @@ npm run lint         # ESLint (obrigatório)
 
 ## 🔧 Variáveis de Ambiente
 
+**⚠️ IMPORTANTE:** O arquivo `.env` é gerado **automaticamente** pelo script de instalação. Não edite manualmente!
+
+### Gerado Automaticamente (install.sh)
 ```env
-# Banco de Dados
-DATABASE_URL="postgresql://user:password@host:5432/dbname"
+# Banco de Dados (Gerado pelo install.sh)
+DATABASE_URL="postgresql://sbp_user:SENHA_GERADA@localhost:5432/socialbluepro"
+DIRECT_URL="postgresql://sbp_user:SENHA_GERADA@localhost:5432/socialbluepro"
 
-# Autenticação
-NEXTAUTH_SECRET="sua-chave-secreta-aqui"
-NEXTAUTH_URL="https://seu-dominio.com"
+# Autenticação (Gerado pelo install.sh)
+NEXTAUTH_SECRET="CHAVE_GERADA_AUTOMATICAMENTE"
+NEXTAUTH_URL="http://localhost:3000"
 
-# Email (SMTP)
-SMTP_HOST="smtp.gmail.com"
-SMTP_PORT="587"
-SMTP_USER="seu-email@gmail.com"
-SMTP_PASS="sua-senha-app"
+# Criptografia (Gerado pelo install.sh)
+ENCRYPTION_KEY="CHAVE_GERADA_AUTOMATICAMENTE"
 
-# reCAPTCHA (opcional)
-RECAPTCHA_SITE_KEY="..."
-RECAPTCHA_SECRET_KEY="..."
-
-# Outras
-UPLOAD_DIR="./uploads"
+# Uploads
+UPLOAD_DIR="./public/uploads"
+MAX_FILE_SIZE=1073741824
 ```
+
+### Configurado via Interface Admin
+As seguintes configurações são feitas via **interface web** após login:
+
+- **SMTP/Email**: Settings > Email Channels
+- **reCAPTCHA**: Settings > Integrations  
+- **Tracking Pixels**: Settings > Integrations
+
+**NÃO adicione essas configurações no .env!**
 
 ---
 
@@ -460,22 +503,40 @@ npm run dev
 
 ## 🚀 Deploy
 
-### Build de Produção
+### Instalação em Produção (Recomendado)
+
 ```bash
-npm run build
-npm run start
+curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
 ```
 
-### Verificação Pré-deploy
+O sistema roda em **localhost:3000** e é acessível via:
+- http://localhost:3000 (local)
+- http://IP_DO_SERVIDOR:3000 (rede)
+
+**Não requer Nginx** - o Node.js serve diretamente na porta 3000.
+
+### Atualização
+```bash
+cd /opt/socialbluepro
+sudo git pull origin main
+sudo npm install --production
+sudo npx prisma migrate deploy
+sudo npm run build
+sudo systemctl restart socialbluepro
+```
+
+### Verificação Pré-deploy (Desenvolvimento)
 ```bash
 npm run lint      # Verificar erros de lint
 npm run build     # Verificar build completo
 ```
 
-### Scripts de Deploy
-O `init.sh` automatiza o processo:
+### Scripts Locais (init.sh)
+Para desenvolvimento local:
 ```bash
-./init.sh prod    # Build + start em produção
+./init.sh setup   # Setup inicial
+./init.sh prod    # Build + start
+./init.sh stop    # Parar servidor
 ```
 
 ---
