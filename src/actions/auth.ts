@@ -3,8 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import * as bcrypt from "bcryptjs";
 
-const DEFAULT_EMAIL = "admin@socialbluepro.com";
-const DEFAULT_PASSWORDS = new Set(["admin123"]);
+// Security: No hardcoded credentials - all credentials must be set via database
 const MAX_FAILED_ATTEMPTS = 5;
 
 const LOCKOUT_TIERS = [
@@ -282,7 +281,6 @@ export async function createAdminUser(data: {
     }
 
     const passwordHash = await bcrypt.hash(data.password, 10);
-    const isDefault = data.password === "admin123";
 
     const user = await prisma.adminUser.create({
        data: {
@@ -292,7 +290,7 @@ export async function createAdminUser(data: {
         role: data.role || 'admin',
         is_active: true,
         failed_attempts: 0,
-        is_default_password: isDefault
+        is_default_password: false
       }
     });
     return { success: true, user };

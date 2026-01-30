@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const isDefaultPassword = user.user.is_default_password || (email === "admin@socialbluepro.com" && password === "admin123");
+    const isDefaultPassword = user.user.is_default_password;
 
     const sessionToken = buildSessionToken({
       id: user.user.id,
