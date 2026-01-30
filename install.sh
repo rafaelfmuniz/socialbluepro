@@ -52,60 +52,111 @@ if [[ -d "$INSTALL_DIR/.git" ]]; then
     
     cd "$INSTALL_DIR"
     
-    # Verificar versão atual
-    CURRENT_VERSION=$(git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
-    echo -e "${BLUE}Versão atual:${NC} $CURRENT_VERSION"
-    echo -e "${BLUE}Nova versão:${NC} $SCRIPT_BRANCH"
-    echo ""
+    # Verificar se a instalação está funcionando
+    INSTALLATION_BROKEN=false
+    if ! npm --version &>/dev/null || ! node --version &>/dev/null; then
+        INSTALLATION_BROKEN=true
+        echo -e "${RED}❌ A instalação anterior parece estar quebrada (Node.js/npm não encontrado)${NC}"
+    elif [[ ! -d "node_modules" ]] || [[ ! -f "package-lock.json" ]]; then
+        INSTALLATION_BROKEN=true
+        echo -e "${RED}❌ A instalação anterior está incompleta (faltam dependências)${NC}"
+    fi
     
-    echo "${YELLOW}Este script vai atualizar seu sistema para a última versão.${NC}"
-    echo "${YELLOW}Seu banco de dados e configurações serão preservados.${NC}"
-    echo ""
-    read -p "Deseja continuar com a atualização? (s/N): " confirm
-    if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
-        echo "Atualização cancelada."
-        exit 0
+    # Se estiver quebrada, oferecer reinstalação limpa
+    if [[ "$INSTALLATION_BROKEN" == true ]]; then
+        echo ""
+        echo -e "${YELLOW}⚠️  Instalação quebrada detectada!${NC}"
+        echo ""
+        echo "Opções:"
+        echo "1. ${GREEN}[R]einstalar${NC} - Limpar tudo e instalar do zero (recomendado)"
+        echo "2. ${YELLOW}[A]tualizar${NC} - Tentar corrigir a instalação existente"
+        echo "3. ${RED}[C]ancelar${NC} - Sair sem fazer nada"
+        echo ""
+        read -p "Escolha uma opção (R/A/C): " choice
+        
+        case "$choice" in
+            [Rr])
+                echo -e "${BLUE}Preparando reinstalação limpa...${NC}"
+                # Parar serviço se estiver rodando
+                systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+                # Backup do banco
+                log "Fazendo backup do banco antes da reinstalação..."
+                sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-backup-reinstall-$(date +%Y%m%d-%H%M%S).sql" || warning "Falha no backup"
+                # Remover instalação antiga (preservando .env se existir)
+                cp .env /tmp/socialbluepro-env-backup 2>/dev/null || true
+                cd /
+                rm -rf "$INSTALL_DIR"
+                echo -e "${GREEN}✅ Diretório antigo removido. Continuando com instalação nova...${NC}"
+                echo ""
+                # Continuar para instalação nova
+                ;;
+            [Aa])
+                echo -e "${BLUE}Tentando atualizar instalação existente...${NC}"
+                ;;
+            *)
+                echo "Operação cancelada."
+                exit 0
+                ;;
+        esac
+    else
+        # Instalação parece OK, oferecer atualização normal
+        CURRENT_VERSION=$(git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
+        echo -e "${BLUE}Versão atual:${NC} $CURRENT_VERSION"
+        echo -e "${BLUE}Nova versão:${NC} $SCRIPT_BRANCH"
+        echo ""
+        echo "${YELLOW}Este script vai atualizar seu sistema para a última versão.${NC}"
+        echo "${YELLOW}Seu banco de dados e configurações serão preservados.${NC}"
+        echo ""
+        read -p "Deseja continuar com a atualização? (s/N): " confirm
+        if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
+            echo "Atualização cancelada."
+            exit 0
+        fi
     fi
     
     echo ""
     
-    # Backup do banco
-    log "Backupeando banco..."
-    sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-backup-$(date +%Y%m%d-%H%M%S).sql" || warning "Falha no backup"
-    
-    # Parar serviço
-    log "Parando serviço..."
-    systemctl stop "$SERVICE_NAME" 2>/dev/null || true
-    
-    # Salvar .env atual
-    cp .env /tmp/socialbluepro-env-backup 2>/dev/null || true
-    
-    # Atualizar código
-    log "Atualizando código..."
-    git fetch origin
-    git reset --hard origin/$SCRIPT_BRANCH
-    
-    # Restaurar .env
-    cp /tmp/socialbluepro-env-backup .env 2>/dev/null || true
-    
-    # Atualizar dependências
-    log "Atualizando dependências..."
-    npm install --production
-    
-    # Atualizar banco
-    log "Atualizando banco de dados..."
-    npx prisma migrate deploy
-    
-    # Rebuild
-    log "Compilando..."
-    npm run build
-    
-    # Ajustar permissões
-    chown -R www-data:www-data public/uploads 2>/dev/null || chown -R root:root public/uploads
-    
-    # Iniciar
-    log "Iniciando serviço..."
-    systemctl start "$SERVICE_NAME"
+    # Se chegou aqui, é para atualizar (não reinstalar do zero)
+    if [[ -d "$INSTALL_DIR/.git" ]]; then
+        cd "$INSTALL_DIR"
+        
+        # Backup do banco
+        log "Backupeando banco..."
+        sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-backup-$(date +%Y%m%d-%H%M%S).sql" || warning "Falha no backup"
+        
+        # Parar serviço
+        log "Parando serviço..."
+        systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+        
+        # Salvar .env atual
+        cp .env /tmp/socialbluepro-env-backup 2>/dev/null || true
+        
+        # Atualizar código
+        log "Atualizando código..."
+        git fetch origin
+        git reset --hard origin/$SCRIPT_BRANCH
+        
+        # Restaurar .env
+        cp /tmp/socialbluepro-env-backup .env 2>/dev/null || true
+        
+        # Atualizar dependências
+        log "Atualizando dependências..."
+        npm install --production
+        
+        # Atualizar banco
+        log "Atualizando banco de dados..."
+        npx prisma migrate deploy
+        
+        # Rebuild
+        log "Compilando..."
+        npm run build
+        
+        # Ajustar permissões
+        chown -R www-data:www-data public/uploads 2>/dev/null || chown -R root:root public/uploads
+        
+        # Iniciar
+        log "Iniciando serviço..."
+        systemctl start "$SERVICE_NAME"
     
     # Verificar
     sleep 3
