@@ -139,10 +139,20 @@ ADMIN_HASH=$(echo -n "$ADMIN_PASSWORD" | openssl dgst -sha256 -binary | openssl 
 log "Credenciais do administrador geradas (serão mostradas no final)"
 
 # Instalar dependências
-log "Instalando Node.js e PostgreSQL..."
+log "Instalando Node.js LTS mais recente e PostgreSQL..."
 apt-get update -qq
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash - 2>/dev/null
+
+# Detectar e instalar Node.js LTS mais recente (automático)
+# O script detecta a distro e instala a versão LTS apropriada
+curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - 2>/dev/null || \
+    curl -fsSL https://deb.nodesource.com/setup_current.x | bash - 2>/dev/null || \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - 2>/dev/null
+
 apt-get install -y -qq nodejs postgresql postgresql-client git curl
+
+# Verificar versão instalada
+NODE_VERSION=$(node --version 2>/dev/null || echo "N/A")
+log "Node.js instalado: $NODE_VERSION"
 
 # Configurar PostgreSQL
 log "Configurando banco de dados..."
