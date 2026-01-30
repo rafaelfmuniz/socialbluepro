@@ -1,3 +1,8 @@
+// Versão do Sistema
+export const SYSTEM_VERSION = "2.0.0";
+export const SYSTEM_VERSION_DATE = "2026-01-30";
+export const SYSTEM_NAME = "SocialBluePro";
+
 export const IMAGES = {
   // Logos
   logoWhite: "/imgs/Imgs_WEBP/logo.webp",

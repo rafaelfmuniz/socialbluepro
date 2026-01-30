@@ -152,18 +152,25 @@ export default function AdminDashboard() {
                 Blast an offer to all your leads. High-impact email campaigns converted to projects.
               </p>
               
-              <div className="mt-auto space-y-2 sm:space-y-3 md:space-y-4">
-                <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm font-bold text-slate-400 bg-white/5 p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10">
-                  <CheckCircle2 size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
-                  No 3rd party costs
-                </div>
-                <Link href="/admin/campaigns" className="block w-full bg-accent text-white py-2.5 sm:py-3 md:py-4 lg:py-5 rounded-lg sm:rounded-xl md:rounded-2xl font-black uppercase tracking-wider sm:tracking-widest hover:bg-accent-dark transition-all shadow-xl shadow-accent/20 text-center text-[10px] sm:text-xs md:text-sm">
-                  Start Campaign
-                </Link>
-              </div>
-            </div>
-         </div>
-       </div>
-     </div>
-   );
- }
+               <div className="mt-auto space-y-2 sm:space-y-3 md:space-y-4">
+                 <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm font-bold text-slate-400 bg-white/5 p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10">
+                   <CheckCircle2 size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                   No 3rd party costs
+                 </div>
+                 <Link href="/admin/campaigns" className="block w-full bg-accent text-white py-2.5 sm:py-3 md:py-4 lg:py-5 rounded-lg sm:rounded-xl md:rounded-2xl font-black uppercase tracking-wider sm:tracking-widest hover:bg-accent-dark transition-all shadow-xl shadow-accent/20 text-center text-[10px] sm:text-xs md:text-sm">
+                   Start Campaign
+                 </Link>
+               </div>
+             </div>
+          </div>
+        </div>
+        
+        {/* Footer com versão */}
+        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12 pt-4 sm:pt-5 md:pt-6 border-t border-slate-200">
+          <p className="text-[10px] sm:text-xs text-slate-400 text-center font-medium">
+            SocialBluePro <span className="text-slate-300">v2.0.0</span> • 2026-01-30
+          </p>
+        </div>
+      </div>
+    );
+  }
