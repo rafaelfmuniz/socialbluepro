@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# SocialBluePro - Instalação Simplificada
-# Roda diretamente em localhost:3000 ou IP:3000
-# Uso: curl -fsSL https://raw.githubusercontent.com/seu-usuario/socialbluepro/main/install.sh | sudo bash
+# SocialBluePro - Instalação Segura
+# Gera credenciais aleatórias para o usuário admin
+# Uso: curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
 
 set -e
 
@@ -27,8 +27,8 @@ if [[ $EUID -ne 0 ]]; then
    error "Execute como root: sudo curl ... | sudo bash"
 fi
 
-log "SocialBluePro - Instalador"
-echo "=========================="
+log "SocialBluePro - Instalador Seguro"
+echo "=================================="
 echo ""
 
 # Verificar se é Ubuntu/Debian
@@ -83,6 +83,13 @@ fi
 log "Iniciando instalação nova..."
 echo ""
 
+# Gerar credenciais aleatórias para o admin
+ADMIN_EMAIL="admin-$(openssl rand -hex 4)@local.system"
+ADMIN_PASSWORD=$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-16)
+ADMIN_HASH=$(echo -n "$ADMIN_PASSWORD" | openssl dgst -sha256 -binary | openssl base64)
+
+log "Credenciais do administrador geradas (serão mostradas no final)"
+
 # Instalar dependências
 log "Instalando Node.js e PostgreSQL..."
 apt-get update -qq
@@ -130,6 +137,23 @@ log "Configurando Prisma..."
 npx prisma generate
 npx prisma migrate deploy
 
+# Criar usuário admin via script SQL seguro
+log "Criando usuário administrador..."
+sudo -u postgres psql socialbluepro << EOF
+INSERT INTO admin_users (id, name, email, password_hash, role, is_active, failed_attempts, is_default_password)
+VALUES (
+    gen_random_uuid(),
+    'Administrador',
+    '$ADMIN_EMAIL',
+    crypt('$ADMIN_PASSWORD', gen_salt('bf')),
+    'admin',
+    true,
+    0,
+    true
+)
+ON CONFLICT (email) DO NOTHING;
+EOF
+
 # Build
 log "Compilando aplicação..."
 npm run build || error "Falha no build"
@@ -137,6 +161,28 @@ npm run build || error "Falha no build"
 # Diretório de uploads
 mkdir -p public/uploads
 chown -R www-data:www-data public/uploads 2>/dev/null || chown -R root:root public/uploads
+
+# Criar arquivo com credenciais (apenas root pode ler)
+CRED_FILE="/root/.socialbluepro-credentials"
+cat > "$CRED_FILE" << EOF
+====================================
+SocialBluePro - Credenciais de Acesso
+Gerado em: $(date)
+====================================
+
+Email: $ADMIN_EMAIL
+Senha: $ADMIN_PASSWORD
+
+IMPORTANTE:
+- Este arquivo está em /root/.socialbluepro-credentials
+- Apenas root pode ler este arquivo
+- Altere a senha após o primeiro login
+- Delete este arquivo após anotar as credenciais
+
+Acesso: http://$(hostname -I | awk '{print $1}'):3000
+====================================
+EOF
+chmod 600 "$CRED_FILE"
 
 # Criar serviço systemd
 log "Criando serviço..."
@@ -173,6 +219,15 @@ if systemctl is-active --quiet "$SERVICE_NAME"; then
     echo "========================================"
     echo -e "${GREEN}SocialBluePro está rodando!${NC}"
     echo "========================================"
+    echo ""
+    echo -e "${YELLOW}🔐 CREDENCIAIS DE ACESSO (GUARDE ISSO):${NC}"
+    echo ""
+    echo -e "${GREEN}Email:${NC} $ADMIN_EMAIL"
+    echo -e "${GREEN}Senha:${NC} $ADMIN_PASSWORD"
+    echo ""
+    echo -e "${YELLOW}⚠️  IMPORTANTE:${NC}"
+    echo "   - Altere a senha após o primeiro login"
+    echo "   - Credenciais salvas em: /root/.socialbluepro-credentials"
     echo ""
     echo "🌐 Acesse:"
     echo "   Local: http://localhost:3000"
