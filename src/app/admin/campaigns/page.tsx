@@ -3,7 +3,7 @@
 import { getCampaigns, updateCampaign, deleteCampaign, createCampaign } from "@/actions/campaigns";
 import { getLeads, updateLeadStatus } from "@/actions/leads";
 import { useRealTimePoll } from "@/lib/hooks/useRealTimePoll";
-import { LiveIndicator } from "@/components/ui/LiveIndicator";
+import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 
 // Local database compatibility wrapper using server actions
 function createClient() {
@@ -608,7 +608,7 @@ export default function CampaignsPage() {
      }
    };
 
-   const { loading, lastUpdate, refetch, isPolling } = useRealTimePoll<{
+   const { loading, refetch } = useRealTimePoll<{
     campaigns: Campaign[];
     leads: Lead[];
   }>({
@@ -621,12 +621,18 @@ export default function CampaignsPage() {
 
       // Fetch leads for audience selection
       const leadsData = await getLeads();
-      setLeads(leadsData.data || []);
+      const sanitizedLeads: Lead[] = (leadsData.data || []).map((l: any) => ({
+        ...l,
+        service_interest: l.service_interest || "",
+        city: l.city || "",
+        state: l.state || ""
+      }));
+      setLeads(sanitizedLeads);
 
       // Calculate audience size for default segment
-      updateAudienceSize("all", leadsData.data || []);
+      updateAudienceSize("all", sanitizedLeads);
 
-      return { campaigns: campaignsData, leads: leadsData.data || [] };
+      return { campaigns: campaignsData, leads: sanitizedLeads };
     },
     interval: 30000,
     enabled: true,
@@ -890,9 +896,9 @@ export default function CampaignsPage() {
           
           // Create tracking record for this email
           const trackingResult = await createTrackingRecord({
-            campaignId,
-            leadId: lead.id,
-            recipientEmail: lead.email,
+            campaign_id: campaignId,
+            lead_id: lead.id,
+            recipient_email: lead.email,
             subject: mergedSubject
           });
           
@@ -973,60 +979,49 @@ export default function CampaignsPage() {
   }
 
   return (
-     <div className="space-y-8">
-       <div className="flex justify-between items-center">
-         <div>
-           <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900">Email Campaigns</h1>
-           <p className="text-slate-500 font-medium text-sm">Reach out to your {leads.length} leads with targeted marketing.</p>
-         </div>
-         <button
-           onClick={handleNewCampaign}
-           className="bg-accent text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-green-600 transition-all shadow-lg shadow-accent/20"
-         >
-           <Send size={16} /> New Campaign
-         </button>
-       </div>
+      <PageContainer>
+        <PageHeader
+          title="Email Campaigns"
+          description={`Reach out to your ${leads.length} leads with targeted marketing.`}
+          actions={
+            <button
+              onClick={handleNewCampaign}
+              className="bg-accent text-white px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-green-600 transition-all shadow-lg shadow-accent/20 min-h-[40px] sm:min-h-[44px] w-full md:w-auto"
+            >
+              <Send size={14} className="sm:w-4 sm:h-4" /> <span>New Campaign</span>
+            </button>
+          }
+        />
 
-       {/* Live Indicator */}
-       <div className="flex justify-end">
-         <LiveIndicator
-           isPolling={isPolling}
-           lastUpdate={lastUpdate}
-           onRefresh={handleManualRefresh}
-           refreshLoading={manualRefreshing}
-           showLabel={true}
-         />
-       </div>
-
-      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 w-full max-w-full">
+      <div className="grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full max-w-full">
         {/* Campaign Builder */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6 w-full max-w-full min-w-0">
-          <div className="bg-white p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-slate-100 shadow-xl space-y-4 sm:space-y-6 max-w-full">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
-              <h3 className="text-base sm:text-lg md:text-xl font-black tracking-tighter uppercase text-slate-900">Compose Campaign</h3>
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-6 w-full max-w-full min-w-0">
+          <div className="bg-white p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl border border-slate-100 shadow-xl space-y-3 sm:space-y-4 md:space-y-6 max-w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
+              <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-tighter uppercase text-slate-900">Compose Campaign</h3>
               <button 
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold text-xs uppercase tracking-widest"
+                className="flex items-center gap-1.5 sm:gap-2 text-slate-500 hover:text-slate-900 font-bold text-[10px] sm:text-xs uppercase tracking-widest"
               >
-                <Filter size={14} /> {showAdvanced ? 'Simple Mode' : 'Advanced Options'}
+                <Filter size={12} className="sm:w-3.5 sm:h-3.5" /> {showAdvanced ? 'Simple' : 'Advanced'}
               </button>
             </div>
             
-        <div className="space-y-6 w-full max-w-full">
+        <div className="space-y-4 sm:space-y-5 md:space-y-6 w-full max-w-full">
               {/* Template Selection */}
               <div>
-                <label className="block text-sm font-black uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
-                  <FileText size={16} /> Marketing Templates
+                <label className="block text-xs sm:text-sm font-black uppercase tracking-widest text-slate-500 mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
+                  <FileText size={14} className="sm:w-4 sm:h-4" /> Templates
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2 md:gap-3">
                   {MARKETING_TEMPLATES.map(template => (
                     <button
                       key={template.id}
                       onClick={() => handleTemplateSelect(template.id)}
-                      className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border text-left transition-all ${selectedTemplate === template.id ? 'border-accent bg-accent/5' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
+                       className={`p-2.5 sm:p-3 md:p-4 rounded-md sm:rounded-lg md:rounded-xl border text-left transition-all min-h-[40px] sm:min-h-[44px] ${selectedTemplate === template.id ? 'border-accent bg-accent/5' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
                     >
-                      <p className="font-bold text-slate-900 text-xs sm:text-sm mb-1">{template.name}</p>
-                      <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">{template.description}</p>
+                      <p className="font-bold text-slate-900 text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">{template.name}</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-medium line-clamp-2">{template.description}</p>
                     </button>
                   ))}
                 </div>
@@ -1045,46 +1040,46 @@ export default function CampaignsPage() {
               </div>
 
                {/* Target Audience */}
-               <div>
-                 <label className="block text-sm font-black uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
-                   <Users size={16} /> Target Audience
-                 </label>
-                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-                   {AUDIENCE_SEGMENTS.map(segment => (
-                     <button
-                       key={segment.id}
-                       onClick={() => handleAudienceChange(segment.id)}
-                       className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl border text-center transition-all ${selectedAudience === segment.id ? 'border-accent bg-accent/10 text-accent' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
-                     >
-                       <p className="font-bold text-xs sm:text-sm mb-1">{segment.name}</p>
-                       <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">
-                         {leads.filter(segment.filter).length} leads
-                       </p>
-                     </button>
-                   ))}
-                 </div>
-               </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-black uppercase tracking-widest text-slate-500 mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
+                    <Users size={14} className="sm:w-4 sm:h-4" /> Target Audience
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 md:gap-3">
+                    {AUDIENCE_SEGMENTS.map(segment => (
+                      <button
+                        key={segment.id}
+                        onClick={() => handleAudienceChange(segment.id)}
+                         className={`p-2 sm:p-2.5 md:p-3 rounded-md sm:rounded-lg md:rounded-xl border text-center transition-all min-h-[40px] sm:min-h-[44px] ${selectedAudience === segment.id ? 'border-accent bg-accent/10 text-accent' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
+                      >
+                        <p className="font-bold text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">{segment.name}</p>
+                         <p className="text-[10px] sm:text-xs text-slate-500 font-medium">
+                           {leads.filter(segment.filter).length} leads
+                         </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-               {/* Advanced Options */}
-               {showAdvanced && (
-                 <div className="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                   <h4 className="text-sm font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                     <Zap size={14} /> Delivery Settings
-                   </h4>
-                   
-                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                     <div className="space-y-2">
-                       <label className="text-xs font-bold text-slate-600">Send Method</label>
-                       <select
-                         value={sendMethod}
-                         onChange={(e) => setSendMethod(e.target.value as "now" | "schedule" | "batch")}
-                         className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
-                       >
-                         <option value="now">Send Now</option>
-                         <option value="schedule">Schedule</option>
-                         <option value="batch">Batch Send</option>
-                       </select>
-                     </div>
+                {/* Advanced Options */}
+                {showAdvanced && (
+                  <div className="space-y-3 sm:space-y-4 p-3 sm:p-4 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-200">
+                    <h4 className="text-xs sm:text-sm font-black uppercase tracking-widest text-slate-500 flex items-center gap-1.5 sm:gap-2">
+                      <Zap size={12} className="sm:w-3.5 sm:h-3.5" /> Delivery Settings
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                      <div className="space-y-1.5 sm:space-y-2">
+                        <label className="text-[10px] sm:text-xs font-bold text-slate-600">Send Method</label>
+                        <select
+                          value={sendMethod}
+                          onChange={(e) => setSendMethod(e.target.value as "now" | "schedule" | "batch")}
+                          className="w-full px-2.5 sm:px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                        >
+                          <option value="now">Send Now</option>
+                          <option value="schedule">Schedule</option>
+                          <option value="batch">Batch Send</option>
+                        </select>
+                      </div>
                      
                      {sendMethod === "schedule" && (
                        <div className="space-y-2">
@@ -1134,31 +1129,31 @@ export default function CampaignsPage() {
 
               {/* Email Body with Tabs */}
               <div>
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                   <label className="block text-sm font-black uppercase tracking-widest text-slate-500">Email Content</label>
-                  <div className="flex bg-slate-100 p-1 rounded-lg">
+                    <div className="flex bg-slate-100 p-1 rounded-lg w-full sm:w-auto gap-1">
                     <button
                       onClick={() => setActiveTab("compose")}
-                      className={`px-4 py-2 text-xs font-bold rounded-md transition-all ${activeTab === "compose" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                      className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === "compose" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                      <FileText size={14} className="inline mr-2" />
-                      Compose
+                      <FileText size={14} />
+                      <span>Compose</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("preview")}
-                      className={`px-4 py-2 text-xs font-bold rounded-md transition-all ${activeTab === "preview" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                      className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === "preview" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                      <Eye size={14} className="inline mr-2" />
-                      Preview
+                      <Eye size={14} />
+                      <span>Preview</span>
                     </button>
                     <button
                       onClick={() => setShowTestEmail(!showTestEmail)}
-                      className={`px-4 py-2 text-xs font-bold rounded-md transition-all ${showTestEmail ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                      className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 whitespace-nowrap ${showTestEmail ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                      <Mail size={14} className="inline mr-2" />
-                      Test
+                      <Mail size={14} />
+                      <span>Test</span>
                     </button>
-                  </div>
+                   </div>
                 </div>
                 
                 {activeTab === "compose" ? (
@@ -1184,7 +1179,7 @@ export default function CampaignsPage() {
                        <div className="p-4 overflow-auto max-h-[500px] bg-slate-100">
                          {emailBody ? (
                            <div className="flex justify-center min-h-[400px]">
-                             <div className="bg-white shadow-lg" style={{ maxWidth: '600px', width: '100%' }}>
+                              <div className="bg-white shadow-lg w-full max-w-full md:max-w-[600px]" style={{ width: '100%' }}>
                                <style>{`
                                  .email-preview-container .email-body {
                                    margin: 0 !important;
@@ -1209,12 +1204,13 @@ export default function CampaignsPage() {
                                    border-radius: 10px 10px 0 0 !important;
                                  }
                                `}</style>
-                               <div
-                                 className="email-preview-container"
-                                 dangerouslySetInnerHTML={{ __html: safeHtml(emailBody) }}
-                               />
-                             </div>
-                           </div>
+                                <div
+                                  className="email-preview-container"
+                                  dangerouslySetInnerHTML={{ __html: safeHtml(emailBody) }}
+                                />
+
+                            </div>
+                          </div>
                          ) : (
                            <div className="text-center text-slate-400 italic py-12">
                              <p>Select a template or compose an email to see preview</p>
@@ -1270,11 +1266,11 @@ export default function CampaignsPage() {
               </div>
 
               {/* Send Actions */}
-               <div className="flex flex-col sm:flex-row gap-4">
+               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   onClick={handleSendCampaign}
                   disabled={sendingCampaign || !subject.trim() || !emailBody.trim() || audienceSize === 0}
-                  className="flex-1 bg-accent text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="flex-1 bg-accent text-white py-3 sm:py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {sendingCampaign ? (
                     <>
@@ -1298,11 +1294,11 @@ export default function CampaignsPage() {
                   else if (sendMethod === "schedule") setSendMethod("batch");
                     else setSendMethod("now");
                   }}
-                  className="flex items-center justify-center px-6 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-500 transition-all"
+                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-500 transition-all min-h-[44px]"
                   title={`Current: ${sendMethod}. Click to cycle: now → schedule → batch`}
                 >
                   <Calendar size={20} />
-                  <span className="ml-2 text-xs font-bold">{sendMethod}</span>
+                  <span className="text-xs font-bold capitalize">{sendMethod}</span>
                 </button>
               </div>
             </div>
@@ -1312,34 +1308,34 @@ export default function CampaignsPage() {
         {/* Recent Activity & Stats */}
         <div className="space-y-6">
           {/* Campaign Stats */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
-            <h3 className="font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
-              <Mail size={18} /> Campaign Summary
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-xl">
+            <h3 className="text-sm sm:text-base font-black uppercase tracking-widest text-slate-900 mb-3 sm:mb-4 flex items-center gap-2">
+              <Mail size={16} className="sm:w-[18px] sm:h-[18px]" /> Campaign Summary
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-slate-600">Selected Audience</span>
-                <span className="font-black text-slate-900">{AUDIENCE_SEGMENTS.find(s => s.id === selectedAudience)?.name}</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-600">Selected Audience</span>
+                <span className="text-sm sm:text-base font-bold text-slate-900">{AUDIENCE_SEGMENTS.find(s => s.id === selectedAudience)?.name}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-slate-600">Total Leads</span>
-                <span className="font-black text-slate-900">{audienceSize} leads</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-600">Total Leads</span>
+                <span className="text-sm sm:text-base font-bold text-slate-900">{audienceSize} leads</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-slate-600">Delivery Method</span>
-                <span className="font-black text-slate-900 capitalize">{sendMethod}</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-600">Delivery Method</span>
+                <span className="text-sm sm:text-base font-bold text-slate-900 capitalize">{sendMethod}</span>
               </div>
-              <div className="pt-4 border-t border-slate-100">
+              <div className="pt-3 sm:pt-4 border-t border-slate-100">
                 <p className="text-xs text-slate-500 font-bold">Ready to send to {audienceSize} leads</p>
               </div>
             </div>
           </div>
 
           {/* Past Campaigns */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
-                <Clock size={18} /> {showArchivedOnly ? 'Archived Campaigns' : 'Past Campaigns'}
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-xl">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h3 className="text-sm sm:text-base font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                <Clock size={16} className="sm:w-[18px] sm:h-[18px]" /> {showArchivedOnly ? 'Archived Campaigns' : 'Past Campaigns'}
               </h3>
               <button
                 onClick={() => setShowArchivedOnly(!showArchivedOnly)}
@@ -1348,7 +1344,7 @@ export default function CampaignsPage() {
                 {showArchivedOnly ? 'Show Active' : 'Show Archived'}
               </button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {campaigns
                 .filter(c => showArchivedOnly ? c.archived : !c.archived)
                 .map((campaign) => (
@@ -1360,44 +1356,44 @@ export default function CampaignsPage() {
                         <p className="font-bold text-slate-900 text-sm truncate">{campaign.subject}</p>
                       </div>
                       <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                        <span>{new Date(campaign.sent_at).toLocaleDateString()}</span>
-                        <span className="text-green-600 font-bold">{campaign.open_rate}% open</span>
+                        <span>{campaign.sent_at ? new Date(campaign.sent_at).toLocaleDateString() : 'Draft'}</span>
+                        <span className="text-green-600 font-bold">{campaign.open_rate || 0}% open</span>
                         {campaign.status && (
                           <span className="text-slate-400 capitalize">{campaign.status}</span>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                     <div className="flex items-center gap-2 flex-shrink-0">
                       {campaign.archived ? (
                         <button
                           onClick={() => confirmAction('unarchive', campaign)}
-                          className="p-2.5 text-green-500 hover:bg-green-50 rounded-lg transition-colors"
+                          className="p-3 text-green-500 hover:bg-green-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                           title="Unarchive"
                         >
-                          <FolderOpen size={14} />
+                          <FolderOpen size={18} />
                         </button>
                       ) : (
                         <button
                           onClick={() => confirmAction('archive', campaign)}
-                          className="p-2.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                          className="p-3 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                           title="Archive"
                         >
-                          <Archive size={14} />
+                          <Archive size={18} />
                         </button>
                       )}
                       <button
                         onClick={() => handleDuplicateCampaign(campaign)}
-                        className="p-2.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-3 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                         title="Duplicate"
                       >
-                        <Copy size={14} />
+                        <Copy size={18} />
                       </button>
                       <button
                         onClick={() => confirmAction('delete', campaign)}
-                        className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                         title="Delete"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </div>
@@ -1441,6 +1437,6 @@ export default function CampaignsPage() {
         confirmText={confirmModal.action === 'delete' ? 'Delete' : confirmModal.action === 'archive' ? 'Archive' : 'Unarchive'}
         variant={confirmModal.action === 'delete' ? 'danger' : 'warning'}
       />
-    </div>
+    </PageContainer>
   );
 }

@@ -36,7 +36,7 @@ export function Table({
   }[shadow];
 
   return (
-    <div className={cn("overflow-hidden", roundedClasses, shadowClasses, className)}>
+    <div className={cn("overflow-x-auto", roundedClasses, shadowClasses, className)}>
       <table className={cn(
         "w-full text-sm text-left",
         border && "border border-[var(--color-border-light)]"

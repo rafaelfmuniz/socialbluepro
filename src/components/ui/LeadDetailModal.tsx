@@ -256,7 +256,7 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-3 md:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -269,42 +269,42 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+            className="relative w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col mx-2 sm:mx-3 md:mx-4"
           >
             {/* Header */}
-            <div className="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 rounded-xl flex items-center justify-center font-black text-lg shadow-inner">
+            <div className="p-3 sm:p-4 md:p-6 lg:p-8 border-b border-slate-100 flex justify-between items-start">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-2">
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 rounded-lg sm:rounded-xl flex items-center justify-center font-black text-base sm:text-lg shadow-inner shrink-0">
                     {lead.name.charAt(0)}
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase">{lead.name}</h2>
-                    <p className="text-sm text-slate-500 font-medium">{lead.email}</p>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate">{lead.name}</h2>
+                    <p className="text-xs sm:text-sm text-slate-500 font-medium truncate">{lead.email}</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2 sm:mt-3">
                   <span className={cn(
-                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                    "px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
                     lead.status === "new" ? "bg-green-50 text-green-700 border-green-100" :
                     lead.status === "contacted" ? "bg-blue-50 text-blue-700 border-blue-100" :
                     "bg-slate-50 text-slate-500 border-slate-200"
                   )}>
                     {lead.status}
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200">
                     {lead.service_interest}
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] font-black uppercase tracking-widest border border-accent/20">
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-accent/10 text-accent text-[10px] font-black uppercase tracking-widest border border-accent/20">
                     {lead.city || "Colorado"}
                   </span>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 bg-slate-100 rounded-full text-slate-500 hover:text-slate-900 transition-colors"
+                className="p-1.5 sm:p-2 bg-slate-100 rounded-full text-slate-500 hover:text-slate-900 transition-colors shrink-0 ml-2"
               >
-                <X size={24} />
+                <X size={20} className="sm:w-6 sm:h-6" />
               </button>
             </div>
 
@@ -318,8 +318,8 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
             )}
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8">
-              <div className="space-y-8">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8">
+              <div className="space-y-4 sm:space-y-6 md:space-y-8">
                 {/* Lead Details - Full Width */}
                 <div className="space-y-8">
                   {/* Contact Information */}
@@ -421,61 +421,40 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                            )}
                          </div>
                        </div>
-                      <div className="grid grid-cols-4 gap-3">
-                        {lead.attachments.map((att, idx) => {
-                           const attachmentUrl = resolveAttachmentUrl(att.url);
-                          const isImage = isImageFile(att.name);
-                          return (
-                            <div
-                              key={idx}
-                              className="bg-white p-3 rounded-xl border border-slate-200 hover:border-accent transition-colors group relative"
-                            >
-                              {isImage ? (
-                                 <div 
-                                   className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center cursor-pointer overflow-hidden"
-                                   onClick={() => window.open(attachmentUrl, '_blank')}
-                                 >
-                                   <img 
-                                     src={attachmentUrl} 
-                                     alt={att.name}
-                                    className="max-w-full max-h-full object-contain"
-                                    onError={(e) => {
-                                      (e.target as HTMLImageElement).style.display = 'none';
-                                      const parent = (e.target as HTMLImageElement).parentElement;
-                                      if (parent) {
-                                        const fallback = document.createElement('div');
-                                        fallback.className = 'flex items-center justify-center';
-                                        fallback.innerHTML = '<svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
-                                        parent.appendChild(fallback);
-                                      }
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                 <a
-                                   href={attachmentUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center hover:bg-slate-200 transition-colors"
-                                >
-                                  <FileText className="text-slate-400 group-hover:text-accent" size={20} />
-                                </a>
-                              )}
-                              <p className="text-[10px] font-bold text-slate-600 truncate" title={att.name}>
-                                {att.name}
-                              </p>
-                              <p className="text-[8px] text-slate-400 font-bold">{Math.round(att.size / 1024)} KB</p>
-                               <a
-                                 href={attachmentUrl}
+                        <div className="grid grid-cols-4 gap-3">
+                          {lead.attachments.map((att, idx) => {
+                            const attachmentUrl = resolveAttachmentUrl(att.url);
+                            const isImage = isImageFile(att.name);
+                            return (
+                              <a
+                                key={idx}
+                                href={attachmentUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="absolute inset-0 z-10"
-                                aria-label={`Open ${att.name}`}
-                              ></a>
-                            </div>
-                          );
-                        })}
-                      </div>
+                                className="bg-white p-3 rounded-xl border border-slate-200 hover:border-accent transition-colors group"
+                              >
+                                {isImage ? (
+                                  <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+                                    <img
+                                      src={attachmentUrl}
+                                      alt={att.name}
+                                      className="max-w-full max-h-full object-contain"
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center">
+                                    <FileText className="text-slate-400 group-hover:text-accent" size={20} />
+                                  </div>
+                                )}
+                                <p className="text-[10px] font-bold text-slate-600 truncate" title={att.name}>
+                                  {att.name}
+                                </p>
+                                <p className="text-[8px] text-slate-400 font-bold">{Math.round(att.size / 1024)} KB</p>
+                              </a>
+                            );
+                          })}
+                        </div>
                     </section>
                   )}
                 </div>
@@ -785,22 +764,22 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
              )}
 
              {/* Footer */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <div className="p-3 sm:p-4 md:p-6 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Lead ID: {lead.id.substring(0, 8)}...
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
                   onClick={onClose}
-                  className="px-6 py-3 rounded-xl bg-white text-slate-600 font-black text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-50 transition-all"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-white text-slate-600 font-black text-[10px] sm:text-xs uppercase tracking-widest border border-slate-200 hover:bg-slate-50 transition-all"
                 >
                   Close
                 </button>
                 <button
                   onClick={handleExportLead}
-                  className="px-6 py-3 rounded-xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-900 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-slate-800 transition-all"
                 >
-                  Export Lead
+                  Export
                 </button>
               </div>
             </div>

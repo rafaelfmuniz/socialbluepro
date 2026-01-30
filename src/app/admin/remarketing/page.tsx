@@ -6,6 +6,7 @@ import { getRemarketingSegments, createRemarketingSegment, updateRemarketingSegm
 import { getLeads } from "@/actions/leads";
 import { useToast } from "@/lib/toast";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 import {
    Flame,
    Snowflake,
@@ -405,63 +406,60 @@ export default function RemarketingPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900">Remarketing Automation</h1>
-          <p className="text-slate-500 font-medium text-sm">
-            Build high-performing segments and relaunch campaigns automatically.
-          </p>
-        </div>
-        <button
-          onClick={fetchRemarketingData}
-          className="inline-flex items-center gap-2 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-widest hover:bg-white"
-        >
-          <RefreshCw size={16} /> Refresh Data
-        </button>
-      </div>
+    <PageContainer className="space-y-10">
+      <PageHeader
+        title="Remarketing Automation"
+        description="Build high-performing segments and relaunch campaigns automatically."
+        actions={
+          <button
+            onClick={fetchRemarketingData}
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-widest hover:bg-white min-h-[44px]"
+          >
+            <RefreshCw size={16} /> Refresh Data
+          </button>
+        }
+      />
 
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4">
         {SEGMENT_BLUEPRINTS.map((blueprint) => {
           const Icon = blueprint.icon;
           const count = blueprintCounts[blueprint.id] || 0;
           const isLoading = generatingSegment === blueprint.id;
           return (
-            <div key={blueprint.id} className="bg-white border border-slate-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm">
-              <div className="flex items-center gap-2 sm:gap-3 mb-3">
-                <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl ${blueprint.accent}`}>
-                  <Icon size={18} className="sm:hidden" />
-                  <Icon size={20} className="hidden sm:block" />
+            <div key={blueprint.id} className="bg-white border border-slate-100 rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 shadow-sm">
+              <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
+                <div className={`p-2 sm:p-2.5 md:p-3 rounded-md sm:rounded-lg md:rounded-xl ${blueprint.accent}`}>
+                  <Icon size={16} className="sm:w-5 sm:h-5 md:w-5 md:h-5" />
                 </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-widest">{blueprint.name}</p>
-                  <p className="text-[10px] sm:text-xs text-slate-400 hidden sm:block">{blueprint.description}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-3 sm:mt-4">
-                <div>
-                  <p className="text-xl sm:text-2xl font-black text-slate-900">{count}</p>
-                  <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest">matched leads</p>
-                </div>
-                <button
-                  onClick={() => handleGenerateSegment(blueprint)}
-                  disabled={isLoading}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl bg-slate-900 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50"
-                >
-                  {isLoading ? "Saving..." : "Save Segment"}
-                </button>
+                 <div className="min-w-0 flex-1">
+                   <p className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wider truncate">{blueprint.name}</p>
+                   <p className="text-[10px] sm:text-xs text-slate-400 truncate">{blueprint.description}</p>
+                 </div>
+               </div>
+               <div className="flex items-center justify-between mt-2 sm:mt-3 md:mt-4">
+                 <div>
+                   <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900">{count}</p>
+                   <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">matched leads</p>
+                 </div>
+                 <button
+                   onClick={() => handleGenerateSegment(blueprint)}
+                   disabled={isLoading}
+                   className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg md:rounded-xl bg-slate-900 text-white text-[10px] sm:text-xs font-black uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50"
+                 >
+                   {isLoading ? "Saving..." : "Save"}
+                 </button>
               </div>
             </div>
           );
         })}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
-          <h3 className="font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
-            <Filter size={18} /> Saved Segments
+      <div className="grid gap-4 sm:gap-6 md:gap-8 lg:grid-cols-2">
+        <div className="bg-white p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl border border-slate-100 shadow-xl">
+          <h3 className="text-sm sm:text-base md:text-lg font-black uppercase tracking-widest text-slate-900 mb-3 sm:mb-4 flex items-center gap-2">
+            <Filter size={16} className="sm:w-[18px] sm:h-[18px]" /> Saved Segments
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {segments.length ? (
               segments.map((segment) => {
                 const isActive = selectedSegmentId === segment.id;
@@ -470,40 +468,40 @@ export default function RemarketingPage() {
                 return (
                   <div
                     key={segment.id}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all ${
                       isActive ? "border-accent bg-accent/5" : "border-slate-200 bg-slate-50"
                     }`}
                   >
                     {isEditing ? (
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         <div>
-                          <label className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Name</label>
+                          <label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2">Name</label>
                           <input
                             type="text"
                             value={editSegmentName}
                             onChange={(e) => setEditSegmentName(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-bold"
+                            className="w-full px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold"
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Description</label>
+                          <label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2">Description</label>
                           <input
                             type="text"
                             value={editSegmentDescription}
                             onChange={(e) => setEditSegmentDescription(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-bold"
+                            className="w-full px-2.5 sm:px-3 py-2 rounded-md sm:rounded-lg bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold"
                           />
                         </div>
                         <div className="flex gap-2">
                           <button
                             onClick={handleSaveSegmentEdit}
-                            className="px-4 py-2 rounded-xl bg-accent text-white text-xs font-black uppercase tracking-widest hover:bg-green-600"
+                            className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl bg-accent text-white text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-green-600"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingSegmentId(null)}
-                            className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-widest hover:bg-white"
+                            className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-slate-200 text-slate-600 text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-white"
                           >
                             Cancel
                           </button>
@@ -511,43 +509,43 @@ export default function RemarketingPage() {
                       </div>
                     ) : (
                       <>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-sm font-black text-slate-900 uppercase tracking-widest truncate">{segment.name}</p>
-                            </div>
-                            <p className="text-xs text-slate-500 line-clamp-2">{segment.description}</p>
+                            <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                               <p className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wider sm:tracking-widest truncate">{segment.name}</p>
+                             </div>
+                             <p className="text-[10px] sm:text-xs text-slate-500 line-clamp-2">{segment.description}</p>
                           </div>
-                          <span className="text-xs font-black text-slate-500 flex-shrink-0">{segment.lead_count} leads</span>
+                          <span className="text-[10px] sm:text-xs font-black text-slate-500 flex-shrink-0">{segment.lead_count} leads</span>
                         </div>
-                        <div className="flex items-center gap-2 mt-3 flex-wrap">
+                        <div className="flex items-center gap-1.5 sm:gap-2 mt-2 sm:mt-3 flex-wrap">
                           <button
                             onClick={() => setSelectedSegmentId(segment.id)}
-                            className="px-3 py-2 rounded-xl bg-white text-xs font-black uppercase tracking-widest border border-slate-200 text-slate-600 flex-shrink-0"
+                            className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white text-[10px] sm:text-xs font-black uppercase tracking-widest border border-slate-200 text-slate-600 flex-shrink-0"
                           >
-                            Use Segment
+                            Use
                           </button>
                           <button
                             onClick={() => handleRefreshSegment(segment)}
                             disabled={refreshingSegmentId === segment.id}
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-white disabled:opacity-50 flex-shrink-0"
+                            className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-slate-200 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-white disabled:opacity-50 flex-shrink-0"
                           >
-                            <RefreshCw size={14} />
+                            <RefreshCw size={12} className="sm:w-3.5 sm:h-3.5" />
                             {refreshingSegmentId === segment.id ? "Updating" : "Refresh"}
                           </button>
                           <button
                             onClick={() => handleEditSegment(segment)}
-                            className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors flex-shrink-0"
+                            className="p-1.5 sm:p-2 text-blue-500 hover:bg-blue-50 rounded-md sm:rounded-lg transition-colors flex-shrink-0"
                             title="Edit"
                           >
-                            <Pencil size={14} />
+                            <Pencil size={12} className="sm:w-3.5 sm:h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteSegmentClick(segment)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                            className="p-1.5 sm:p-2 text-red-500 hover:bg-red-50 rounded-md sm:rounded-lg transition-colors flex-shrink-0"
                             title="Delete"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={12} className="sm:w-3.5 sm:h-3.5" />
                           </button>
                         </div>
                       </>
@@ -556,66 +554,66 @@ export default function RemarketingPage() {
                 );
               })
             ) : (
-              <p className="text-sm text-slate-400 text-center py-10 font-medium">
+              <p className="text-xs sm:text-sm text-slate-400 text-center py-8 sm:py-10 font-medium">
                 No remarketing segments saved yet. Generate one above to get started.
               </p>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
-          <h3 className="font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
-            <Sparkles size={18} /> Launch Remarketing Campaign
+        <div className="bg-white p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl border border-slate-100 shadow-xl">
+          <h3 className="text-sm sm:text-base md:text-lg font-black uppercase tracking-widest text-slate-900 mb-3 sm:mb-4 flex items-center gap-2">
+            <Sparkles size={16} className="sm:w-[18px] sm:h-[18px]" /> Launch Campaign
           </h3>
           {selectedSegment ? (
-            <div className="space-y-4">
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Selected Segment</p>
-                <p className="text-lg font-black text-slate-900">{selectedSegment.name}</p>
-                <p className="text-sm text-slate-500">{selectedSegmentLeads.length} leads currently match this segment.</p>
+            <div className="space-y-3 sm:space-y-4">
+              <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200">
+                <p className="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-widest">Selected Segment</p>
+                <p className="text-sm sm:text-base md:text-lg font-black text-slate-900">{selectedSegment.name}</p>
+                <p className="text-xs sm:text-sm text-slate-500">{selectedSegmentLeads.length} leads currently match this segment.</p>
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Subject</label>
+                <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2">Subject</label>
                 <input
                   type="text"
                   value={campaignSubject}
                   onChange={(e) => setCampaignSubject(e.target.value)}
                   placeholder="e.g. We miss you! Exclusive lawn care tune-up"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">HTML Body</label>
+                <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2">HTML Body</label>
                 <textarea
-                  rows={6}
+                  rows={5}
                   value={campaignBody}
                   onChange={(e) => setCampaignBody(e.target.value)}
                   placeholder="Compose a short remarketing message..."
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">Supports HTML and merge tags such as {"{name}"}.</p>
+                <p className="text-[10px] text-slate-400 mt-1">Supports HTML and merge tags such as {"{name}"}.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
-                    <Calendar size={14} /> Schedule
+                  <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
+                    <Calendar size={12} className="sm:w-3.5 sm:h-3.5" /> Schedule
                   </label>
                   <input
                     type="datetime-local"
                     value={campaignSchedule}
                     onChange={(e) => setCampaignSchedule(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold"
+                    className="w-full px-2.5 sm:px-3 py-2 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Send Method</label>
+                  <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2">Send Method</label>
                   <select
                     value={campaignSendMode}
                     onChange={(e) => setCampaignSendMode(e.target.value as RemarketingSendMode)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold"
+                    className="w-full px-2.5 sm:px-3 py-2 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-bold"
                   >
                     <option value="scheduled">Send all at once</option>
                     <option value="batch">Batch (limit per day)</option>
@@ -625,8 +623,8 @@ export default function RemarketingPage() {
 
               {campaignSendMode === "batch" && (
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
-                    <Zap size={14} /> Emails per day: {campaignEmailsPerDay}
+                  <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500 mb-1 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
+                    <Zap size={12} className="sm:w-3.5 sm:h-3.5" /> Emails per day: {campaignEmailsPerDay}
                   </label>
                   <input
                     type="range"
@@ -643,22 +641,22 @@ export default function RemarketingPage() {
               <button
                 onClick={handleLaunchRemarketingCampaign}
                 disabled={launchingCampaign}
-                className="w-full flex items-center justify-center gap-2 bg-accent text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-600 disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-1.5 sm:gap-2 bg-accent text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-green-600 disabled:opacity-60"
               >
                 {launchingCampaign ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
                     Scheduling...
                   </>
                 ) : (
                   <>
-                    <Send size={16} /> Schedule Campaign
+                    <Send size={14} className="sm:w-4 sm:h-4" /> Schedule Campaign
                   </>
                 )}
               </button>
             </div>
           ) : (
-            <p className="text-sm text-slate-400 text-center py-12 font-medium">
+            <p className="text-xs sm:text-sm text-slate-400 text-center py-8 sm:py-12 font-medium">
               Select or create a segment to configure a remarketing campaign.
             </p>
           )}
@@ -675,6 +673,6 @@ export default function RemarketingPage() {
         confirmText="Delete"
         variant="danger"
       />
-    </div>
+    </PageContainer>
   );
 }

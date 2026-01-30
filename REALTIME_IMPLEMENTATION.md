@@ -65,27 +65,7 @@ Enhanced toast component with better visual design.
 - Better accessibility
 - Responsive design
 
-### 4. Live Indicator Component: `src/components/ui/LiveIndicator.tsx`
-Visual indicator showing real-time update status.
 
-**Features:**
-- Live/Offline status with pulsing indicator
-- Last update timestamp
-- Relative time display (e.g., "Just now", "30s ago", "5m ago")
-- Manual refresh button
-- Loading state for refresh
-- Clean, modern UI
-
-**Usage:**
-```tsx
-<LiveIndicator
-  isPolling={isPolling}
-  lastUpdate={lastUpdate}
-  onRefresh={handleManualRefresh}
-  refreshLoading={manualRefreshing}
-  showLabel={true}
-/>
-```
 
 ### 5. WebSocket Preparation: `src/lib/websocket.ts`
 Prepared WebSocket implementation for future real-time updates.
@@ -107,19 +87,16 @@ Prepared WebSocket implementation for future real-time updates.
 
 ### 1. Leads Page: `src/app/admin/leads/page.tsx`
 - Integrated `useRealTimePoll` for automatic data refresh every 30s
-- Added `LiveIndicator` component
 - Replaced manual `fetchLeads` with hook
 - Enhanced error handling
 
 ### 2. Campaigns Page: `src/app/admin/campaigns/page.tsx`
 - Integrated `useRealTimePoll` for automatic data refresh every 30s
-- Added `LiveIndicator` component
 - Replaced manual `fetchData` with hook
 - Updated campaign data fetching
 
 ### 3. Analytics Page: `src/app/admin/analytics/page.tsx`
 - Integrated `useRealTimePoll` for automatic data refresh every 30s
-- Added `LiveIndicator` component
 - Replaced manual `fetchAnalytics` and `fetchCampaigns` with hook
 - Combined data fetching for efficiency
 
@@ -132,6 +109,26 @@ Prepared WebSocket implementation for future real-time updates.
 5. **Performance:** Debouncing prevents unnecessary requests
 6. **Future-Ready:** WebSocket code prepared for eventual real-time implementation
 7. **Clean Code:** Modular, reusable components and hooks
+
+## Update Note (January 29, 2026)
+
+### LiveIndicator Component Removed
+The `LiveIndicator` component (`src/components/ui/LiveIndicator.tsx`) has been removed from the project due to functionality issues. The component displayed "Updated: Just now Refresh" but was not working correctly in the admin panel.
+
+**Changes made:**
+- Component file `LiveIndicator.tsx` deleted
+- Removed imports from `src/app/admin/analytics/page.tsx` and `src/app/admin/campaigns/page.tsx`
+- Removed unused state variables (`manualRefreshing`, `lastUpdate`, `isPolling`) where appropriate
+- Maintained core polling functionality via `useRealTimePoll` hook (30s intervals)
+- Updated documentation to reflect removal
+
+**Functionality preserved:**
+- Automatic data polling every 30 seconds continues to work
+- Real-time updates in admin panels remain active
+- Manual refresh capability via hook methods
+- Toast notification system unchanged
+
+**Reason for removal:** The visual indicator was not providing reliable feedback to users and was identified as a non-functional UI element that cluttered the interface.
 
 ## Future Enhancements
 

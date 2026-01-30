@@ -5,7 +5,7 @@ import { getCampaigns, Campaign } from "@/actions/campaigns";
 import { useToast } from "@/lib/toast";
 import { useState, useEffect } from "react";
 import { useRealTimePoll } from "@/lib/hooks/useRealTimePoll";
-import { LiveIndicator } from "@/components/ui/LiveIndicator";
+import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 import {
   Mail, Eye, MousePointer, AlertCircle, CheckCircle,
   Filter, Download, TrendingUp, Smartphone, X
@@ -19,7 +19,6 @@ export default function AnalyticsDashboard() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [campaignError, setCampaignError] = useState<string | null>(null);
-  const [manualRefreshing, setManualRefreshing] = useState(false);
   const [stats, setStats] = useState({
     sent: 0,
     opened: 0,
@@ -34,7 +33,7 @@ export default function AnalyticsDashboard() {
     calculateStats();
   }, [analytics]);
 
-  const { loading, lastUpdate, refetch, isPolling } = useRealTimePoll<{
+  const { loading, refetch } = useRealTimePoll<{
     analytics: CampaignAnalytics[];
     campaigns: Campaign[];
   }>({
@@ -61,11 +60,7 @@ export default function AnalyticsDashboard() {
     }
   });
 
-  const handleManualRefresh = async () => {
-    setManualRefreshing(true);
-    await refetch();
-    setManualRefreshing(false);
-  };
+
 
   function calculateStats() {
     try {
@@ -140,7 +135,7 @@ export default function AnalyticsDashboard() {
         a.clicked_at ? "Yes" : "No",
         a.delivery_status
       ])
-    ].map((row: string[]) => row.join(",")).join("\n");
+    ].map((row) => row.join(",")).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -164,191 +159,181 @@ export default function AnalyticsDashboard() {
 
   const filteredAnalytics = getFilteredAnalytics();
 
-  return (
-    <div className="space-y-8">
-      {/* Error Display */}
-      {campaignError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600" />
-          <div>
-            <p className="text-sm font-bold text-red-900">Error loading campaigns</p>
-            <p className="text-sm text-red-700">{campaignError}</p>
-          </div>
-          <button
-            onClick={() => setCampaignError(null)}
-            className="ml-auto text-red-600 hover:text-red-800"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
-
-      {/* No Data Display */}
-      {!campaignError && filteredAnalytics.length === 0 && !loading && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 text-center">
-          <Mail className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-blue-900 mb-2">No analytics data yet</h3>
-          <p className="text-sm text-blue-700">Send a campaign to start tracking email performance</p>
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900">
-            Email Analytics
-          </h1>
-          <p className="text-slate-500 font-medium text-sm">
-            Monitor email performance and engagement
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            <Filter size={16} />
-            Filters
-          </button>
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            <Download size={16} />
-            Export
-          </button>
-        </div>
-      </div>
-
-      {/* Live Indicator */}
-      <div className="flex justify-end">
-        <LiveIndicator
-          isPolling={isPolling}
-          lastUpdate={lastUpdate}
-          onRefresh={handleManualRefresh}
-          refreshLoading={manualRefreshing}
-          showLabel={true}
+    return (
+      <PageContainer className="space-y-3 sm:space-y-4 md:space-y-5">
+        <PageHeader
+          title="Email Analytics"
+          description="Monitor email performance and engagement"
+           actions={
+            <>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex-1 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 border px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 min-h-[40px] sm:min-h-[44px] ${
+                  showFilters
+                    ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <Filter size={14} className="sm:w-4 sm:h-4" /> <span className="whitespace-nowrap">{showFilters ? 'Hide' : 'Filter'}</span>
+              </button>
+              <button
+                onClick={handleExport}
+                className="flex-1 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 bg-accent text-white px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-accent/20 active:scale-95 min-h-[40px] sm:min-h-[44px]"
+              >
+                <Download size={14} className="sm:w-4 sm:h-4" /> <span className="whitespace-nowrap">Export</span>
+              </button>
+            </>
+          }
         />
-      </div>
 
-      {showFilters && (
-        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+
+         {/* Error Display */}
+         {campaignError && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600" />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Campaign</label>
-              <select
-                value={selectedCampaign}
-                onChange={(e) => setSelectedCampaign(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value="all">All Campaigns</option>
-                {campaigns.map(camp => (
-                   <option key={camp.id} value={camp.id}>{camp.subject}</option>
-                ))}
-              </select>
+              <p className="text-sm font-bold text-red-900">Error loading campaigns</p>
+              <p className="text-sm text-red-700">{campaignError}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value="all">All Status</option>
-                <option value="sent">Sent</option>
-                <option value="delivered">Delivered</option>
-                <option value="bounced">Bounced</option>
-              </select>
+            <button
+              onClick={() => setCampaignError(null)}
+              className="ml-auto text-red-600 hover:text-red-800"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* No Data Display */}
+        {!campaignError && filteredAnalytics.length === 0 && !loading && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 text-center mt-3 sm:mt-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-blue-500 mx-auto mb-2 sm:mb-3">
+              <Mail size={28} className="sm:w-9 sm:h-9 md:w-10 md:h-10" />
+            </div>
+            <h3 className="text-sm sm:text-base md:text-lg font-bold text-blue-900 mb-1 sm:mb-2">No analytics data yet</h3>
+            <p className="text-xs sm:text-sm text-blue-700">Send a campaign to start tracking email performance</p>
+          </div>
+        )}
+
+       {showFilters && (
+         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">Campaign</label>
+               <select
+                 value={selectedCampaign}
+                 onChange={(e) => setSelectedCampaign(e.target.value)}
+                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+               >
+                 <option value="all">All Campaigns</option>
+                 {campaigns.map(camp => (
+                    <option key={camp.id} value={camp.id}>{camp.subject}</option>
+                 ))}
+               </select>
+             </div>
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+               <select
+                 value={selectedStatus}
+                 onChange={(e) => setSelectedStatus(e.target.value)}
+                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+               >
+                 <option value="all">All Status</option>
+                 <option value="sent">Sent</option>
+                 <option value="delivered">Delivered</option>
+                 <option value="bounced">Bounced</option>
+               </select>
+             </div>
+           </div>
+         </div>
+       )}
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
+          <div className="bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-3 md:p-5 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 font-medium">Emails Sent</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-black text-slate-900">{stats.sent}</p>
+              </div>
+              <Mail className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-accent" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Opened</p>
+                <p className="text-base sm:text-lg md:text-xl font-black text-slate-900">{stats.opened}</p>
+              </div>
+              <Eye className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-blue-500" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Clicked</p>
+                <p className="text-base sm:text-lg md:text-xl font-black text-slate-900">{stats.clicked}</p>
+              </div>
+              <MousePointer className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-purple-500" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Open Rate</p>
+                <p className="text-base sm:text-lg md:text-xl font-black text-accent-accessible">
+                  {stats.openRate}%
+                </p>
+              </div>
+              <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-accent-accessible" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Click Rate</p>
+                <p className="text-base sm:text-lg md:text-xl font-black text-purple-600">
+                  {stats.clickRate}%
+                </p>
+              </div>
+              <MousePointer className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-purple-600" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Bounced</p>
+                <p className="text-base sm:text-lg md:text-xl font-black text-red-600">{stats.bounced}</p>
+              </div>
+              <AlertCircle className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-red-600" />
             </div>
           </div>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
-        <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">Emails Sent</p>
-              <p className="text-xl sm:text-2xl font-black text-slate-900">{stats.sent}</p>
+        <div className="bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-3 md:p-5 border border-gray-200 shadow-sm">
+          <h2 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 mb-1.5 sm:mb-2 md:mb-3">
+            Engagement Overview
+          </h2>
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4">
+            <div className="text-center p-2 sm:p-2.5 md:p-3 bg-green-50 rounded-md sm:rounded-lg">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-accent-accessible">{stats.openRate.toFixed(1)}%</p>
+              <p className="text-[10px] sm:text-xs text-gray-600">Open Rate</p>
             </div>
-            <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-accent" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">Opened</p>
-              <p className="text-xl sm:text-2xl font-black text-slate-900">{stats.opened}</p>
+            <div className="text-center p-2 sm:p-2.5 md:p-3 bg-purple-50 rounded-md sm:rounded-lg">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-purple-600">{stats.clickRate.toFixed(1)}%</p>
+              <p className="text-[10px] sm:text-xs text-gray-600">Click Rate</p>
             </div>
-            <Eye className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">Clicked</p>
-              <p className="text-xl sm:text-2xl font-black text-slate-900">{stats.clicked}</p>
+            <div className="text-center p-2 sm:p-2.5 md:p-3 bg-blue-50 rounded-md sm:rounded-lg">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-blue-600">{stats.opened}</p>
+              <p className="text-[10px] sm:text-xs text-gray-600">Total Opens</p>
             </div>
-            <MousePointer className="w-8 h-8 sm:w-10 sm:h-10 text-purple-500" />
           </div>
         </div>
-
-        <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">Open Rate</p>
-              <p className="text-xl sm:text-2xl font-black text-accent-accessible">
-                {stats.openRate}%
-              </p>
-            </div>
-            <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-accent-accessible" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">Click Rate</p>
-              <p className="text-xl sm:text-2xl font-black text-purple-600">
-                {stats.clickRate}%
-              </p>
-            </div>
-            <MousePointer className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium">Bounced</p>
-              <p className="text-xl sm:text-2xl font-black text-red-600">{stats.bounced}</p>
-            </div>
-            <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600" />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
-        <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-3 sm:mb-4">
-          Engagement Overview
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          <div className="text-center p-3 sm:p-4 bg-green-50 rounded-lg">
-            <p className="text-2xl sm:text-3xl font-black text-accent-accessible">{stats.openRate.toFixed(1)}%</p>
-            <p className="text-xs sm:text-sm text-gray-600">Open Rate</p>
-          </div>
-          <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-lg">
-            <p className="text-2xl sm:text-3xl font-black text-purple-600">{stats.clickRate.toFixed(1)}%</p>
-            <p className="text-xs sm:text-sm text-gray-600">Click Rate</p>
-          </div>
-          <div className="text-center p-3 sm:p-4 bg-blue-50 rounded-lg">
-            <p className="text-2xl sm:text-3xl font-black text-blue-600">{stats.opened}</p>
-            <p className="text-xs sm:text-sm text-gray-600">Total Opens</p>
-          </div>
-        </div>
-      </div>
 
       {/* Desktop Table - Hidden on mobile */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden lg:block">
@@ -450,78 +435,78 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Mobile Card Layout - Shows on mobile */}
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden space-y-3 sm:space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-bold text-slate-900">
+          <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">
             Email Details ({filteredAnalytics.length})
           </h2>
         </div>
         
         {filteredAnalytics.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center">
-            <p className="text-gray-500 text-sm">No analytics data available</p>
+          <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6 md:p-8 text-center">
+            <p className="text-gray-500 text-xs sm:text-sm">No analytics data available</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredAnalytics.map((item) => (
-              <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600 rounded-lg flex items-center justify-center">
-                      <Mail size={18} className="text-gray-500" />
+              <div key={item.id} className="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600 rounded-md sm:rounded-lg flex items-center justify-center shrink-0">
+                      <Mail size={16} className="text-gray-500 sm:w-[18px] sm:h-[18px]" />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm">{item.recipient_email}</h3>
-                      <p className="text-xs text-gray-500">Campaign: {item.campaign_id || 'N/A'}</p>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-bold text-slate-900 text-xs sm:text-sm truncate">{item.recipient_email}</h3>
+                      <p className="text-[10px] sm:text-xs text-gray-500 truncate">Campaign: {item.campaign_id || 'N/A'}</p>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+                  <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${
                     item.delivery_status === 'delivered' ? 'bg-green-100 text-green-700' :
                     item.delivery_status === 'bounced' ? 'bg-red-100 text-red-700' :
                     'bg-blue-100 text-blue-700'
                   }`}>
-                    {item.delivery_status === 'delivered' && <CheckCircle size={12} />}
-                    {item.delivery_status === 'bounced' && <AlertCircle size={12} />}
+                    {item.delivery_status === 'delivered' && <CheckCircle size={10} className="sm:w-3 sm:h-3" />}
+                    {item.delivery_status === 'bounced' && <AlertCircle size={10} className="sm:w-3 sm:h-3" />}
                     {item.delivery_status}
                   </span>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Sent At</p>
-                    <p className="text-sm font-medium text-slate-900">{new Date(item.sent_at).toLocaleDateString()}</p>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  <div className="bg-gray-50 p-2 sm:p-3 rounded-md sm:rounded-lg border border-gray-100">
+                    <p className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5 sm:mb-1">Sent At</p>
+                    <p className="text-xs sm:text-sm font-medium text-slate-900">{new Date(item.sent_at).toLocaleDateString()}</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Device</p>
-                    <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                      {item.device_type === 'mobile' && <Smartphone size={14} />}
+                  <div className="bg-gray-50 p-2 sm:p-3 rounded-md sm:rounded-lg border border-gray-100">
+                    <p className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5 sm:mb-1">Device</p>
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-600">
+                      {item.device_type === 'mobile' && <Smartphone size={12} className="sm:w-3.5 sm:h-3.5" />}
                       <span>{item.device_type || '-'}</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className={`p-3 rounded-lg border ${
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  <div className={`p-2 sm:p-3 rounded-md sm:rounded-lg border ${
                     item.opened_at ? 'bg-green-50 border-green-100' : 'bg-gray-50 border-gray-100'
                   }`}>
-                    <div className="flex items-center gap-2">
-                      <Eye size={14} className={item.opened_at ? 'text-accent-accessible' : 'text-gray-400'} />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Eye size={12} className={`${item.opened_at ? 'text-accent-accessible' : 'text-gray-400'} sm:w-3.5 sm:h-3.5`} />
                       <div>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Opened</p>
-                        <p className={`text-sm font-medium ${item.opened_at ? 'text-green-700' : 'text-gray-500'}`}>
+                        <p className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider">Opened</p>
+                        <p className={`text-xs sm:text-sm font-medium ${item.opened_at ? 'text-green-700' : 'text-gray-500'}`}>
                           {item.opened_at ? new Date(item.opened_at).toLocaleTimeString() : 'Not opened'}
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className={`p-3 rounded-lg border ${
+                  <div className={`p-2 sm:p-3 rounded-md sm:rounded-lg border ${
                     item.clicked_at ? 'bg-purple-50 border-purple-100' : 'bg-gray-50 border-gray-100'
                   }`}>
-                    <div className="flex items-center gap-2">
-                      <MousePointer size={14} className={item.clicked_at ? 'text-purple-600' : 'text-gray-400'} />
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <MousePointer size={12} className={`${item.clicked_at ? 'text-purple-600' : 'text-gray-400'} sm:w-3.5 sm:h-3.5`} />
                       <div>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Clicked</p>
-                        <p className={`text-sm font-medium ${item.clicked_at ? 'text-purple-700' : 'text-gray-500'}`}>
+                        <p className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider">Clicked</p>
+                        <p className={`text-xs sm:text-sm font-medium ${item.clicked_at ? 'text-purple-700' : 'text-gray-500'}`}>
                           {item.clicked_at ? new Date(item.clicked_at).toLocaleTimeString() : 'Not clicked'}
                         </p>
                       </div>
@@ -533,7 +518,7 @@ export default function AnalyticsDashboard() {
           </div>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

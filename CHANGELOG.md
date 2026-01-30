@@ -2,6 +2,30 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.0.0] - 2026-01-30
+
+### Adicionado
+- **Documentação completa do projeto:** README.md, AGENTS.md, DOCUMENTATION.md atualizados
+- **Organização estrutural:** Estrutura de pastas documentada e padronizada
+- **Design System:** Tokens de design documentados (cores, tipografia, espaçamento)
+- **Arquitetura de dados:** Fluxos de dados diagramados e documentados
+- **API documentation:** Endpoints documentados com exemplos
+
+### Modificado
+- **README.md:** Reescrito com documentação técnica completa
+- **AGENTS.md:** Atualizado para versão 2.0.0 com guidelines detalhados
+- **Estrutura visual:** Árvore de diretórios documentada
+
+### Documentação
+- Guia completo de instalação e setup
+- Documentação de todas as páginas e rotas
+- Documentação do banco de dados (Prisma schema)
+- Guia de contribuição e convenções
+- Checklist pré-commit
+- Troubleshooting guide
+
+---
+
 ## [1.2.0] - 2026-01-21
 
 ### Adicionado
@@ -27,6 +51,31 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
  - Remoção de emojis dos toasts (usando ícones coloridos)
  - Interface de administração atualizada com indicadores visuais
  - Melhoria no sistema de validação de formulários
+
+## [1.2.2] - 2026-01-29
+
+### Adicionado
+- **Servidor de produção otimizado:** Build de produção com Next.js 15.5.9, servidor rodando em modo produção (`npm start`)
+- **Sistema de limpeza automatizado:** Scripts para remover arquivos temporários, logs, backups e caches desnecessários
+- **Documentação atualizada:** Guia completo de estrutura do projeto após limpeza e otimização
+
+### Removido
+- **Componente LiveIndicator:** Seção problemática "Updated: Just now Refresh" removida do painel administrativo
+- **Arquivos desnecessários:** Logs antigos, relatórios Lighthouse, caches do Next.js, arquivos de backup temporários
+- **Diretório de instalação:** `socialbluepro-install/` removido (projeto já instalado)
+- **Cache npm:** Diretório `.npm/` removido para economia de espaço
+
+### Corrigido
+- **Build de produção:** Erros de TypeScript resolvidos em todas as páginas administrativas
+- **Estrutura do projeto:** Organização limpa com apenas arquivos essenciais mantidos
+- **Performance:** Redução de tamanho do projeto após limpeza completa
+- **Interface administrativa:** Remoção de elementos não funcionais que poluíam a UI
+
+### Mudanças
+- **Projeto otimizado:** Estrutura limpa com 681MB (reduzido de ~700MB+)
+- **Serviço de produção:** Configuração atualizada para reinício automático e logs em `/tmp/socialbluepro-prod.log`
+- **Componentes atualizados:** Páginas admin usam consistentemente `PageContainer` e `PageHeader`
+- **Mobile-first design:** Responsividade implementada em todas as páginas administrativas
 
 ## [1.2.1] - 2026-01-23
 
@@ -84,7 +133,7 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
 ## Versão
 
-Versão atual: **1.2.1**
+Versão atual: **2.0.0**
 
 ## Próximas Lançamentos
 

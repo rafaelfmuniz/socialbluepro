@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { IMAGES } from "@/lib/constants";
-import { useState } from "react";
-import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, Bell, BarChart2, Target } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useToast } from "@/lib/toast";
+import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, Bell, BarChart2, Target, ArrowUp } from "lucide-react";
 
 const navItems = [
    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -18,8 +19,22 @@ const navItems = [
 
 export default function AdminNavigation({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const { addToast } = useToast();
     const pathname = usePathname();
     const router = useRouter();
+
+    useEffect(() => {
+      const handleScroll = () => {
+        setShowScrollTop(window.scrollY > 300);
+      };
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const handleSignOut = async () => {
       // Clear session storage
@@ -32,12 +47,12 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
    return (
      <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans overflow-x-hidden">
        {/* Mobile Backdrop */}
-       {isSidebarOpen && (
-         <div 
-           className="fixed inset-0 bg-slate-900/50 z-[60] lg:hidden backdrop-blur-sm transition-all"
-           onClick={() => setIsSidebarOpen(false)}
-         />
-       )}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-slate-900/60 z-[60] lg:hidden backdrop-blur-sm transition-all animate-fade-in"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
  
         {/* Sidebar */}
         <aside className={cn(
@@ -77,12 +92,20 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
                     )}
                 >
                   <div className="flex items-center gap-3 sm:gap-4">
-                    <item.icon size={18} className="sm:hidden" />
-                    <item.icon size={20} className="hidden sm:block" />
+                    <div className="sm:hidden">
+                      <item.icon size={18} />
+                    </div>
+                    <div className="hidden sm:block">
+                      <item.icon size={20} />
+                    </div>
                     <span className="text-xs sm:text-sm uppercase tracking-widest">{item.name}</span>
                   </div>
-                  <ChevronRight size={12} className="sm:hidden" />
-                  <ChevronRight size={14} className="hidden sm:block" />
+                  <div className="sm:hidden">
+                    <ChevronRight size={12} />
+                  </div>
+                  <div className="hidden sm:block">
+                    <ChevronRight size={14} />
+                  </div>
                 </Link>
               );
             })}
@@ -93,12 +116,12 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
               <div className="w-10 h-10 bg-accent text-white rounded-full flex items-center justify-center font-black shrink-0">A</div>
               <div className="overflow-hidden text-center sm:text-left">
                 <p className="text-xs font-black uppercase text-slate-900 truncate">Admin User</p>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate">Super User</p>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest truncate">Super User</p>
               </div>
             </div>
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 w-full px-4 py-3 rounded-xl bg-white text-red-500 hover:bg-red-50 transition-all border border-slate-100 text-[10px] font-black uppercase tracking-widest"
+              className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 w-full px-4 py-3 rounded-xl bg-white text-red-500 hover:bg-red-50 transition-all border border-slate-100 text-xs font-black uppercase tracking-widest"
             >
               <LogOut size={14} />
               Sign Out
@@ -106,41 +129,65 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
           </div>
        </aside>
  
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col min-w-0">
-           <header className="bg-white border-b border-slate-200 h-16 sm:h-20 md:h-24 flex items-center justify-between px-4 sm:px-6 md:px-12 sticky top-0 z-50">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <button 
-                  className="lg:hidden p-2 text-slate-400 hover:text-slate-900"
-                  onClick={() => setIsSidebarOpen(true)}
-                >
-                  <Menu size={24} />
-                </button>
-                <div className="hidden sm:block">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-none">
-                    SocialBluePro Portal
-                  </h2>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Management v1.0</p>
-                </div>
-              </div>
+         {/* Main Content */}
+         <div className="flex-1 flex flex-col min-w-0">
+             <header className="bg-white border-b border-slate-200 h-16 sm:h-20 md:h-24 flex items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-12 sticky top-0 z-50 lg:relative">
+               <div className="flex items-center gap-3 sm:gap-4">
+                 <button 
+                   className="lg:hidden p-3 sm:p-3 text-slate-400 hover:text-slate-900 active:scale-95 transition-transform min-h-[44px] min-w-[44px] flex items-center justify-center"
+                   onClick={() => setIsSidebarOpen(true)}
+                   aria-label="Open menu"
+                 >
+                   <Menu size={28} className="sm:w-6 sm:h-6" />
+                 </button>
+                 <div className="hidden sm:block">
+                   <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
+                     SocialBluePro Portal
+                   </h2>
+                   <p className="text-xs sm:text-xs text-slate-400 font-bold uppercase tracking-widest">Management v1.0</p>
+                 </div>
+                 <div className="sm:hidden">
+                   <h2 className="text-base font-black text-slate-900 tracking-tighter uppercase truncate max-w-[140px]">
+                     Portal
+                   </h2>
+                   <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">v1.0</p>
+                 </div>
+               </div>
               
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-                <button className="p-2 sm:p-3 bg-slate-50 rounded-xl sm:rounded-2xl text-slate-400 hover:text-accent transition-colors relative">
-                  <Bell size={18} className="sm:hidden" />
-                  <Bell size={20} className="hidden sm:block" />
-                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
-                </button>
+                 <button 
+                   onClick={() => addToast("No new notifications", "info")}
+                   className="p-3 sm:p-3 bg-slate-50 rounded-xl sm:rounded-2xl text-slate-400 hover:text-accent transition-colors relative min-h-[44px] min-w-[44px] flex items-center justify-center"
+                 >
+                   <div className="sm:hidden">
+                     <Bell size={22} />
+                   </div>
+                   <div className="hidden sm:block">
+                     <Bell size={24} />
+                   </div>
+                   <span className="absolute top-3 right-3 sm:top-3 sm:right-3 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
+                 </button>
                 <div className="h-8 sm:h-10 w-px bg-slate-200 mx-1 hidden md:block" />
                 <div className="hidden md:flex flex-col items-end">
                   <span className="text-sm font-black text-slate-900 uppercase tracking-tighter">SocialBluePro</span>
-                  <span className="text-[10px] text-accent font-bold uppercase tracking-widest">Authorized</span>
+                  <span className="text-xs text-accent font-bold uppercase tracking-widest">Authorized</span>
                 </div>
               </div>
            </header>
  
-         <main className="p-6 md:p-12 animate-fade-up">
-           {children}
-         </main>
+           <main className="p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
+            {children}
+          </main>
+
+          {/* Scroll to Top Button */}
+          {showScrollTop && (
+            <button 
+              onClick={scrollToTop} 
+              className="fixed bottom-6 right-6 p-3 bg-slate-900 text-white rounded-full shadow-xl z-50 animate-fade-in hover:bg-slate-700 transition-colors lg:hidden"
+            >
+              <ArrowUp size={20} />
+            </button>
+          )}
        </div>
      </div>
    );

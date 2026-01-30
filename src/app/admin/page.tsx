@@ -89,87 +89,81 @@ export default function AdminDashboard() {
   }
 
    return (
-     <div className="space-y-8 sm:space-y-12 font-sans">
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-         {stats.map((stat) => (
-           <div key={stat.name} className="bg-white p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl md:rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
-             <div className="flex items-center justify-between mb-4 sm:mb-6 md:mb-8">
-               <div className={`${stat.color} w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl sm:rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                 <stat.icon size={20} className="sm:hidden" />
-                 <stat.icon size={24} className="hidden sm:block md:hidden" />
-                 <stat.icon size={28} className="hidden md:block" />
-               </div>
-               <ArrowUpRight className="text-slate-300" size={16} className="sm:hidden" />
-               <ArrowUpRight className="text-slate-300 hidden sm:block md:hidden" size={18} />
-               <ArrowUpRight className="text-slate-300 hidden md:block" size={20} />
-             </div>
-             <h3 className="text-slate-500 text-[10px] sm:text-xs font-black uppercase tracking-widest mb-1">{stat.name}</h3>
-             <p className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
-           </div>
-         ))}
-       </div>
+     <div className="space-y-6 sm:space-y-8 md:space-y-12 font-sans">
 
-      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-        <div className="lg:col-span-2 bg-white p-4 sm:p-6 md:p-10 rounded-xl sm:rounded-2xl md:rounded-[3rem] border border-slate-200 shadow-xl">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 md:mb-10">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter uppercase">Recent Project Leads</h3>
-            <Link href="/admin/leads" className="text-xs font-black uppercase tracking-widest text-accent border-b border-accent/20 pb-1 whitespace-nowrap">View Full CRM</Link>
-          </div>
-          <div className="space-y-3 sm:space-y-6">
-            {leads.slice(0, 5).map((lead: Lead) => (
-              <div key={lead.id} className="flex items-center justify-between p-4 sm:p-6 bg-slate-50 rounded-xl sm:rounded-2xl hover:bg-slate-100 transition-colors border border-slate-100 group">
-                <div className="flex items-center gap-3 sm:gap-4">
-                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg sm:rounded-xl flex items-center justify-center font-black text-slate-300 group-hover:text-accent transition-colors">
-                      {lead.name?.charAt(0) || "?"}
-                   </div>
-                   <div>
-                      <p className="font-black text-slate-900 text-base sm:text-lg leading-tight mb-1">{lead.name}</p>
-                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest hidden sm:block">{lead.email}</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest sm:hidden">{lead.email}</p>
-                   </div>
-                </div>
-                <div className="text-right">
-                   <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-900 mb-1">{lead.service_interest || "Service Unknown"}</p>
-                   <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-700 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
-                     {lead.status}
-                   </span>
-                </div>
-              </div>
-            ))}
-            {leads.length === 0 && (
-               <div className="text-center py-12 sm:py-20 bg-slate-50 rounded-2xl sm:rounded-3xl border-2 border-dashed border-slate-200">
-                 <Users className="mx-auto text-slate-200 mb-4" size={36} className="sm:hidden" />
-                 <Users className="mx-auto text-slate-200 mb-4 hidden sm:block md:hidden" size={42} />
-                 <Users className="mx-auto text-slate-200 mb-4 hidden md:block" size={48} />
-                 <p className="text-slate-400 font-black uppercase tracking-widest text-xs sm:text-sm">Awaiting Your First Lead</p>
-               </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-slate-900 p-4 sm:p-6 md:p-10 rounded-xl sm:rounded-2xl md:rounded-[3rem] flex flex-col text-white shadow-2xl relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-accent/20 rounded-full blur-[100px] -mr-24 -mt-24 sm:-mr-32 sm:-mt-32" />
-           
-           <div className="relative z-10 flex flex-col h-full">
-             <Mail size={36} className="text-accent mb-4 sm:mb-6 md:mb-8" />
-             <h3 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase mb-3 sm:mb-4 leading-none">Ready to <br/> scale up?</h3>
-             <p className="text-slate-400 font-medium leading-relaxed mb-6 sm:mb-8 md:mb-10 text-sm sm:text-base italic">
-               Blast an offer to all your leads. High-impact email campaigns converted to projects.
-             </p>
-             
-             <div className="mt-auto space-y-3 sm:space-y-4">
-               <div className="flex items-center gap-3 text-xs sm:text-sm font-bold text-slate-400 bg-white/5 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/10">
-                 <CheckCircle2 size={16} className="sm:hidden" />
-                 <CheckCircle2 size={18} className="hidden sm:block" />
-                 No 3rd party costs
-               </div>
-               <Link href="/admin/campaigns" className="block w-full bg-accent text-white py-3 sm:py-5 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest hover:bg-accent-dark transition-all shadow-xl shadow-accent/20 text-center text-xs sm:text-sm">
-                 Start Campaign
-               </Link>
-             </div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+     {stats.map((stat) => (
+        <div key={stat.name} className="bg-white p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
+            <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4 lg:mb-5">
+            <div className={`${stat.color} w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+             <stat.icon size={20} className="sm:w-6 sm:h-6 md:w-6 md:h-6 lg:w-6 lg:h-6" />
            </div>
+           <ArrowUpRight className="text-slate-300 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+          </div>
+          <h3 className="text-slate-500 text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest mb-0.5 sm:mb-1">{stat.name}</h3>
+          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
         </div>
-      </div>
+      ))}
     </div>
-  );
-}
+        <div className="grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+          <div className="lg:col-span-2 bg-white p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-[3rem] border border-slate-200 shadow-xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+             <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-black tracking-tighter uppercase">Recent Project Leads</h3>
+             <Link href="/admin/leads" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-accent border-b border-accent/20 pb-1 whitespace-nowrap">View Full CRM</Link>
+           </div>
+           <div className="space-y-2 sm:space-y-3 md:space-y-6">
+             {leads.slice(0, 5).map((lead: Lead) => (
+                <div key={lead.id} className="flex items-center justify-between p-2.5 sm:p-3 md:p-4 bg-slate-50 rounded-lg sm:rounded-xl md:rounded-2xl hover:bg-slate-100 transition-colors border border-slate-100 group">
+                 <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-md sm:rounded-lg md:rounded-xl flex items-center justify-center font-black text-slate-300 group-hover:text-accent transition-colors shrink-0">
+                       {lead.name?.charAt(0) || "?"}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                       <p className="font-black text-slate-900 text-sm sm:text-base md:text-lg leading-tight mb-0.5 sm:mb-1 truncate">{lead.name}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider sm:tracking-widest truncate">{lead.email}</p>
+                    </div>
+                 </div>
+                 <div className="text-right shrink-0 ml-2">
+ <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest text-slate-900 mb-0.5 sm:mb-1 truncate max-w-[100px] sm:max-w-[140px]">{lead.service_interest || "Service Unknown"}</p>
+                     <span className="px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 bg-green-100 text-green-700 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest">
+                      {lead.status}
+                    </span>
+                 </div>
+               </div>
+             ))}
+             {leads.length === 0 && (
+                 <div className="text-center py-6 sm:py-8 md:py-12 bg-slate-50 rounded-xl sm:rounded-2xl md:rounded-3xl border-2 border-dashed border-slate-200">
+                  <div className="mx-auto text-slate-200 mb-3 sm:mb-4">
+                    <Users size={32} />
+                  </div>
+                  <p className="text-slate-400 font-black uppercase tracking-widest text-[10px] sm:text-xs md:text-sm">Awaiting Your First Lead</p>
+                </div>
+             )}
+           </div>
+         </div>
+
+          <div className="bg-slate-900 p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-[3rem] flex flex-col text-white shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-accent/20 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px] -mr-16 -mt-16 sm:-mr-24 sm:-mt-24 md:-mr-32 md:-mt-32" />
+            
+            <div className="relative z-10 flex flex-col h-full">
+               <Mail size={28} className="text-accent mb-2 sm:mb-3 md:mb-4 lg:mb-5 sm:w-8 sm:h-8 md:w-9 md:h-9" />
+              <h3 className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter uppercase mb-2 sm:mb-3 md:mb-4 leading-none">Ready to <br/> scale up?</h3>
+               <p className="text-slate-400 font-medium leading-relaxed mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-xs sm:text-sm md:text-base italic">
+                Blast an offer to all your leads. High-impact email campaigns converted to projects.
+              </p>
+              
+              <div className="mt-auto space-y-2 sm:space-y-3 md:space-y-4">
+                <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm font-bold text-slate-400 bg-white/5 p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10">
+                  <CheckCircle2 size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                  No 3rd party costs
+                </div>
+                <Link href="/admin/campaigns" className="block w-full bg-accent text-white py-2.5 sm:py-3 md:py-4 lg:py-5 rounded-lg sm:rounded-xl md:rounded-2xl font-black uppercase tracking-wider sm:tracking-widest hover:bg-accent-dark transition-all shadow-xl shadow-accent/20 text-center text-[10px] sm:text-xs md:text-sm">
+                  Start Campaign
+                </Link>
+              </div>
+            </div>
+         </div>
+       </div>
+     </div>
+   );
+ }

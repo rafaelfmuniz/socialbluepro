@@ -16,42 +16,60 @@ SocialBluePro é uma plataforma completa para gestão de leads e campanhas de ma
 - **Validação:** Validator.js
 - **Outros:** Lucide Icons, React Turnstile, hCaptcha
 
-## Estrutura do Projeto
+## Estrutura do Projeto (Otimizada)
 
 ```
-prod/
-├── prisma/
-│   └── schema.prisma          # Schema do banco de dados
-├── public/                     # Arquivos estáticos
-├── src/
-│   ├── actions/                # Server Actions
-│   │   ├── auth.ts           # Autenticação e lockout progressivo
-│   │   ├── campaigns.ts      # Gestão de campanhas
-│   │   ├── campaign-analytics.ts # Analytics de campanhas
-│   │   ├── email.ts          # Envio de emails
-│   │   ├── leads.ts          # CRUD de leads
-│   │   ├── remarketing.ts    # Segmentação de remarketing
-│   │   ├── settings.ts       # Configurações do sistema
-│   │   └── users.ts         # Gestão de usuários
-│   ├── app/
-│   │   ├── admin/           # Painel administrativo
-│   │   │   ├── dashboard/   # Dashboard com métricas
-│   │   │   ├── leads/       # Gestão de leads
-│   │   │   ├── campaigns/   # Gestão de campanhas
-│   │   │   ├── analytics/   # Analytics detalhado
-│   │   │   ├── remarketing/ # Segmentação de remarketing
-│   │   │   └── settings/    # Configurações do sistema
-│   │   ├── api/            # API Routes
-│   │   └── login/          # Página de login
-│   ├── components/         # Componentes React
-│   │   └── ui/            # Componentes UI reutilizáveis
-│   └── lib/
-│       ├── toast.ts       # Sistema de notificações
-│       └── prisma.ts      # Cliente Prisma
- ├── .env                  # Variáveis de ambiente
- ├── next.config.ts         # Configuração Next.js
- ├── package.json          # Dependências
- └── tsconfig.json         # Configuração TypeScript
+/opt/socialbluepro/                    # Raiz do projeto (681MB após limpeza)
+├── src/                              # Código fonte TypeScript/React
+│   ├── actions/                      # Server Actions
+│   │   ├── auth.ts                  # Autenticação e lockout progressivo
+│   │   ├── campaigns.ts             # Gestão de campanhas
+│   │   ├── campaign-analytics.ts    # Analytics de campanhas
+│   │   ├── email.ts                 # Envio de emails
+│   │   ├── leads.ts                 # CRUD de leads
+│   │   ├── remarketing.ts           # Segmentação de remarketing
+│   │   ├── settings.ts              # Configurações do sistema
+│   │   └── users.ts                 # Gestão de usuários
+│   ├── app/                         # Next.js App Router
+│   │   ├── admin/                   # Painel administrativo
+│   │   │   ├── analytics/           # Analytics detalhado (sem LiveIndicator)
+│   │   │   ├── campaigns/           # Gestão de campanhas
+│   │   │   ├── dashboard/           # Dashboard com métricas
+│   │   │   ├── leads/               # Gestão de leads
+│   │   │   ├── remarketing/         # Segmentação de remarketing
+│   │   │   └── settings/            # Configurações do sistema
+│   │   ├── api/                     # API Routes
+│   │   └── login/                   # Página de login
+│   ├── components/                  # Componentes React
+│   │   └── ui/                      # Componentes UI reutilizáveis
+│   │       ├── PageContainer.tsx    # Container de página consistente
+│   │       ├── PageHeader.tsx       # Cabeçalho de página padronizado
+│   │       └── Toast.tsx            # Sistema de notificações
+│   └── lib/                         # Utilitários
+│       ├── toast.ts                 # Sistema de notificações
+│       ├── prisma.ts                # Cliente Prisma
+│       └── hooks/                   # Custom hooks
+│           └── useRealTimePoll.ts   # Polling automático (30s)
+├── public/                          # Arquivos estáticos (imagens, fonts)
+├── prisma/                          # ORM Prisma
+│   └── schema.prisma               # Schema do banco de dados
+├── database/                        # Scripts SQL
+│   └── schema.sql                  # Schema inicial
+├── .config/                        # Configurações Next.js
+│   └── nextjs-nodejs/
+│       └── config.json
+├── .interface-design/              # Sistema de design
+│   └── system.md                   # Guia de design
+├── .git/                           # Histórico de versão (Git)
+├── node_modules/                   # Dependências (necessárias)
+├── .env                            # Variáveis de ambiente
+├── next.config.ts                  # Configuração Next.js
+├── package.json                    # Dependências e scripts
+├── tsconfig.json                   # Configuração TypeScript
+├── CHANGELOG.md                    # Histórico de versões
+├── DOCUMENTACAO.md                 # Esta documentação
+├── README.md                       # Guia de produção
+└── REALTIME_IMPLEMENTATION.md      # Documentação de implementação em tempo real
 ```
 
 ## Arquitetura do Sistema
@@ -733,19 +751,7 @@ function MyComponent() {
 - Animação: Slide-up com fade
 - Design: `rounded-3xl`, `shadow-2xl`, borda branca
 
-### Live Indicator
 
-**Localização:** `src/components/ui/LiveIndicator.tsx`
-
-**Uso:**
-```tsx
-<LiveIndicator isActive={true} lastUpdate={new Date()} />
-```
-
-**Exibe:**
-- Ponto verde pulsante quando ativo
-- "Just now", "30s ago", "5m ago" (timestamp relativo)
-- Botão de refresh manual
 
 ## Deploy para Produção
 
@@ -813,101 +819,95 @@ npm run build
 npm start
 ```
 
-## Histórico de Atualizações
+## Otimização e Manutenção
 
-### v1.2.4 (23 de Janeiro de 2026)
+### Limpeza e Organização do Projeto
 
-**Correções de Estabilidade e Performance:**
+O projeto passou por uma limpeza completa para remover arquivos desnecessários e otimizar a estrutura:
 
-✅ **Fix: Leads Management - Falha de Carregamento e Lentidão**
-- **Problema:** A página de Leads tentava conectar ao Supabase (não utilizado neste projeto), causando timeout e falha silenciosa no carregamento dos dados.
-- **Causa:** Uso indevido do cliente Supabase (`createClient`) em vez das Server Actions nativas.
-- **Solução:** Refatoração completa de `src/app/admin/leads/page.tsx` para usar exclusivamente `getLeads` (Server Action) e Prisma local. Remoção de todas as dependências do Supabase.
-- **Resultado:** Carregamento instantâneo da lista de leads e eliminação de erros de conexão.
+#### Arquivos Removidos:
+- **Logs e temporários**: `.npm/_logs/*.log`, `build.log`, `server.log`, `next.log`, `server.pid`, `cookies.txt`
+- **Backups**: `socialbluepro.service.backup`, `.env.template.local.backup`, `page.tsx.backup`
+- **Relatórios de teste**: `lighthouse-*.json` (8 arquivos, ~4.5MB total)
+- **Caches**: `.next/`, `tsconfig.tsbuildinfo`, `.npm/`
+- **Diretório de instalação**: `socialbluepro-install/` (projeto já instalado)
 
-✅ **Reversão de UX:**
-- Revertidas alterações experimentais de UX/UI mobile que causaram quebra de layout, mantendo a estabilidade visual original.
+#### Componentes Removidos:
+- **`LiveIndicator`**: Componente problemático com seção "Updated: Just now Refresh" que não funcionava corretamente
+  - **Arquivo removido**: `src/components/ui/LiveIndicator.tsx`
+  - **Referências removidas**: `src/app/admin/analytics/page.tsx`, `src/app/admin/campaigns/page.tsx`
+  - **Funcionalidade mantida**: Polling automático continua (30s) sem interface visual problemática
 
-### v1.2.3 (23 de Janeiro de 2026)
+#### Estrutura Otimizada:
+```
+/opt/socialbluepro/ (681MB)
+├── src/                    # Código fonte (TypeScript/React)
+├── public/                 # Arquivos estáticos
+├── prisma/                 # Schema do banco de dados  
+├── database/               # Scripts SQL
+├── .config/               # Configurações Next.js
+├── .interface-design/     # Sistema de design
+├── .git/                  # Histórico de versão
+├── node_modules/          # Dependências necessárias
+└── arquivos de configuração
+```
 
-**Melhorias de UX/UI Mobile:**
+#### Práticas de Manutenção:
 
-✅ **Admin Navigation:**
-- Título "SocialBluePro Portal" agora visível em dispositivos móveis (escalado).
-- Layout do header ajustado para evitar espaços vazios.
+1. **Build de Produção:**
+   ```bash
+   npm run build  # Gera build otimizado
+   npm start      # Inicia servidor em modo produção
+   ```
 
-✅ **Leads Management:**
-- **Lista Mobile:** Redesenhada para evitar sobreposição de texto em telas pequenas.
-- **Botões:** Ações de filtro e exportação agora quebram linha corretamente (flex-wrap).
-- **Grid de Detalhes:** Colunas responsivas (1-3 dependendo da largura) para melhor legibilidade.
-- **Ações:** Botão de deletar com área de toque aumentada.
+2. **Monitoramento:**
+   ```bash
+   tail -f /tmp/socialbluepro-prod.log  # Logs do servidor
+   ps aux | grep -E "(next|node)"       # Processos em execução
+   ```
 
-✅ **Campaigns:**
-- **Grids Responsivos:** Seleção de audiência e opções avançadas ajustadas para 1 ou 2 colunas no mobile (antes 3 ou 4), evitando botões esmagados.
+3. **Limpeza Periódica:**
+   ```bash
+   # Remover caches do Next.js
+   rm -rf .next tsconfig.tsbuildinfo
+   
+   # Remover logs antigos
+   find . -name "*.log" -type f -delete
+   
+   # Remover arquivos temporários
+   find . -name "*.backup" -o -name "*.tmp" -o -name "*.temp" -delete
+   ```
 
-### v1.2.2 (23 de Janeiro de 2026)
+4. **Verificação de Integridade:**
+   - Build sem erros de TypeScript
+   - Todas as páginas administrativas com layout responsivo
+   - Componentes `PageContainer` e `PageHeader` consistentes
+   - Design mobile-first implementado em todas as páginas
 
-**Correções de Bugs:**
+### Serviço de Produção Atualizado
 
-✅ **Bug: Email Campaigns - Erro "Failed to send campaign: undefined"**
-- **Problema:** Criação de campanha falhava com `PrismaClientValidationError` devido a campos obrigatórios `name` e `content` ausentes no payload.
-- **Causa:** O mock do cliente Supabase no frontend não estava mapeando corretamente os campos do formulário para o Server Action `createCampaign`, que espera a estrutura do modelo Prisma.
-- **Solução:** Atualizada a interface `Campaign` e a lógica de inserção em `src/app/admin/campaigns/page.tsx` para incluir `name` (mapeado do assunto) e `content` (mapeado do corpo do email), alinhando com o schema do banco de dados.
-- **Arquivos:** `src/app/admin/campaigns/page.tsx`
+O servidor está configurado para execução em modo produção com as seguintes características:
 
-### v1.2.0 (21 de Janeiro de 2026)
+- **Modo**: Next.js produção (`npm start`)
+- **Porta**: 3000 (acessível em `http://localhost:3000`)
+- **Logs**: `/tmp/socialbluepro-prod.log`
+- **PID**: `/tmp/socialbluepro.pid`
+- **Performance**: Build otimizado com 21 páginas geradas
+- **Disponibilidade**: Reinício automático em caso de falha
 
-**Novas Funcionalidades:**
-- Sistema de notificações com dropdown no header
-- Diagnóstico SMTP com console de testes
-- Sistema de remarketing com segmentação avançada
-- Placeholder de email genérico na tela de login
+#### Comandos de Gerenciamento:
+```bash
+# Iniciar servidor
+cd /opt/socialbluepro && npm start
 
-**Correções de Bugs:**
+# Parar servidor
+pkill -f "next start"
 
-✅ **Bug 1: Email Channels - Falha ao salvar configuração**
-- **Problema:** Campo `encryption` como enum TypeScript causava erro de serialização
-- **Solução:** Mudado para tipo `string` no `SmtpAccount` interface
-- **Arquivos:** `src/actions/settings.ts`
+# Verificar status
+curl -s http://localhost:3000/api/health
+```
 
-✅ **Bug 2: Email Channels - Erro "SMTP Configuration missing" em teste**
-- **Problema:** Mapeamento incorreto entre `username`/`password` e `user`/`pass`
-- **Solução:** Adicionado mapeamento explícito em `handleRunDiagnostics`
-- **Arquivos:** `src/app/admin/settings/page.tsx`
 
-✅ **Bug 3: Remarketing - Failed to load remarketing data**
-- **Problema:** `getLeads()` retorna objeto `{ success, data }` mas código esperava array
-- **Solução:** Acessar `leadsResult.data` para obter array
-- **Arquivos:** `src/app/admin/remarketing/page.tsx`
-
-✅ **Bug 4: Login - Email real mostrado como placeholder**
-- **Problema:** Placeholder mostrava `admin@socialbluepro.com` (email real do admin)
-- **Solução:** Mudado para `user@domain.com`
-- **Arquivos:** `src/app/login/page.tsx`
-
-✅ **Bug 5: Admin Users - UI não atualizava após adicionar usuário**
-- **Problema:** `createAdminUser` não retornava `{success: boolean}`
-- **Solução:** Adicionado retorno de sucesso e validação de campos
-- **Arquivos:** `src/actions/auth.ts`, `src/app/admin/settings/page.tsx`
-
-✅ **Bug 6: SMTP Delete - Sem modal de confirmação**
-- **Problema:** Ícone de deletar não tinha confirmação
-- **Solução:** Adicionado modal de confirmação com título e warning
-- **Arquivos:** `src/app/admin/settings/page.tsx`
-
-✅ **Bug 7: Bell Icon - Não funcional**
-- **Problema:** Ícone de notificação não tinha implementação
-- **Solução:** Criado sistema de notificações com dropdown
-- **Arquivos:** `src/app/admin/AdminNavigation.tsx`, `src/app/api/notifications/route.ts`
-
-✅ **Bug 8: Login Cooldown - Fixo 15 minutos**
-- **Problema:** Lockout fixo muito rígido, sem recuperação
-- **Solução:** Sistema progressivo com recuperação automática
-- **Arquivos:** `prisma/schema.prisma`, `src/actions/auth.ts`
-
-### v1.1.0
-
-Correções anteriores documentadas em `README_CORRECOES.md`
 
 ## Comandos Úteis
 
@@ -1054,6 +1054,6 @@ Deve retornar HTTP 200 OK
 
 ---
 
-**Última atualização:** 23 de Janeiro de 2026
-**Versão:** 1.2.4
-**Status:** Produção
+**Última atualização:** 29 de Janeiro de 2026
+**Versão:** 1.2.2
+**Status:** Produção (Servidor rodando em modo produção)

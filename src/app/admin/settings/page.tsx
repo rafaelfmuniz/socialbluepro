@@ -11,6 +11,7 @@ import { sendDiagnosticTestEmail } from "@/actions/email";
 import { getUsers, deleteUser, unlockUser, updateUser, changePassword, AdminUser } from "@/actions/users";
 import { createAdminUser } from "@/actions/auth";
 import { useToast } from "@/lib/toast";
+import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 
 const VALID_PURPOSES = [
   { id: 'general', name: 'General', description: 'Standard system notifications' },
@@ -485,53 +486,51 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900">System Settings</h1>
-          <p className="text-slate-500 font-medium text-sm">Configure environment, security, and access.</p>
-        </div>
-      </div>
+     <PageContainer className="space-y-6 sm:space-y-8 pb-16 sm:pb-20">
+       <PageHeader
+         title="System Settings"
+         description="Configure environment, security, and access."
+       />
 
-      <div className="flex gap-4 border-b border-slate-200 overflow-x-auto">
+      <div className="flex gap-2 sm:gap-4 border-b border-slate-200 overflow-x-auto">
          {["channels", "users", "integrations"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as "channels" | "users" | "integrations")}
-              className={`pb-4 px-2 font-black uppercase text-[10px] tracking-widest transition-colors ${
-                activeTab === tab ? "text-accent border-b-2 border-accent" : "text-slate-400 hover:text-slate-600"
-              }`}
+               className={`pb-2 sm:pb-3 px-1 font-black uppercase text-[10px] sm:text-xs tracking-widest transition-colors flex items-center whitespace-nowrap ${
+                 activeTab === tab ? "text-accent border-b-2 border-accent" : "text-slate-400 hover:text-slate-600"
+               }`}
             >
-              {tab === "channels" ? "Email Channels" : tab === "users" ? "User Management" : "Integrations"}
+              {tab === "channels" ? "Email" : tab === "users" ? "Users" : "Integrations"}
             </button>
           ))}
       </div>
 
-       <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-         <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-          
-          {/* EMAIL CHANNELS TAB */}
-          {activeTab === "channels" && (
-            <section className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl space-y-8 animate-fade-in">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4 text-accent">
-                  <Server size={24} />
-                  <div>
-                    <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900">Email Channels</h2>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Manage SMTP Servers</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-8">
+           
+            {/* EMAIL CHANNELS TAB */}
+            {activeTab === "channels" && (
+              <section className="bg-white p-3 sm:p-4 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-slate-100 shadow-xl space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-8 animate-fade-in">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 text-accent">
+                    <Server size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    <div>
+                      <h2 className="text-sm sm:text-base md:text-lg font-black uppercase tracking-tighter text-slate-900">Email Channels</h2>
+                      <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest hidden sm:block">Manage SMTP Servers</p>
+                    </div>
                   </div>
+ <button 
+                     onClick={() => setShowAddAccount(!showAddAccount)} 
+                     className="flex items-center gap-1.5 sm:gap-2 bg-slate-900 text-white px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95 w-full sm:w-auto justify-center"
+                   >
+                     <Plus size={12} className="sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" /> <span className="sm:hidden">Add</span><span className="hidden sm:inline">Add Channel</span>
+                   </button>
                 </div>
-                <button 
-                  onClick={() => setShowAddAccount(!showAddAccount)} 
-                  className="flex items-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95"
-                >
-                  <Plus size={16} /> Add Channel
-                </button>
-              </div>
 
-              {/* Add Account Form */}
-              {showAddAccount && (
-                <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 space-y-6 animate-slide-down">
+               {/* Add Account Form */}
+               {showAddAccount && (
+                 <div className="bg-slate-50 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 space-y-4 sm:space-y-6 animate-slide-down">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
                       <Plus size={18} />
@@ -542,7 +541,7 @@ export default function SettingsPage() {
                    {/* Basic Info */}
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Channel Name</label>
+                        <label className="text-xs font-black text-slate-400 uppercase ml-1">Channel Name</label>
                         <input 
                           placeholder="e.g. Marketing Sender"
                           className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -551,7 +550,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Purposes</label>
+                        <label className="text-xs font-black text-slate-400 uppercase ml-1">Purposes</label>
                         <div className="flex flex-wrap gap-2 bg-white p-2 rounded-xl border border-slate-200 min-h-[46px]">
                           {VALID_PURPOSES.map(p => (
                              <button
@@ -565,7 +564,7 @@ export default function SettingsPage() {
                                      : [...newAccount.purposes, p.id]
                                  });
                                }}
-                               className={`text-[9px] uppercase font-black px-2 py-1 rounded-lg transition-colors ${
+                               className={`text-xs uppercase font-black px-2 py-1 rounded-lg transition-colors ${
                                  newAccount.purposes.includes(p.id) ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-400 hover:bg-slate-200"
                                }`}
                              >
@@ -579,7 +578,7 @@ export default function SettingsPage() {
                    {/* Server Details */}
                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                      <div className="sm:col-span-1 md:col-span-3 space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">SMTP Host</label>
+                         <label className="text-xs font-black text-slate-400 uppercase ml-1">SMTP Host</label>
                         <input 
                           placeholder="smtp.provider.com"
                           className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -588,7 +587,7 @@ export default function SettingsPage() {
                         />
                      </div>
                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Port</label>
+                         <label className="text-xs font-black text-slate-400 uppercase ml-1">Port</label>
                         <input 
                           placeholder="587"
                           className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -601,7 +600,7 @@ export default function SettingsPage() {
                    {/* Auth & Security */}
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Username / API User</label>
+                        <label className="text-xs font-black text-slate-400 uppercase ml-1">Username / API User</label>
                         <input
                           className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                           value={newAccount.username}
@@ -609,7 +608,7 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Password / API Key</label>
+                        <label className="text-xs font-black text-slate-400 uppercase ml-1">Password / API Key</label>
                         <input
                           type="password"
                           className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -621,7 +620,7 @@ export default function SettingsPage() {
 
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase">Encryption Mode</label>
+                        <label className="text-xs font-black text-slate-400 uppercase">Encryption Mode</label>
                         <select
                           className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                           value={newAccount.encryption}
@@ -647,8 +646,8 @@ export default function SettingsPage() {
 
                    {/* Sender Identity */}
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
-                     <div className="space-y-1">
-                       <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Sender Name (Optional)</label>
+                      <div className="space-y-1">
+                       <label className="text-xs font-black text-slate-400 uppercase ml-1">Sender Name (Optional)</label>
                        <input 
                          placeholder="e.g. SocialBlue Support"
                          className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -656,8 +655,8 @@ export default function SettingsPage() {
                          onChange={e => setNewAccount({...newAccount, from_name: e.target.value})}
                        />
                      </div>
-                     <div className="space-y-1">
-                       <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Reply-To Email (Optional)</label>
+                      <div className="space-y-1">
+                       <label className="text-xs font-black text-slate-400 uppercase ml-1">Reply-To Email (Optional)</label>
                        <input 
                          placeholder="support@domain.com"
                          className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -679,92 +678,92 @@ export default function SettingsPage() {
               {/* List of Accounts */}
               <div className="space-y-4">
                 {smtpAccounts.length === 0 && !showAddAccount && (
-                  <div className="text-center py-12 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                    <Mail size={48} className="mx-auto text-slate-300 mb-4" />
-                    <h3 className="text-slate-900 font-bold mb-1">No Email Channels</h3>
-                    <p className="text-slate-400 text-sm mb-6">Configure an SMTP server to start sending emails.</p>
-                    <button onClick={() => setShowAddAccount(true)} className="text-blue-600 font-black uppercase text-xs tracking-widest hover:underline">Create Channel</button>
-                  </div>
+                   <div className="text-center py-8 sm:py-12 bg-slate-50 rounded-2xl sm:rounded-3xl border-2 border-dashed border-slate-200">
+                     <Mail size={36} className="mx-auto text-slate-300 mb-3 sm:mb-4 sm:w-12 sm:h-12" />
+                     <h3 className="text-slate-900 font-bold mb-1 text-sm sm:text-base">No Email Channels</h3>
+                     <p className="text-slate-400 text-xs sm:text-sm mb-4 sm:mb-6">Configure an SMTP server to start sending emails.</p>
+                     <button onClick={() => setShowAddAccount(true)} className="text-blue-600 font-black uppercase text-xs tracking-widest hover:underline px-4 py-2">Create Channel</button>
+                   </div>
                 )}
 
-                {smtpAccounts.map(account => (
-                  <div key={account.id} className="group bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-slate-300 transition-all">
-                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div className="flex items-center gap-4">
-                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${account.is_default ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}`}>
-                             <Server size={20} />
-                           </div>
-                           <div>
-                             <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                               {account.name}
-                               {account.is_default && <span className="bg-green-100 text-green-700 text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">Default</span>}
-                             </h3>
-                              <p className="text-xs text-slate-500 font-mono mt-1">{account.username} • {account.host}:{account.port}</p>
-                           </div>
-                        </div>
+                 {smtpAccounts.map(account => (
+                   <div key={account.id} className="group bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 hover:shadow-lg hover:border-slate-300 transition-all">
+                      <div className="flex flex-col gap-3 sm:gap-4">
+                         <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${account.is_default ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}`}>
+                              <Server size={18} className="sm:w-5 sm:h-5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2 flex-wrap">
+                                <span className="truncate">{account.name}</span>
+                                {account.is_default && <span className="bg-green-100 text-green-700 text-xs font-black px-2 py-0.5 rounded-md uppercase tracking-wide shrink-0">Default</span>}
+                              </h3>
+                               <p className="text-xs text-slate-500 font-mono mt-1 truncate">{account.username} • {account.host}:{account.port}</p>
+                            </div>
+                         </div>
 
-                        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                           <div className="flex flex-wrap gap-1 max-w-[200px] justify-end">
-                             {account.purposes.map(p => (
-                               <span key={p} className="text-[8px] font-black uppercase bg-slate-100 text-slate-500 px-2 py-1 rounded-md tracking-wider">
-                                 {p}
-                               </span>
-                             ))}
-                           </div>
-                           <div className="w-px h-8 bg-slate-100 mx-2"></div>
-                           <div className="flex gap-2">
-                              <button onClick={() => handleEditSmtpAccount(account)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit size={18} /></button>
-                              <button onClick={() => setAccountToDelete(account.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                ))}
+                         <div className="flex items-center gap-2 sm:gap-3 w-full justify-between sm:justify-end pt-2 border-t border-slate-100 sm:border-t-0">
+                            <div className="flex flex-wrap gap-1 max-w-[150px] sm:max-w-[200px]">
+                              {account.purposes.map(p => (
+                                <span key={p} className="text-xs font-black uppercase bg-slate-100 text-slate-500 px-2 py-1 rounded-md tracking-wider">
+                                  {p}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="hidden sm:block w-px h-8 bg-slate-100 mx-2"></div>
+                            <div className="flex gap-1 sm:gap-2">
+                               <button onClick={() => handleEditSmtpAccount(account)} className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit size={16} className="sm:w-[18px] sm:h-[18px]" /></button>
+                               <button onClick={() => setAccountToDelete(account.id)} className="p-1.5 sm:p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" /></button>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+                 ))}
               </div>
             </section>
           )}
 
-           {/* EDIT ACCOUNT MODAL (With Diagnostics) */}
-           {editingAccount && (
-             <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
-                <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full animate-slide-up my-auto">
-                   <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                     <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-3">
-                       <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Edit size={20} /></div>
-                       Edit Channel: <span className="text-blue-600">{editingAccount.name}</span>
-                     </h3>
-                     <button onClick={() => setEditingAccount(null)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
-                       <X size={24} />
-                     </button>
-                   </div>
+            {/* EDIT ACCOUNT MODAL (With Diagnostics) */}
+            {editingAccount && (
+              <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto max-h-screen">
+                 <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-4xl w-full animate-slide-up my-4 sm:my-auto max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
+                    <div className="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-start sm:items-center gap-3">
+                      <h3 className="text-base sm:text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                        <div className="p-1.5 sm:p-2 bg-blue-50 text-blue-600 rounded-lg flex-shrink-0"><Edit size={18} className="sm:w-5 sm:h-5" /></div>
+                        <span className="truncate">Edit: <span className="text-blue-600">{editingAccount.name}</span></span>
+                      </h3>
+                      <button onClick={() => setEditingAccount(null)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0">
+                        <X size={20} className="sm:w-6 sm:h-6" />
+                      </button>
+                    </div>
 
-                    <div className="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                     <div className="p-4 sm:p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                       {/* Left: Configuration Form */}
                       <div className="space-y-6">
                           <div className="space-y-4">
                              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2">Configuration</h4>
                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                  <label className="text-[10px] font-black text-slate-400 uppercase">Host</label>
+                                  <label className="text-xs font-black text-slate-400 uppercase">Host</label>
                                   <input value={editingAccount.host} onChange={e => setEditingAccount({...editingAccount, host: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500" />
                                 </div>
                                  <div className="space-y-1">
-                                   <label className="text-[10px] font-black text-slate-400 uppercase">Port</label>
+                                   <label className="text-xs font-black text-slate-400 uppercase">Port</label>
                                    <input value={editingAccount.port} onChange={e => setEditingAccount({...editingAccount, port: Number(e.target.value)})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500" />
                                  </div>
                               </div>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                  <div className="space-y-1">
-                                   <label className="text-[10px] font-black text-slate-400 uppercase">User</label>
+                                   <label className="text-xs font-black text-slate-400 uppercase">User</label>
                                    <input value={editingAccount.username} onChange={e => setEditingAccount({...editingAccount, username: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500" />
                                  </div>
                                  <div className="space-y-1">
-                                   <label className="text-[10px] font-black text-slate-400 uppercase">Pass</label>
+                                   <label className="text-xs font-black text-slate-400 uppercase">Pass</label>
                                    <input type="password" value={editingAccount.password} onChange={e => setEditingAccount({...editingAccount, password: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500" />
                                  </div>
                              </div>
                              <div className="space-y-1">
-                               <label className="text-[10px] font-black text-slate-400 uppercase">Encryption</label>
+                               <label className="text-xs font-black text-slate-400 uppercase">Encryption</label>
                                <select value={editingAccount.encryption || 'auto'} onChange={e => setEditingAccount({...editingAccount, encryption: e.target.value as any})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500">
                                  <option value="auto">Auto (Detect)</option>
                                  <option value="ssl">SSL (465)</option>
@@ -778,51 +777,53 @@ export default function SettingsPage() {
                              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2">Identity</h4>
                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                <div className="space-y-1">
-                                  <label className="text-[10px] font-black text-slate-400 uppercase">From Name</label>
+                                  <label className="text-xs font-black text-slate-400 uppercase">From Name</label>
                                   <input value={editingAccount.from_name || ''} onChange={e => setEditingAccount({...editingAccount, from_name: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500" />
                                </div>
                                <div className="space-y-1">
-                                  <label className="text-[10px] font-black text-slate-400 uppercase">Reply-To</label>
+                                  <label className="text-xs font-black text-slate-400 uppercase">Reply-To</label>
                                   <input value={editingAccount.reply_to || ''} onChange={e => setEditingAccount({...editingAccount, reply_to: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-500" />
                                </div>
                              </div>
                           </div>
 
-                         <div className="space-y-4">
-                            <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2">Settings</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              {VALID_PURPOSES.map(p => (
-                                 <div
-                                   key={p.id}
-                                   onClick={() => {
-                                     const active = editingAccount.purposes.includes(p.id);
-                                     setEditingAccount({
-                                       ...editingAccount,
-                                       purposes: active 
-                                         ? editingAccount.purposes.filter(x => x !== p.id)
-                                         : [...editingAccount.purposes, p.id]
-                                     });
-                                   }}
-                                   className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex flex-col gap-1.5 group relative ${
-                                     editingAccount.purposes.includes(p.id)
-                                       ? "border-blue-500 bg-blue-50/50"
-                                       : "border-slate-100 bg-white hover:border-slate-200"
-                                   }`}
-                                 >
-                                   <div className="flex justify-between items-start">
-                                     <span className={`text-[10px] font-black uppercase tracking-widest ${editingAccount.purposes.includes(p.id) ? "text-blue-600" : "text-slate-600"}`}>
-                                       {p.name}
-                                     </span>
-                                     <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${editingAccount.purposes.includes(p.id) ? "border-blue-500 bg-blue-500" : "border-slate-200 bg-transparent"}`}>
-                                       {editingAccount.purposes.includes(p.id) && <CheckCircle size={10} className="text-white" />}
-                                     </div>
+                          <div className="space-y-4 min-w-0">
+                             <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2">Settings</h4>
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
+                               {VALID_PURPOSES.map(p => (
+                                  <div
+                                    key={p.id}
+                                    onClick={() => {
+                                      const active = editingAccount.purposes.includes(p.id);
+                                      setEditingAccount({
+                                        ...editingAccount,
+                                        purposes: active 
+                                          ? editingAccount.purposes.filter(x => x !== p.id)
+                                          : [...editingAccount.purposes, p.id]
+                                      });
+                                    }}
+                                    className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex flex-col gap-1.5 group relative min-w-0 ${
+                                      editingAccount.purposes.includes(p.id)
+                                        ? "border-blue-500 bg-blue-50/50"
+                                        : "border-slate-100 bg-white hover:border-slate-200"
+                                    }`}
+                                   >
+                                      <div className="flex flex-col gap-1.5 min-w-0">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                          <span className={`text-[10px] font-black uppercase tracking-wide truncate ${editingAccount.purposes.includes(p.id) ? "text-blue-600" : "text-slate-600"}`}>
+                                            {p.name}
+                                          </span>
+                                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${editingAccount.purposes.includes(p.id) ? "border-blue-500 bg-blue-500" : "border-slate-200 bg-transparent"}`}>
+                                            {editingAccount.purposes.includes(p.id) && <CheckCircle size={10} className="text-white" />}
+                                          </div>
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 font-medium leading-tight">
+                                          {p.description}
+                                        </p>
+                                      </div>
                                    </div>
-                                   <p className="text-[9px] text-slate-400 font-medium leading-tight">
-                                     {p.description}
-                                   </p>
-                                 </div>
-                              ))}
-                            </div>
+                               ))}
+                             </div>
                             <div className="flex items-center gap-2 pt-2 bg-slate-50 p-3 rounded-xl border border-slate-100">
                               <input type="checkbox" id="edit-default" checked={editingAccount.is_default} onChange={e => setEditingAccount({...editingAccount, is_default: e.target.checked})} className="w-4 h-4 accent-blue-600 cursor-pointer" />
                               <label htmlFor="edit-default" className="text-xs font-bold text-slate-700 cursor-pointer">Use as Default Channel</label>
@@ -830,15 +831,19 @@ export default function SettingsPage() {
                          </div>
 
                          <div className="flex gap-3 pt-4">
-                           <button 
-                             onClick={() => setEditingAccount(null)} 
-                             className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
-                           >
-                             Cancel
-                           </button>
-                           <Button onClick={handleSaveEditSmtpAccount} loading={loading} className="flex-[2] py-4 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-xs tracking-widest">
-                             Save Changes
-                           </Button>
+                            <button 
+                              onClick={() => setEditingAccount(null)} 
+                              className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={handleSaveEditSmtpAccount}
+                              disabled={loading}
+                              className="flex-[2] flex items-center justify-center gap-2 bg-blue-600 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/10 active:scale-95 disabled:opacity-50"
+                            >
+                              {loading ? <Loader2 className="animate-spin" size={14} /> : <><Save size={14} className="sm:w-4 sm:h-4" /> Save Changes</>}
+                            </button>
                          </div>
                       </div>
 
@@ -850,7 +855,7 @@ export default function SettingsPage() {
                          </div>
                          
                          <div className="space-y-4 mb-6">
-                           <label className="text-[10px] font-black text-slate-500 uppercase block">Test Recipient</label>
+                           <label className="text-xs font-black text-slate-500 uppercase block">Test Recipient</label>
                            <div className="flex gap-2">
                              <input 
                                value={testEmailTo} 
@@ -885,8 +890,8 @@ export default function SettingsPage() {
                                  
                                  {diagnosticLog.details && (
                                    <div className="mt-4 pt-4 border-t border-slate-800">
-                                     <p className="text-[10px] text-slate-500 uppercase font-black mb-2">Raw Log Output</p>
-                                     <pre className="whitespace-pre-wrap break-all text-slate-400 text-[10px] leading-relaxed">
+<p className="text-xs text-slate-500 uppercase font-black mb-2">Raw Log Output</p>
+                                      <pre className="whitespace-pre-wrap break-all text-slate-400 text-xs leading-relaxed">
                                        {JSON.stringify(diagnosticLog.details, null, 2)}
                                      </pre>
                                    </div>
@@ -900,85 +905,85 @@ export default function SettingsPage() {
              </div>
            )}
 
-           {/* Delete SMTP Confirmation Modal */}
-           {accountToDelete && (
-             <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-               <div 
-                 className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm" 
-                 onClick={() => setAccountToDelete(null)}
-               />
-               <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl p-6">
-                 <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
-                   <Trash2 size={24} />
-                 </div>
-                 <h3 className="text-lg font-black tracking-tighter uppercase text-slate-900 mb-4 text-center">Delete Channel?</h3>
-                 <p className="text-slate-500 text-sm mb-6 text-center leading-relaxed">Are you sure you want to delete this SMTP channel? This action cannot be undone and emails using this channel will stop working.</p>
-                 <div className="flex gap-3">
-                   <button
-                     onClick={() => setAccountToDelete(null)}
-                     className="flex-1 px-6 py-3 rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
-                   >
-                     Cancel
-                   </button>
-                   <button
-                     onClick={handleDeleteSmtpAccountConfirm}
-                     disabled={loading}
-                     className="flex-1 px-6 py-3 rounded-xl bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-                   >
-                     {loading ? "..." : "Delete"}
-                   </button>
-                 </div>
-               </div>
-             </div>
-           )}
-
-          {/* USERS TAB */}
-          {activeTab === "users" && (
-            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl space-y-8 animate-fade-in">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4 text-accent">
-                  <User size={24} />
-                  <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900">Admin Users</h2>
+            {/* Delete SMTP Confirmation Modal */}
+            {accountToDelete && (
+              <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto max-h-screen">
+                <div 
+                  className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm" 
+                  onClick={() => setAccountToDelete(null)}
+                />
+                <div className="relative w-full max-w-sm bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 my-4 sm:my-auto">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                    <Trash2 size={20} className="sm:w-6 sm:h-6" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-black tracking-tighter uppercase text-slate-900 mb-3 sm:mb-4 text-center">Delete Channel?</h3>
+                  <p className="text-slate-500 text-sm mb-4 sm:mb-6 text-center leading-relaxed">Are you sure you want to delete this SMTP channel? This action cannot be undone and emails using this channel will stop working.</p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setAccountToDelete(null)}
+                      className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDeleteSmtpAccountConfirm}
+                      disabled={loading}
+                      className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+                    >
+                      {loading ? "..." : "Delete"}
+                    </button>
+                  </div>
                 </div>
-                <button 
-                  onClick={() => setShowAddUser(!showAddUser)} 
-                  className="flex items-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95"
-                >
-                  <Plus size={16} /> Add User
-                </button>
               </div>
+            )}
 
-              {showAddUser && (
-                <div className="bg-slate-50 p-8 rounded-3xl mt-6 animate-slide-down border border-slate-200 shadow-inner space-y-6">
+           {/* USERS TAB */}
+           {activeTab === "users" && (
+             <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                 <div className="flex items-center gap-3 sm:gap-4 text-accent">
+                   <User size={20} className="sm:w-6 sm:h-6" />
+                   <h2 className="text-base sm:text-lg font-black uppercase tracking-tighter text-slate-900">Admin Users</h2>
+                 </div>
+                 <button 
+                   onClick={() => setShowAddUser(!showAddUser)} 
+                   className="flex items-center gap-2 bg-slate-900 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95 w-full sm:w-auto justify-center"
+                 >
+                   <Plus size={14} className="sm:w-4 sm:h-4" /> <span className="sm:hidden">Add</span><span className="hidden sm:inline">Add User</span>
+                 </button>
+               </div>
+
+               {showAddUser && (
+                 <div className="bg-slate-50 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl mt-4 sm:mt-6 animate-slide-down border border-slate-200 shadow-inner space-y-4 sm:space-y-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Plus size={18} /></div>
                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">New Administrator</h3>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Full Name</label>
-                      <input 
-                        placeholder="John Doe" 
-                        value={newUser.name}
-                        onChange={e => setNewUser({...newUser, name: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-slate-900 text-sm"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Email Address</label>
-                      <input 
-                        placeholder="john@socialbluepro.com" 
-                        value={newUser.email}
-                        onChange={e => setNewUser({...newUser, email: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-slate-900 text-sm"
-                      />
-                    </div>
-                  </div>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                     <div className="space-y-1">
+                       <label className="text-xs font-black text-slate-400 uppercase ml-1">Full Name</label>
+                       <input 
+                         placeholder="John Doe" 
+                         value={newUser.name}
+                         onChange={e => setNewUser({...newUser, name: e.target.value})}
+                         className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-slate-900 text-sm"
+                       />
+                     </div>
+                     <div className="space-y-1">
+                       <label className="text-xs font-black text-slate-400 uppercase ml-1">Email Address</label>
+                       <input 
+                         placeholder="john@socialbluepro.com" 
+                         value={newUser.email}
+                         onChange={e => setNewUser({...newUser, email: e.target.value})}
+                         className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-slate-900 text-sm"
+                       />
+                     </div>
+                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Password</label>
+                      <label className="text-xs font-black text-slate-400 uppercase ml-1">Password</label>
                       <div className="relative">
                         <input 
                           type={showNewUserPassword ? "text" : "password"}
@@ -997,7 +1002,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Access Level (Role)</label>
+<label className="text-xs font-black text-slate-400 uppercase ml-1">Access Level (Role)</label>
                       <select 
                         value={newUser.role}
                         onChange={e => setNewUser({...newUser, role: e.target.value})}
@@ -1023,72 +1028,117 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              <div className="overflow-hidden rounded-xl border border-slate-100 mt-6">
-                <Table border={false}>
-                  <TableHeader backgroundColor="slate-50" textSize="xs">
-                    <TableRow hover={false}>
-                      <TableHead>User</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map(user => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-bold text-slate-900">{user.name}</TableCell>
-                        <TableCell className="text-slate-500">{user.email}</TableCell>
-                        <TableCell><span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-md text-[10px] font-black uppercase">{user.role}</span></TableCell>
-                        <TableCell>
-                           {user.locked_until && new Date(user.locked_until) > new Date() ? (
-                             <span className="bg-red-50 text-red-600 px-2 py-1 rounded-md text-[10px] font-black uppercase flex items-center gap-1 w-fit"><Lock size={10} /> Locked</span>
-                           ) : (
-                             <span className="bg-green-50 text-green-600 px-2 py-1 rounded-md text-[10px] font-black uppercase flex items-center gap-1 w-fit"><CheckCircle size={10} /> Active</span>
-                           )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                             {user.locked_until && new Date(user.locked_until) > new Date() && (
-                               <button onClick={() => handleUnlockUser(user.id)} className="p-2 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Unlock User Account"><Unlock size={16} /></button>
-                             )}
-                             <button onClick={() => handleSendResetEmail(user)} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Send Password Reset Email"><Mail size={16} /></button>
-                             <button onClick={() => setChangingPasswordFor(user.id)} className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Force Password Change"><Key size={16} /></button>
-                             <button onClick={() => handleEditUser(user)} className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Edit User Details"><Edit size={16} /></button>
-                             <button onClick={() => handleDeleteUser(user.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete User Account"><Trash2 size={16} /></button>
-                          </div>
-                        </TableCell>
+              {/* Desktop Table - hidden on mobile */}
+              <div className="hidden lg:block overflow-x-auto mt-6">
+                <div className="min-w-[600px] overflow-hidden rounded-xl border border-slate-100">
+                  <Table border={false}>
+                    <TableHeader backgroundColor="slate-50" textSize="xs">
+                      <TableRow hover={false}>
+                        <TableHead>User</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map(user => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-bold text-slate-900">{user.name}</TableCell>
+                          <TableCell className="text-slate-500">{user.email}</TableCell>
+                          <TableCell><span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-md text-xs font-black uppercase">{user.role}</span></TableCell>
+                          <TableCell>
+                             {user.locked_until && new Date(user.locked_until) > new Date() ? (
+                               <span className="bg-red-50 text-red-600 px-2 py-1 rounded-md text-xs font-black uppercase flex items-center gap-1 w-fit"><Lock size={10} /> Locked</span>
+                             ) : (
+                               <span className="bg-green-50 text-green-600 px-2 py-1 rounded-md text-xs font-black uppercase flex items-center gap-1 w-fit"><CheckCircle size={10} /> Active</span>
+                             )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                             <div className="flex justify-end gap-1 sm:gap-2">
+                                {user.locked_until && new Date(user.locked_until) > new Date() && (
+                                  <button onClick={() => handleUnlockUser(user.id)} className="p-1.5 sm:p-2 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Unlock User Account"><Unlock size={14} className="sm:w-4 sm:h-4" /></button>
+                                )}
+                                <button onClick={() => handleSendResetEmail(user)} className="p-1.5 sm:p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Send Password Reset Email"><Mail size={14} className="sm:w-4 sm:h-4" /></button>
+                                <button onClick={() => setChangingPasswordFor(user.id)} className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Force Password Change"><Key size={14} className="sm:w-4 sm:h-4" /></button>
+                                <button onClick={() => handleEditUser(user)} className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Edit User Details"><Edit size={14} className="sm:w-4 sm:h-4" /></button>
+                                <button onClick={() => handleDeleteUser(user.id)} className="p-1.5 sm:p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete User Account"><Trash2 size={14} className="sm:w-4 sm:h-4" /></button>
+                             </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              {/* Mobile Cards - visible only on mobile */}
+              <div className="lg:hidden mt-6 space-y-3">
+                {users.map(user => (
+                  <div key={user.id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                    {/* User Header */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-slate-900 truncate">{user.name}</p>
+                        <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Role & Status */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-md text-xs font-black uppercase">{user.role}</span>
+                      {user.locked_until && new Date(user.locked_until) > new Date() ? (
+                        <span className="bg-red-50 text-red-600 px-2 py-1 rounded-md text-xs font-black uppercase flex items-center gap-1"><Lock size={10} /> Locked</span>
+                      ) : (
+                        <span className="bg-green-50 text-green-600 px-2 py-1 rounded-md text-xs font-black uppercase flex items-center gap-1"><CheckCircle size={10} /> Active</span>
+                      )}
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                      <span className="text-xs text-slate-400 font-medium">Actions</span>
+                      <div className="flex items-center gap-1">
+                        {user.locked_until && new Date(user.locked_until) > new Date() && (
+                          <button onClick={() => handleUnlockUser(user.id)} className="p-2 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Unlock User Account"><Unlock size={16} /></button>
+                        )}
+                        <button onClick={() => handleSendResetEmail(user)} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Send Password Reset Email"><Mail size={16} /></button>
+                        <button onClick={() => setChangingPasswordFor(user.id)} className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Force Password Change"><Key size={16} /></button>
+                        <button onClick={() => handleEditUser(user)} className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Edit User Details"><Edit size={16} /></button>
+                        <button onClick={() => handleDeleteUser(user.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete User Account"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
-          {/* INTEGRATIONS TAB */}
-          {activeTab === "integrations" && (
-            <div className="space-y-8 animate-fade-in">
-              
-              {/* Bot Protection Card */}
-              <section className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                <div className="p-8 border-b border-slate-50">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3 text-slate-800">
-                      <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
-                        <Shield size={24} />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-black uppercase tracking-tight">Bot Protection</h2>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">reCAPTCHA / Turnstile Configuration</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+           {/* INTEGRATIONS TAB */}
+           {activeTab === "integrations" && (
+             <div className="space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in">
+               
+               {/* Bot Protection Card */}
+               <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+                 <div className="p-4 sm:p-6 md:p-8 border-b border-slate-50">
+                   <div className="flex items-center justify-between mb-2">
+                     <div className="flex items-center gap-3 text-slate-800">
+                       <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                         <Shield size={20} className="sm:w-6 sm:h-6" />
+                       </div>
+                       <div>
+                         <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight">Bot Protection</h2>
+                         <p className="text-xs sm:text-xs font-bold text-slate-400 uppercase tracking-widest">reCAPTCHA / Turnstile Configuration</p>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
 
-                <div className="p-8 bg-slate-50/50 space-y-8">
-                  {/* Toggle Switch */}
-                  <div className="flex items-center justify-between bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                 <div className="p-4 sm:p-6 md:p-8 bg-slate-50/50 space-y-4 sm:space-y-6 md:space-y-8">
+                   {/* Toggle Switch */}
+                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm gap-4">
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-slate-800 uppercase tracking-wide">Enable Protection</span>
                       <span className="text-xs text-slate-500 font-medium mt-1">Protect login and public forms against bots</span>
@@ -1104,7 +1154,7 @@ export default function SettingsPage() {
                     </label>
                   </div>
 
-                  <div className={`grid md:grid-cols-2 gap-8 transition-opacity duration-300 ${!recaptchaForm.isEnabled ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
+                   <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 transition-opacity duration-300 ${!recaptchaForm.isEnabled ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
                     <div className="space-y-6">
                       <div className="space-y-3">
                         <label className="text-[11px] uppercase font-black text-slate-500 ml-1">Service Provider</label>
@@ -1126,16 +1176,16 @@ export default function SettingsPage() {
                       </div>
 
                       <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                        <p className="text-[10px] font-bold text-blue-600 flex items-center gap-2 mb-2">
+                        <p className="text-xs font-bold text-blue-600 flex items-center gap-2 mb-2">
                           <Info size={14} />
                           CONFIGURATION LINKS
                         </p>
                         <div className="flex flex-wrap gap-3">
-                          <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 hover:text-blue-700 hover:underline font-black uppercase transition-colors">Google Admin</a>
+                          <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:text-blue-700 hover:underline font-black uppercase transition-colors">Google Admin</a>
                           <span className="text-blue-200">|</span>
-                          <a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 hover:text-blue-700 hover:underline font-black uppercase transition-colors">Cloudflare Dash</a>
+                          <a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:text-blue-700 hover:underline font-black uppercase transition-colors">Cloudflare Dash</a>
                           <span className="text-blue-200">|</span>
-                          <a href="https://dashboard.hcaptcha.com/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 hover:text-blue-700 hover:underline font-black uppercase transition-colors">hCaptcha Admin</a>
+                          <a href="https://dashboard.hcaptcha.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:text-blue-700 hover:underline font-black uppercase transition-colors">hCaptcha Admin</a>
                         </div>
                       </div>
                     </div>
@@ -1169,46 +1219,44 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-200 flex justify-end">
-                    <Button 
-                      onClick={handleSaveRecaptcha} 
-                      loading={loading} 
-                      icon={<Save size={18} />}
-                      variant="primary"
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 text-xs"
-                    >
-                      Save Protection Settings
-                    </Button>
-                  </div>
+                     <div className="pt-4 border-t border-slate-200 flex justify-end">
+                       <button
+                         onClick={handleSaveRecaptcha}
+                         disabled={loading}
+                         className="flex items-center gap-2 bg-indigo-600 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/10 active:scale-95 disabled:opacity-50"
+                       >
+                         {loading ? <Loader2 className="animate-spin" size={14} /> : <><Save size={14} className="sm:w-4 sm:h-4" /> <span className="sm:hidden">Save</span><span className="hidden sm:inline">Save Protection</span></>}
+                       </button>
+                     </div>
                 </div>
               </section>
 
-              {/* Tracking Pixels Section */}
-              <section className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                <div className="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="flex items-center gap-3 text-slate-800">
-                    <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                      <Code size={24} />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-black uppercase tracking-tight">Tracking Pixels</h2>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Analytics & Conversion Scripts</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setShowAddPixel(true);
-                      setNewPixel({ name: "", type: "google_analytics", code: "", isEnabled: true });
-                    }}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95"
-                  >
-                    <Plus size={16} /> Add New Pixel
-                  </button>
-                </div>
+               {/* Tracking Pixels Section */}
+               <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+                 <div className="p-4 sm:p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                   <div className="flex items-center gap-3 text-slate-800">
+                     <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                       <Code size={20} className="sm:w-6 sm:h-6" />
+                     </div>
+                     <div>
+                       <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight">Tracking Pixels</h2>
+                       <p className="text-xs sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Analytics & Conversion Scripts</p>
+                     </div>
+                   </div>
+                   <button 
+                     onClick={() => {
+                       setShowAddPixel(true);
+                       setNewPixel({ name: "", type: "google_analytics", code: "", isEnabled: true });
+                     }}
+                     className="flex items-center gap-2 bg-slate-900 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95 w-full sm:w-auto justify-center"
+                   >
+                     <Plus size={14} className="sm:w-4 sm:h-4" /> <span className="sm:hidden">Add Pixel</span><span className="hidden sm:inline">Add New Pixel</span>
+                   </button>
+                 </div>
 
-                <div className="p-8 bg-slate-50/50">
-                  {pixels.length === 0 ? (
-                    <div className="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center group hover:border-slate-300 transition-colors">
+                 <div className="p-4 sm:p-6 md:p-8 bg-slate-50/50">
+                   {pixels.length === 0 ? (
+                     <div className="bg-white border-2 border-dashed border-slate-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center group hover:border-slate-300 transition-colors">
                       <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                         <Code className="text-slate-400" size={32} />
                       </div>
@@ -1222,62 +1270,62 @@ export default function SettingsPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="grid gap-4">
-                      {pixels.map(pixel => (
-                        <div key={pixel.id} className={`group bg-white rounded-xl border ${pixel.is_enabled ? 'border-l-4 border-l-green-500 border-y-slate-100 border-r-slate-100' : 'border-l-4 border-l-slate-300 border-y-slate-100 border-r-slate-100'} p-5 transition-all hover:shadow-lg hover:-translate-y-0.5`}>
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div className="flex items-center gap-4">
-                              <div className={`p-3 rounded-lg ${pixel.is_enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
-                                <Code size={20} />
-                              </div>
-                              <div>
-                                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                                  {pixel.name}
-                                  {!pixel.is_enabled && <span className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full">DISABLED</span>}
-                                </h3>
-                                <p className="text-xs text-slate-500 font-mono mt-0.5">{pixel.code}</p>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-                              <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md ${getPixelTypeColor(pixel.type)}`}>
-                                {pixel.type.replace('_', ' ')}
-                              </span>
-                              <div className="w-px h-8 bg-slate-100 mx-2 hidden md:block"></div>
-                              <div className="flex gap-2">
-                                <button 
-                                  onClick={() => handleTogglePixel(pixel.id, !pixel.is_enabled)}
-                                  className={`p-2 rounded-lg transition-colors ${pixel.is_enabled ? 'text-slate-400 hover:text-orange-500 hover:bg-orange-50' : 'text-slate-400 hover:text-green-500 hover:bg-green-50'}`}
-                                  title={pixel.is_enabled ? "Disable" : "Enable"}
-                                >
-                                  {pixel.is_enabled ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                                </button>
-                                <button 
-                                  onClick={() => handleEditPixel(pixel)}
-                                  className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                                >
-                                  <Edit size={18} />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeletePixel(pixel.id)}
-                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                >
-                                  <Trash2 size={18} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </section>
+                     <div className="grid gap-3 sm:gap-4">
+                       {pixels.map(pixel => (
+                         <div key={pixel.id} className={`group bg-white rounded-lg sm:rounded-xl border ${pixel.is_enabled ? 'border-l-4 border-l-green-500 border-y-slate-100 border-r-slate-100' : 'border-l-4 border-l-slate-300 border-y-slate-100 border-r-slate-100'} p-4 sm:p-5 transition-all hover:shadow-lg hover:-translate-y-0.5`}>
+                           <div className="flex flex-col gap-3 sm:gap-4">
+                             <div className="flex items-start gap-3 sm:gap-4">
+                               <div className={`p-2.5 sm:p-3 rounded-lg shrink-0 ${pixel.is_enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
+                                 <Code size={18} className="sm:w-5 sm:h-5" />
+                               </div>
+                               <div className="min-w-0 flex-1">
+                                 <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 flex-wrap">
+                                   <span className="truncate">{pixel.name}</span>
+                                   {!pixel.is_enabled && <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full shrink-0">DISABLED</span>}
+                                 </h3>
+                                 <p className="text-xs text-slate-500 font-mono mt-0.5 truncate">{pixel.code}</p>
+                               </div>
+                             </div>
+                             
+                             <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end pt-2 border-t border-slate-100 sm:border-t-0">
+                               <span className={`text-xs font-black uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md ${getPixelTypeColor(pixel.type)}`}>
+                                 {pixel.type.replace('_', ' ')}
+                               </span>
+                               <div className="w-px h-8 bg-slate-100 mx-2 hidden sm:block"></div>
+                               <div className="flex gap-1 sm:gap-2">
+                                 <button 
+                                   onClick={() => handleTogglePixel(pixel.id, !pixel.is_enabled)}
+                                   className={`p-1.5 sm:p-2 rounded-lg transition-colors ${pixel.is_enabled ? 'text-slate-400 hover:text-orange-500 hover:bg-orange-50' : 'text-slate-400 hover:text-green-500 hover:bg-green-50'}`}
+                                   title={pixel.is_enabled ? "Disable" : "Enable"}
+                                 >
+                                   {pixel.is_enabled ? <ToggleRight size={16} className="sm:w-[18px] sm:h-[18px]" /> : <ToggleLeft size={16} className="sm:w-[18px] sm:h-[18px]" />}
+                                 </button>
+                                 <button 
+                                   onClick={() => handleEditPixel(pixel)}
+                                   className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                 >
+                                   <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                 </button>
+                                 <button 
+                                   onClick={() => handleDeletePixel(pixel.id)}
+                                   className="p-1.5 sm:p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                 >
+                                   <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                 </button>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                 </div>
+               </section>
 
-              {/* Add Pixel Modal */}
-              {showAddPixel && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
-                  <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-lg w-full animate-slide-up">
+               {/* Add Pixel Modal */}
+               {showAddPixel && (
+                 <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto max-h-screen">
+                   <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full animate-slide-up my-4 sm:my-auto">
                     <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Plus size={20} /></div>
                       Add Tracking Pixel
@@ -1314,7 +1362,7 @@ export default function SettingsPage() {
                           placeholder="e.g. G-XXXXXXXXXX"
                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-medium text-slate-900 text-sm"
                         />
-                        <p className="text-[10px] text-slate-400 mt-1 ml-1">Just the ID (e.g. G-12345) or full script tag if Custom.</p>
+                        <p className="text-xs text-slate-400 mt-1 ml-1">Just the ID (e.g. G-12345) or full script tag if Custom.</p>
                       </div>
                       <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
                         <input type="checkbox" 
@@ -1348,10 +1396,10 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* Edit Pixel Modal */}
-              {editingPixel && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
-                  <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-lg w-full animate-slide-up">
+               {/* Edit Pixel Modal */}
+               {editingPixel && (
+                 <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto max-h-screen">
+                   <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full animate-slide-up my-4 sm:my-auto">
                     <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Edit size={20} /></div>
                       Edit Tracking Pixel
@@ -1413,33 +1461,33 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* Delete Pixel Confirmation Modal */}
-              {pixelToDelete && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
-                  <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl p-8 animate-scale-in">
-                    <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
-                      <Trash2 size={24} />
-                    </div>
-                    <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900 mb-2 text-center">Delete Pixel?</h3>
-                    <p className="text-slate-500 text-sm mb-8 text-center leading-relaxed">Are you sure you want to remove this tracking pixel? This action cannot be undone and tracking will stop immediately.</p>
-                    <div className="flex gap-3">
-                      <button 
-                        onClick={() => setPixelToDelete(null)}
-                        className="flex-1 px-6 py-3 rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        onClick={handleDeletePixelConfirm}
-                        disabled={loading}
-                        className="flex-1 bg-red-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-                      >
-                        {loading ? "..." : "Delete"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+               {/* Delete Pixel Confirmation Modal */}
+               {pixelToDelete && (
+                 <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto max-h-screen">
+                   <div className="relative w-full max-w-sm bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 animate-scale-in my-4 sm:my-auto">
+                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                       <Trash2 size={20} className="sm:w-6 sm:h-6" />
+                     </div>
+                     <h3 className="text-base sm:text-lg font-black uppercase tracking-tighter text-slate-900 mb-2 text-center">Delete Pixel?</h3>
+                     <p className="text-slate-500 text-sm mb-6 sm:mb-8 text-center leading-relaxed">Are you sure you want to remove this tracking pixel? This action cannot be undone and tracking will stop immediately.</p>
+                     <div className="flex gap-3">
+                       <button 
+                         onClick={() => setPixelToDelete(null)}
+                         className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                       >
+                         Cancel
+                       </button>
+                       <button 
+                         onClick={handleDeletePixelConfirm}
+                         disabled={loading}
+                         className="flex-1 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+                       >
+                         {loading ? "..." : "Delete"}
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+               )}
             </div>
           )}
         </div>
@@ -1470,20 +1518,20 @@ export default function SettingsPage() {
 
         {/* Edit User Modal */}
         {editingUser && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full animate-slide-up overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-3">
-                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Edit size={20} /></div>
-                  Edit User: <span className="text-blue-600">{editingUser.name}</span>
+          <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto max-h-screen">
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full animate-slide-up overflow-hidden my-4 sm:my-auto">
+              <div className="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h3 className="text-base sm:text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Edit size={18} className="sm:w-5 sm:h-5" /></div>
+                  <span className="truncate">Edit: <span className="text-blue-600">{editingUser.name}</span></span>
                 </h3>
-                <button onClick={() => setEditingUser(null)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={24} /></button>
+                <button onClick={() => setEditingUser(null)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors shrink-0"><X size={20} className="sm:w-6 sm:h-6" /></button>
               </div>
               
-              <div className="p-8 space-y-6">
+              <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Full Name</label>
+                    <label className="text-xs font-black text-slate-400 uppercase ml-1">Full Name</label>
                     <input 
                       value={editingUserData.name}
                       onChange={e => setEditingUserData({...editingUserData, name: e.target.value})}
@@ -1491,7 +1539,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Email Address</label>
+                    <label className="text-xs font-black text-slate-400 uppercase ml-1">Email Address</label>
                     <input 
                       value={editingUserData.email}
                       onChange={e => setEditingUserData({...editingUserData, email: e.target.value})}
@@ -1499,7 +1547,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Access Level (Role)</label>
+                    <label className="text-xs font-black text-slate-400 uppercase ml-1">Access Level (Role)</label>
                     <select 
                       value={editingUserData.role}
                       onChange={e => setEditingUserData({...editingUserData, role: e.target.value})}
@@ -1512,16 +1560,16 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-4 border-t border-slate-100">
-                  <button onClick={() => setEditingUser(null)} className="flex-1 px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors text-xs uppercase tracking-widest">Cancel</button>
-                  <button 
-                    onClick={handleSaveEditUser}
-                    disabled={loading}
-                    className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all"
-                  >
-                    {loading ? <Loader2 className="animate-spin" size={16} /> : "Update User"}
-                  </button>
-                </div>
+                 <div className="flex gap-3 pt-4 border-t border-slate-100">
+                   <button onClick={() => setEditingUser(null)} className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors text-xs uppercase tracking-widest">Cancel</button>
+                   <button 
+                     onClick={handleSaveEditUser}
+                     disabled={loading}
+                     className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all"
+                   >
+                     {loading ? <Loader2 className="animate-spin" size={14} /> : "Update"}
+                   </button>
+                 </div>
               </div>
             </div>
           </div>
@@ -1529,26 +1577,26 @@ export default function SettingsPage() {
 
         {/* Delete Confirmation Modal for User */}
         {userToDelete && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto max-h-screen">
             <div 
               className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm" 
               onClick={() => setUserToDelete(null)}
             />
-            <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl p-6">
-              <h3 className="text-lg font-black tracking-tighter uppercase text-slate-900 mb-4">Delete User</h3>
-              <p className="text-slate-500 text-sm mb-6">Are you sure you want to delete this user? This action cannot be undone.</p>
+            <div className="relative w-full max-w-sm bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 my-4 sm:my-auto">
+              <h3 className="text-base sm:text-lg font-black tracking-tighter uppercase text-slate-900 mb-3 sm:mb-4">Delete User</h3>
+              <p className="text-slate-500 text-sm mb-4 sm:mb-6">Are you sure you want to delete this user? This action cannot be undone.</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setUserToDelete(null)}
-                  className="flex-1 px-6 py-3 rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteUserConfirm}
-                  className="flex-1 px-6 py-3 rounded-xl bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all"
+                  className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all"
                 >
-                  Delete User
+                  Delete
                 </button>
               </div>
             </div>
@@ -1557,13 +1605,13 @@ export default function SettingsPage() {
 
         {/* Change Password Modal */}
         {changingPasswordFor && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
-                  <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-slide-up">
-                    <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-6 flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Key size={20} /></div>
+                <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in overflow-y-auto max-h-screen">
+                  <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-2xl max-w-sm w-full animate-slide-up my-4 sm:my-auto">
+                    <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-slate-900 mb-4 sm:mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Key size={18} className="sm:w-5 sm:h-5" /></div>
                       Change Password
                     </h3>
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       <div className="relative">
                         <input 
                           type={showNewPassword ? "text" : "password"}
@@ -1596,25 +1644,25 @@ export default function SettingsPage() {
                           {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
-                      <div className="flex gap-3 pt-4">
-                        <button
-                          onClick={() => handleChangePassword(changingPasswordFor)}
-                          disabled={loading}
-                          className="flex-1 bg-accent text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all disabled:opacity-50"
-                        >
-                          {loading ? "Changing..." : "Change Password"}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setChangingPasswordFor(null);
-                            setNewPassword("");
-                            setConfirmPassword("");
-                          }}
-                          className="flex-1 bg-slate-100 text-slate-600 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                       <div className="flex gap-3 pt-4">
+                         <button
+                           onClick={() => handleChangePassword(changingPasswordFor)}
+                           disabled={loading}
+                           className="flex-1 bg-accent text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all disabled:opacity-50"
+                         >
+                           {loading ? "Changing..." : "Change"}
+                         </button>
+                         <button
+                           onClick={() => {
+                             setChangingPasswordFor(null);
+                             setNewPassword("");
+                             setConfirmPassword("");
+                           }}
+                           className="flex-1 bg-slate-100 text-slate-600 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                         >
+                           Cancel
+                         </button>
+                       </div>
                     </div>
                   </div>
                 </div>
@@ -1650,6 +1698,6 @@ export default function SettingsPage() {
           to { opacity: 1; transform: scale(1); }
         }
       `}</style>
-    </div>
+    </PageContainer>
   );
 }
