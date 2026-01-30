@@ -57,3 +57,9 @@ out/
 
 # Lighthouse reports
 lighthouse-*.json
+
+# Cache and config directories
+.config/
+.npm/
+.interface-design/
+*.sql
