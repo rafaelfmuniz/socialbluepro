@@ -1,14 +1,23 @@
 #!/bin/bash
 #
-# SocialBluePro - Instalação Segura
+# SocialBluePro - Instalação/Atualização Automatizada
 # Gera credenciais aleatórias para o usuário admin
-# Uso: curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
+# 
+# INSTALAÇÃO NOVA (versão específica):
+#   curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/v2.0.0/install.sh | sudo bash
+#
+# INSTALAÇÃO NOVA (última versão - main):
+#   curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
+#
+# ATUALIZAÇÃO (sempre pega última versão):
+#   cd /opt/socialbluepro && sudo git pull origin main && sudo npm install --production && sudo npx prisma migrate deploy && sudo npm run build && sudo systemctl restart socialbluepro
 
 set -e
 
 INSTALL_DIR="/opt/socialbluepro"
 SERVICE_NAME="socialbluepro"
 REPO_URL="https://github.com/rafaelfmuniz/socialbluepro.git"
+SCRIPT_BRANCH="${SCRIPT_BRANCH:-main}"  # Branch do script (v2.0.0, main, etc)
 
 # Cores
 GREEN='\033[0;32m'
@@ -38,23 +47,46 @@ fi
 
 # Detectar se é instalação ou atualização
 if [[ -d "$INSTALL_DIR/.git" ]]; then
-    echo -e "${YELLOW}Instalação existente detectada${NC}"
-    echo "Atualizando..."
+    echo -e "${YELLOW}⚠️  Instalação existente detectada em $INSTALL_DIR${NC}"
     echo ""
     
     cd "$INSTALL_DIR"
     
+    # Verificar versão atual
+    CURRENT_VERSION=$(git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
+    echo -e "${BLUE}Versão atual:${NC} $CURRENT_VERSION"
+    echo -e "${BLUE}Nova versão:${NC} $SCRIPT_BRANCH"
+    echo ""
+    
+    echo "${YELLOW}Este script vai atualizar seu sistema para a última versão.${NC}"
+    echo "${YELLOW}Seu banco de dados e configurações serão preservados.${NC}"
+    echo ""
+    read -p "Deseja continuar com a atualização? (s/N): " confirm
+    if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
+        echo "Atualização cancelada."
+        exit 0
+    fi
+    
+    echo ""
+    
     # Backup do banco
     log "Backupeando banco..."
-    sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-backup-$(date +%Y%m%d).sql" || warning "Falha no backup"
+    sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-backup-$(date +%Y%m%d-%H%M%S).sql" || warning "Falha no backup"
     
     # Parar serviço
+    log "Parando serviço..."
     systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    
+    # Salvar .env atual
+    cp .env /tmp/socialbluepro-env-backup 2>/dev/null || true
     
     # Atualizar código
     log "Atualizando código..."
     git fetch origin
-    git reset --hard origin/main
+    git reset --hard origin/$SCRIPT_BRANCH
+    
+    # Restaurar .env
+    cp /tmp/socialbluepro-env-backup .env 2>/dev/null || true
     
     # Atualizar dependências
     log "Atualizando dependências..."
@@ -68,14 +100,30 @@ if [[ -d "$INSTALL_DIR/.git" ]]; then
     log "Compilando..."
     npm run build
     
+    # Ajustar permissões
+    chown -R www-data:www-data public/uploads 2>/dev/null || chown -R root:root public/uploads
+    
     # Iniciar
     log "Iniciando serviço..."
     systemctl start "$SERVICE_NAME"
     
-    success "Atualização concluída!"
-    echo ""
-    echo "Acesse: http://$(hostname -I | awk '{print $1}'):3000"
-    echo ""
+    # Verificar
+    sleep 3
+    if systemctl is-active --quiet "$SERVICE_NAME"; then
+        success "✅ Atualização concluída com sucesso!"
+        echo ""
+        echo -e "${GREEN}Versão atualizada:${NC} $(git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)"
+        echo ""
+        echo "🌐 Acesse: http://$(hostname -I | awk '{print $1}'):3000"
+        echo ""
+        echo "📋 Comandos úteis:"
+        echo "  Ver logs: sudo tail -f /var/log/socialbluepro.log"
+        echo "  Status: sudo systemctl status $SERVICE_NAME"
+        echo ""
+    else
+        error "❌ Falha ao iniciar serviço após atualização"
+    fi
+    
     exit 0
 fi
 
@@ -214,10 +262,12 @@ sleep 3
 
 # Verificar
 if systemctl is-active --quiet "$SERVICE_NAME"; then
+    INSTALLED_VERSION=$(git describe --tags --exact-match 2>/dev/null || echo "$SCRIPT_BRANCH")
+    
     success "Instalação concluída!"
     echo ""
     echo "========================================"
-    echo -e "${GREEN}SocialBluePro está rodando!${NC}"
+    echo -e "${GREEN}SocialBluePro v$INSTALLED_VERSION instalado!${NC}"
     echo "========================================"
     echo ""
     echo -e "${YELLOW}🔐 CREDENCIAIS DE ACESSO (GUARDE ISSO):${NC}"
@@ -237,6 +287,9 @@ if systemctl is-active --quiet "$SERVICE_NAME"; then
     echo "   sudo systemctl start $SERVICE_NAME  - Iniciar"
     echo "   sudo systemctl stop $SERVICE_NAME   - Parar"
     echo "   sudo systemctl status $SERVICE_NAME - Status"
+    echo ""
+    echo "🔄 Atualizações futuras:"
+    echo "   curl -fsSL $REPO_URL/raw/main/install.sh | sudo bash"
     echo ""
 else
     error "Falha ao iniciar serviço"
