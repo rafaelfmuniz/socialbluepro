@@ -141,7 +141,7 @@ log "Credenciais do administrador geradas (serão mostradas no final)"
 # Instalar dependências
 log "Instalando Node.js e PostgreSQL..."
 apt-get update -qq
-curl -fsSL https://deb.nodesource.com/setup_18.x | bash - 2>/dev/null
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash - 2>/dev/null
 apt-get install -y -qq nodejs postgresql postgresql-client git curl
 
 # Configurar PostgreSQL
