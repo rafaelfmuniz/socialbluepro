@@ -65,7 +65,7 @@ if [[ -d "$INSTALL_DIR/.git" ]]; then
     echo "${YELLOW}[2] Atualizar${NC} - Manter dados e atualizar código"
     echo "${RED}[3] Cancelar${NC} - Sair sem fazer alterações"
     echo ""
-    read -p "Digite 1, 2 ou 3: " choice
+    read -p "Digite 1, 2 ou 3: " choice < /dev/tty
     
     case "$choice" in
         1)
