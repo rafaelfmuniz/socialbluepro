@@ -403,13 +403,15 @@ install_npm_dependencies() {
         log_warning "Arquivo .env não encontrado"
     fi
     
-    # Limpar caches completamente
-    log_info "Limpando caches..."
+    # Limpar caches AGRESSIVAMENTE
+    log_info "Limpando caches AGRESSIVAMENTE..."
     rm -rf node_modules/.cache 2>/dev/null || true
     rm -rf .next/cache 2>/dev/null || true
-    npm cache clean --force || true
+    rm -rf .next 2>/dev/null || true
     rm -rf ~/.npm/_cacache 2>/dev/null || true
     rm -rf ~/.npm/.npmrc 2>/dev/null || true
+    rm -rf /tmp/npm-* 2>/dev/null || true
+    npm cache clean --force || true
     
     # Criar .npmrc para forçar versões corretas
     log_info "Configurando npm..."
@@ -426,16 +428,35 @@ fetch-retry-maxtimeout=60000
 save-exact=false
 EOF
     
-    # Remover package-lock.json e node_modules se existir (forçar nova resolução)
+    # Remover package-lock.json e node_modules completamente
+    log_info "Removendo dependências antigas..."
     rm -f package-lock.json 2>/dev/null || true
     rm -rf node_modules 2>/dev/null || true
     
-    # Instalar com --force e --legacy-peer-deps para garantir versões corretas
-    log_info "Instalando pacotes..."
+    # Instalar com --force para garantir versões corretas
+    log_info "Instalando pacotes (forçando @next/swc 15.5.11)..."
+    npm install @next/swc@15.5.11 --force --legacy-peer-deps --no-audit --no-fund || {
+        log_error "Falha ao instalar @next/swc"
+        exit 1
+    }
+    
     npm install --force --legacy-peer-deps --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
+    
+    # Verificar versão do @next/swc
+    log_info "Verificando versões dos pacotes..."
+    SWC_VERSION=$(node -e "console.log(require('@next/swc/package.json').version)" 2>/dev/null || echo "não instalado")
+    NEXT_VERSION=$(node -e "console.log(require('next/package.json').version)" 2>/dev/null || echo "não instalado")
+    log_info "@next/swc versão: $SWC_VERSION"
+    log_info "Next.js versão: $NEXT_VERSION"
+    
+    if [[ "$SWC_VERSION" != "$NEXT_VERSION" ]]; then
+        log_warning "Versões do @next/swc ($SWC_VERSION) e Next.js ($NEXT_VERSION) não coincidem"
+    else
+        log_success "@next/swc e Next.js versões coincidem"
+    fi
     
     # Verificar se Prisma Client foi gerado
     if [[ -d node_modules/@prisma/client ]]; then
@@ -509,7 +530,6 @@ build_and_start_service() {
     export NODE_ENV=production
     export NEXT_TELEMETRY_DISABLED=1
     export TURBOWATCHPACK_NOTIFY=0
-    export SWC_BINARY_PATH="$INSTALL_DIR/node_modules/.bin/swc"
     
     npm run build || {
         log_error "Falha no build"
