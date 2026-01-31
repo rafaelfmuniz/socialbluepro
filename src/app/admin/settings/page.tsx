@@ -1,6 +1,7 @@
 "use client";
 
 import { Save, Mail, Globe, Server, User, Key, Lock, Loader2, Plus, Trash2, Unlock, AlertCircle, CheckCircle, Edit, Shield, Code, ToggleLeft, ToggleRight, Info, X, Eye, EyeOff } from "lucide-react";
+import { AdminFooter } from "@/components/admin/AdminFooter";
 import Card from "@/components/ui/Card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
@@ -1697,7 +1698,8 @@ export default function SettingsPage() {
           from { opacity: 0; transform: scale(0.95); }
           to { opacity: 1; transform: scale(1); }
         }
-      `}</style>
+      `}      </style>
+      <AdminFooter />
     </PageContainer>
   );
 }

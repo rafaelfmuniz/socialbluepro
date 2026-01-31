@@ -9,18 +9,19 @@ import ConfirmModal from "@/components/ui/ConfirmModal";
 import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 import {
    Flame,
-   Snowflake,
-   Clock,
-   AlertTriangle,
-   RefreshCw,
-   Send,
-   Sparkles,
-   Filter,
-   Calendar,
-   Zap,
-   Trash2,
-   Pencil,
-  } from "lucide-react";
+    Snowflake,
+    Clock,
+    AlertTriangle,
+    RefreshCw,
+    Send,
+    Sparkles,
+    Filter,
+    Calendar,
+    Zap,
+    Trash2,
+    Pencil,
+   } from "lucide-react";
+import { AdminFooter } from "@/components/admin/AdminFooter";
 
 interface Lead {
   id: string;
@@ -673,6 +674,7 @@ export default function RemarketingPage() {
         confirmText="Delete"
         variant="danger"
       />
+      <AdminFooter />
     </PageContainer>
   );
 }

@@ -495,7 +495,7 @@ create_admin_user() {
     ADMIN_PASSWORD=$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-16)
     
     sudo -u postgres psql socialbluepro <<EOF 2>/dev/null || true
-INSERT INTO admin_users (id, name, email, password_hash, role, is_active, failed_attempts, is_default_password)
+INSERT INTO admin_users (id, name, email, password_hash, role, is_active, failed_attempts, is_default_password, created_at, updated_at)
 VALUES (
     gen_random_uuid(),
     'Administrador',
@@ -504,7 +504,9 @@ VALUES (
     'admin',
     true,
     0,
-    true
+    true,
+    NOW(),
+    NOW()
 )
 ON CONFLICT (email) DO NOTHING;
 EOF

@@ -8,6 +8,7 @@ import { Search, Download, Filter, MapPin, MessageSquare, Phone, Mail, Trash2, E
 import { useState, useEffect } from "react";
 import { useToast } from "@/lib/toast";
 import { resolveAttachmentUrl } from "@/lib/attachments";
+import { AdminFooter } from "@/components/admin/AdminFooter";
 
 interface Lead {
   id: string;
@@ -814,6 +815,7 @@ export default function LeadsManagement() {
             </div>
           </div>
         )}
+        <AdminFooter />
       </div>
     );
   }

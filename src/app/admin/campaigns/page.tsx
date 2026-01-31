@@ -149,6 +149,7 @@ function createClient() {
   };
 }
 import { Send, Clock, Mail, FileText, Users, Calendar, Filter, Zap, Eye, Archive, Trash2, FolderOpen, Copy } from "lucide-react";
+import { AdminFooter } from "@/components/admin/AdminFooter";
 import { useState, useEffect } from "react";
 import validator from "validator";
 import { useToast } from "@/lib/toast";
@@ -1437,6 +1438,7 @@ export default function CampaignsPage() {
         confirmText={confirmModal.action === 'delete' ? 'Delete' : confirmModal.action === 'archive' ? 'Archive' : 'Unarchive'}
         variant={confirmModal.action === 'delete' ? 'danger' : 'warning'}
       />
+      <AdminFooter />
     </PageContainer>
   );
 }

@@ -66,7 +66,7 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
                 alt="Logo" 
                 className="h-6 sm:h-8 w-auto object-contain"
               />
-              <span className="text-lg sm:text-xl font-black tracking-tighter uppercase">Admin</span>
+              <span className="text-lg sm:text-xl font-black tracking-tighter uppercase">Painel Admin</span>
             </Link>
             <button 
               className="lg:hidden p-2 text-slate-400 hover:text-green-600"
@@ -141,17 +141,15 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
                    <Menu size={28} className="sm:w-6 sm:h-6" />
                  </button>
                  <div className="hidden sm:block">
-                   <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
-                     SocialBluePro Portal
-                   </h2>
-                   <p className="text-xs sm:text-xs text-slate-400 font-bold uppercase tracking-widest">Management v1.0</p>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
+                      SocialBluePro
+                    </h2>
                  </div>
-                 <div className="sm:hidden">
-                   <h2 className="text-base font-black text-slate-900 tracking-tighter uppercase truncate max-w-[140px]">
-                     Portal
-                   </h2>
-                   <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">v1.0</p>
-                 </div>
+                  <div className="sm:hidden">
+                    <h2 className="text-base font-black text-slate-900 tracking-tighter uppercase truncate max-w-[140px]">
+                      Painel
+                    </h2>
+                  </div>
                </div>
               
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4">

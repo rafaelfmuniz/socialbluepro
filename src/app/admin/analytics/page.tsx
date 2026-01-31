@@ -10,6 +10,7 @@ import {
   Mail, Eye, MousePointer, AlertCircle, CheckCircle,
   Filter, Download, TrendingUp, Smartphone, X
 } from "lucide-react";
+import { AdminFooter } from "@/components/admin/AdminFooter";
 
 export default function AnalyticsDashboard() {
   const { addToast } = useToast();
@@ -518,6 +519,7 @@ export default function AnalyticsDashboard() {
           </div>
         )}
       </div>
+      <AdminFooter />
     </PageContainer>
   );
 }
