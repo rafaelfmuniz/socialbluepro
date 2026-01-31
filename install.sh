@@ -191,9 +191,11 @@ check_existing_installation() {
 
 get_installed_version() {
     if [[ -f "$INSTALL_DIR/package.json" ]]; then
-        cd "$INSTALL_DIR" 2>/dev/null || true
-        if git describe --tags &>/dev/null; then
-            git describe --tags
+        # Read version from package.json
+        local version
+        version=$(grep -o '"version": "[^"]*"' "$INSTALL_DIR/package.json" | head -1 | cut -d'"' -f4)
+        if [[ -n "$version" ]]; then
+            echo "v$version"
         else
             echo "unknown"
         fi
