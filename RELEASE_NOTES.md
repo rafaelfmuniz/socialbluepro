@@ -1,173 +1,114 @@
-# 🚀 Release v2.0.0 - SocialBluePro
+# Release v2.0.1 - Admin Panel UI Improvements & Installer Fixes
 
-> **Data:** 30 de Janeiro de 2026  
-> **Status:** Production Ready ✅  
-> **Código:** [v2.0.0](https://github.com/rafaelfmuniz/socialbluepro/releases/tag/v2.0.0)
-
----
-
-## ✨ Sobre esta Release
-
-Esta é a **primeira release oficial** do SocialBluePro - um sistema completo e profissional de gestão de leads e marketing para empresas de paisagismo.
+**Release Date:** 2026-01-31  
+**Version:** 2.0.1  
+**Tag:** v2.0.1
 
 ---
 
-## 🎯 Principais Funcionalidades
+## 🎨 Admin Panel UI Improvements
 
-### 🌐 Website Público
-- **Landing page** moderna e responsiva (mobile-first)
-- **Formulário de orçamento** com validações avançadas
-- **Upload de mídia** (fotos/vídeos até 1GB)
-- **8 serviços configuráveis** (Sod, Hardscaping, Weed, Mulch, etc)
-- **SEO otimizado** com metadados e Open Graph
-- **Performance otimizada** (lazy loading, code splitting)
+### Navigation & Branding
+- **Language Consistency:** Changed "Painel Admin" (Portuguese) to "Admin Panel" (English) to match the rest of the English-language interface
+- **Mobile Header:** Updated to display logo + "Admin Panel" text instead of just "Painel"
+- **Desktop Header:** Changed from "SocialBluePro" to "SocialBluePro Landscaping" to match the landing page branding
+- **Mobile Menu:** Now sticky at top - remains visible while scrolling
 
-### 🔐 Sistema Administrativo Completo
-- **CRM de Leads** com filtros avançados e exportação CSV
-- **Email Marketing** com 6 templates profissionais
-- **Analytics em tempo real** (open rate, click rate, bounce rate)
-- **Remarketing Automation** com 4 segmentos pré-definidos
-- **Sistema multi-usuário** com proteção brute-force
-- **Configurações SMTP** múltiplas contas suportadas
-
-### 🛡️ Segurança
-- ✅ **Credenciais aleatórias** geradas automaticamente na instalação
-- ✅ **Proteção brute-force** com bloqueio progressivo
-- ✅ **Autenticação segura** via NextAuth.js v5
-- ✅ **Validação rigorosa** de formulários
-- ✅ **Sem credenciais hardcoded** no código
+### User Experience
+- **Sidebar User Info:** Now displays the actual logged-in user's name and role instead of static "Admin User / Super User"
+- **User Avatar:** Shows the first letter of the user's actual name instead of a fixed "A"
+- **Footer Positioning:** Fixed to stay at the bottom of the page using `mt-auto` flexbox approach
+- **Footer Version:** Updated to display v2.0.1
 
 ---
 
-## 📦 Instalação
+## 🔧 Installer Fixes
 
-### Requisitos
-- Ubuntu 20.04+ ou Debian 11+
-- 2GB RAM mínimo (4GB recomendado)
-- 20GB espaço em disco
-- Acesso root
+### Database & User Creation
+- **Database Setup:** Replaced `prisma migrate deploy` with `prisma db push` exclusively
+  - More reliable for fresh installations
+  - Bypasses migration synchronization issues
+  - Ensures tables are created directly from schema
+  
+- **Admin User:** Changed default name from "Administrador" (Portuguese) to "Administrator" (English)
+- **Default Credentials:** Fixed to use:
+  - Email: `admin@local.system`
+  - Password: `admin123`
 
-### Instalação Automatizada (30 segundos)
+### Post-Installation Warnings
+- **RED Security Warning:** Added prominent warning to change default credentials immediately after first login
+- **SMTP Recommendation:** Added detailed explanation that without SMTP configured, users cannot:
+  - Receive password reset emails
+  - Send email marketing campaigns
+  - Send automatic lead notifications
+
+### Credentials File
+- Updated with comprehensive post-installation instructions
+- Includes navigation paths for changing credentials and configuring SMTP
+
+---
+
+## 📋 Files Changed
+
+### Core Application
+- `src/app/admin/AdminNavigation.tsx` - UI improvements and user data display
+- `src/app/admin/layout.tsx` - Pass user data to navigation component
+- `src/components/admin/AdminFooter.tsx` - Version update and positioning fix
+
+### Installer
+- `install.sh` - Database setup, user creation, and post-install warnings
+
+### Version & Documentation
+- `package.json` - Version bump to 2.0.1
+- `CHANGELOG.md` - Updated with all v2.0.1 changes
+- `RELEASE_NOTES.md` - This file (new)
+
+---
+
+## 🚀 Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/v2.0.0/install.sh | sudo bash
+# Fresh installation
+curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
+
+# Or reinstall
+curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
+# Select option 2 - Reinstall
 ```
 
-**O script faz:**
-1. Instala Node.js 18+, PostgreSQL e dependências
-2. Cria banco de dados e usuário dedicado
-3. Gera credenciais de admin **aleatórias e seguras**
-4. Configura e inicia o serviço automaticamente
-5. Roda em `localhost:3000`
+**Default Credentials:**
+- Email: `admin@local.system`
+- Password: `admin123`
 
-**Após instalação:**
-- Acesse: `http://SEU-IP:3000`
-- Credenciais: mostradas no terminal (guarde em local seguro!)
-- Arquivo de credenciais: `/root/.socialbluepro-credentials`
+**⚠️ Important:** Change these credentials immediately after first login!
 
 ---
 
-## 🛠️ Tecnologias
+## 📝 Migration Notes
 
-| Componente | Versão |
-|------------|--------|
-| Next.js | 15.0.3 |
-| React | 19.0.0 |
-| TypeScript | 5.x |
-| Tailwind CSS | 4.x |
-| PostgreSQL | 14+ |
-| Prisma | 7.2.0 |
-| NextAuth.js | 5.0.0-beta.30 |
+If upgrading from v2.0.0:
+- The database schema remains compatible
+- Run the installer and select "Update" (option 3) to preserve data
+- The new UI improvements will be applied automatically
 
 ---
 
-## 📋 Checklist de Qualidade
+## 🐛 Bug Fixes
 
-- [x] **Build de produção** testado e funcionando
-- [x] **Lint** sem erros
-- [x] **Testes manuais** realizados
-- [x] **Documentação** completa
-- [x] **Sem credenciais expostas** no repositório
-- [x] **Instalação automatizada** testada
-- [x] **Scripts de deploy** funcionando
+- Fixed login failures caused by missing database tables (using db push instead of migrate deploy)
+- Fixed admin user creation with proper timestamp fields
+- Fixed footer positioning in admin pages
+- Fixed mobile menu visibility during scroll
 
 ---
 
-## 📝 Changelog
+## 📞 Support
 
-### Adicionado
-- Sistema completo de gestão de leads (CRM)
-- Email marketing com templates e tracking
-- Analytics de campanhas em tempo real
-- Remarketing automation com segmentação
-- Sistema de notas para leads
-- Upload de arquivos (fotos/vídeos)
-- Filtros avançados no CRM
-- Exportação CSV de leads e analytics
-- Polling em tempo real (30s)
-- Suporte a múltiplas contas SMTP
-- Configurações de reCAPTCHA
-- Tracking pixels (GA, Ads, Facebook, TikTok)
-- Proteção brute-force
-- Sistema de toast notifications
-- Instalação automatizada via curl
-
-### Segurança
-- Credenciais aleatórias geradas automaticamente
-- Remoção de todas as credenciais hardcoded
-- Proteção de dados sensíveis no .env
-- Validação rigorosa de inputs
+For issues or questions:
+- Check the log: `/var/log/socialbluepro-install.log`
+- View credentials: `/root/.socialbluepro-credentials`
+- Service status: `sudo systemctl status socialbluepro`
 
 ---
 
-## 🌟 Destaques desta Versão
-
-1. **Instalação em 30 segundos** - Um comando e o sistema está rodando
-2. **Seguro por padrão** - Nenhuma credencial exposta
-3. **Pronto para produção** - Testado e otimizado
-4. **Documentação completa** - README, AGENTS, CHANGELOG
-5. **Deploy automatizado** - Scripts profissionais incluídos
-
----
-
-## 🔧 Comandos Úteis
-
-```bash
-# Iniciar serviço
-sudo systemctl start socialbluepro
-
-# Parar serviço
-sudo systemctl stop socialbluepro
-
-# Ver status
-sudo systemctl status socialbluepro
-
-# Ver logs
-sudo tail -f /var/log/socialbluepro.log
-```
-
----
-
-## 📞 Suporte
-
-Para dúvidas ou suporte:
-- Email: suporte@socialbluepro.com
-
----
-
-## 🎯 Próximos Passos
-
-Consulte o [README.md](https://github.com/rafaelfmuniz/socialbluepro/blob/main/README.md) para:
-- Configuração avançada
-- Desenvolvimento local
-- Contribuição
-- Troubleshooting
-
----
-
-**🎉 SocialBluePro v2.0.0 está pronto para uso em produção!**
-
----
-
-*Release criada em: 30/01/2026*  
-*Commit: [c2d3ce5](https://github.com/rafaelfmuniz/socialbluepro/commit/c2d3ce5)*
+**Full Changelog:** See [CHANGELOG.md](CHANGELOG.md)
