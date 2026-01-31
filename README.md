@@ -272,7 +272,7 @@ socialbluepro/
 │   ├── 📁 types/                        # Tipos TypeScript
 │   │
 │   ├── 📄 auth.ts                       # Configuração NextAuth
-│   └── 📄 middleware.ts                 # Middleware de proteção
+│   └── 📄 proxy.ts                      # Proxy de proteção e cache
 │
 ├── 📄 .env                              # Variáveis de ambiente (não vai pro GitHub)
 ├── 📄 .env.example                      # Exemplo de variáveis

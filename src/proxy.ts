@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const COOKIE_NAME = "sbp_admin_token";
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const { nextUrl } = req;
   const token = req.cookies.get(COOKIE_NAME)?.value;
 
