@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# SocialBluePro - Instalador v2.0.0
+# SocialBluePro - Instalador
 # Sistema de Gestão de Leads
 #
 # Uso: curl -fsSL https://github.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
@@ -11,7 +11,7 @@ set -euo pipefail
 # ============================================
 # CONFIGURAÇÕES
 # ============================================
-readonly SCRIPT_VERSION="2.0.0"
+readonly SCRIPT_VERSION="2.0.1"
 readonly INSTALL_DIR="/opt/socialbluepro"
 readonly SERVICE_NAME="socialbluepro"
 readonly REPO_URL="https://github.com/rafaelfmuniz/socialbluepro.git"
@@ -46,6 +46,51 @@ setup_colors() {
 }
 
 setup_colors
+
+# ============================================
+# DETECÇÃO DE VERSÃO
+# ============================================
+get_latest_version() {
+    local api_url="https://api.github.com/repos/rafaelfmuniz/socialbluepro/releases/latest"
+    local version=""
+    
+    # Fetch the latest release from GitHub API with timeout
+    local response
+    response=$(curl -s --max-time 5 "$api_url" 2>/dev/null) || {
+        log_warning "Falha ao buscar versão mais recente (timeout ou erro de conexão)"
+        echo "$SCRIPT_VERSION"
+        return
+    }
+    
+    # Check if response is valid JSON
+    if [[ -z "$response" ]] || [[ "$response" == "null" ]]; then
+        log_warning "Resposta vazia da API do GitHub"
+        echo "$SCRIPT_VERSION"
+        return
+    fi
+    
+    # Extract tag_name from JSON response
+    version=$(echo "$response" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4) || true
+    
+    # If version not found or empty, fallback to SCRIPT_VERSION
+    if [[ -z "$version" ]]; then
+        log_warning "Não foi possível extrair versão da resposta da API"
+        echo "$SCRIPT_VERSION"
+        return
+    fi
+    
+    # Remove the "v" prefix if present
+    version="${version#v}"
+    
+    # Validate version format (should be semver-like: x.y.z)
+    if [[ ! "$version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+        log_warning "Formato de versão inválido: $version"
+        echo "$SCRIPT_VERSION"
+        return
+    fi
+    
+    echo "$version"
+}
 
 # ============================================
 # FUNÇÕES DE LOG
@@ -688,12 +733,15 @@ show_success() {
     local ip_address
     ip_address=$(hostname -I | awk '{print $1}')
     
+    local latest_version
+    latest_version=$(get_latest_version)
+    
     echo ""
     echo "========================================"
     echo "SocialBluePro instalado com sucesso!"
     echo "========================================"
     echo ""
-    echo "Versão:   ${SCRIPT_VERSION}"
+    echo "Versão:   ${latest_version}"
     echo "Data:      $(date '+%d/%m/%Y %H:%M')"
     echo ""
     echo "Credenciais padrão:"
