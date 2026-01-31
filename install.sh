@@ -121,6 +121,9 @@ setup_postgresql() {
     local DB_PASS
     DB_PASS=$(openssl rand -hex 16)
     
+    # Salvar senha em arquivo temporário PRIMEIRO
+    echo "$DB_PASS" > /tmp/sbp_db_pass.txt
+    
     # Criar banco (se não existir)
     sudo -u postgres psql -c "CREATE DATABASE socialbluepro;" 2>/dev/null || warning "Banco já existe"
     
@@ -136,7 +139,7 @@ setup_postgresql() {
     # Grant schema permissions for Prisma
     sudo -u postgres psql socialbluepro -c "GRANT ALL ON SCHEMA public TO sbp_user;" || warning "Falha ao conceder permissões no schema"
     
-    echo "$DB_PASS"
+    success "PostgreSQL configurado"
 }
 
 # ============================================
@@ -149,8 +152,12 @@ install_new() {
     install_dependencies
     
     # Setup PostgreSQL
+    setup_postgresql
+    
+    # Ler senha do arquivo temporário
     local DB_PASS
-    DB_PASS=$(setup_postgresql)
+    DB_PASS=$(cat /tmp/sbp_db_pass.txt)
+    rm -f /tmp/sbp_db_pass.txt
     
     # Criar diretório
     log "Baixando projeto..."
