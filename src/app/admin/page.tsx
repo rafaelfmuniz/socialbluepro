@@ -90,7 +90,7 @@ export default function AdminDashboard() {
   }
 
    return (
-     <div className="space-y-6 sm:space-y-8 md:space-y-12 font-sans">
+      <div className="flex-1 space-y-6 sm:space-y-8 md:space-y-12 font-sans">
 
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
      {stats.map((stat) => (

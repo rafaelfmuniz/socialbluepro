@@ -290,7 +290,7 @@ export default function LeadsManagement() {
   }
 
     return (
-      <div className="space-y-4 sm:space-y-6 md:space-y-8 pb-6 sm:pb-8 md:pb-12">
+      <div className="flex-1 space-y-4 sm:space-y-6 md:space-y-8 pb-6 sm:pb-8 md:pb-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 md:gap-6">
           <div className="min-w-0 flex-1">

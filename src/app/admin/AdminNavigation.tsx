@@ -151,11 +151,11 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
                  >
                    <Menu size={28} className="sm:w-6 sm:h-6" />
                  </button>
-                 <div className="hidden sm:block">
-                     <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
-                       SocialBluePro Landscaping
-                     </h2>
-                 </div>
+                  <div className="hidden sm:block">
+                     <h2 className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
+                         <span className="text-slate-900">SOCIALBLUEPRO</span> <span className="text-accent">LANDSCAPING</span>
+                       </h2>
+                  </div>
                    <Link href="/admin" className="sm:hidden flex items-center gap-2">
                      <img 
                        src={IMAGES.logoColor}
