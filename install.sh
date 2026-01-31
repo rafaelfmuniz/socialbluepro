@@ -494,23 +494,39 @@ EOF
 health_check() {
     log_info "Verificando aplicação..."
     
-    local max_attempts=10
+    local max_attempts=15
     local attempt=0
+    local success=false
     
     while [[ $attempt -lt $max_attempts ]]; do
         ((attempt++))
         
-        if systemctl is-active --quiet "$SERVICE_NAME"; then
-            if curl -s http://localhost:3000 &>/dev/null; then
-                log_success "Aplicação funcionando"
-                return 0
+        if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+            if command -v curl &>/dev/null; then
+                if curl -s -m 2 http://localhost:3000 &>/dev/null; then
+                    success=true
+                    break
+                fi
+            else
+                if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+                    success=true
+                    break
+                fi
             fi
         fi
         
         sleep 2
     done
     
-    log_warning "Aplicação pode não estar funcionando corretamente"
+    if [[ "$success" == "true" ]]; then
+        log_success "Aplicação funcionando"
+    else
+        log_warning "Aplicação pode não estar funcionando corretamente"
+        log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
+        log_warning "Verifique o status: sudo systemctl status $SERVICE_NAME"
+    fi
+    
+    return 0
 }
 
 # ============================================
