@@ -1,52 +1,52 @@
-# Release v2.0.1 - Admin Panel UI Improvements & Installer Fixes
+# 🚀 Release Notes - SocialBluePro
 
-**Release Date:** 2026-01-31  
-**Version:** 2.0.1  
-**Tag:** v2.0.1
+## v2.0.1 - Admin Panel UI & Installer Fixes (2026-01-31)
 
----
+### ✨ Novidades
+- Admin Panel completamente em inglês ("Painel Admin" → "Admin Panel")
+- Menu mobile sticky que permanece visível ao scrollar
+- Header mobile com logo + "Admin Panel"
+- Header desktop: "SocialBluePro Landscaping"
+- Sidebar mostra nome real do usuário logado
+- Avatar com primeira letra do nome do usuário
 
-## 🎨 Admin Panel UI Improvements
-
-### Navigation & Branding
-- **Language Consistency:** Changed "Painel Admin" (Portuguese) to "Admin Panel" (English) to match the rest of the English-language interface
-- **Mobile Header:** Updated to display logo + "Admin Panel" text instead of just "Painel"
-- **Desktop Header:** Changed from "SocialBluePro" to "SocialBluePro Landscaping" to match the landing page branding
-- **Mobile Menu:** Now sticky at top - remains visible while scrolling
-
-### User Experience
-- **Sidebar User Info:** Now displays the actual logged-in user's name and role instead of static "Admin User / Super User"
-- **User Avatar:** Shows the first letter of the user's actual name instead of a fixed "A"
-- **Footer Positioning:** Fixed to stay at the bottom of the page using `mt-auto` flexbox approach
-- **Footer Version:** Updated to display v2.0.1
+### 🔧 Correções
+- Instalador usa `prisma db push` (mais confiável)
+- Credenciais padrão fixas: admin@local.system / admin123
+- Aviso VERMELHO para mudar credenciais após login
+- Recomendação de configurar SMTP
+- Correção do footer para ficar no rodapé
 
 ---
 
-## 🔧 Installer Fixes
+## v2.0.0 - Sistema Completo de Gestão de Leads (2026-01-30)
 
-### Database & User Creation
-- **Database Setup:** Replaced `prisma migrate deploy` with `prisma db push` exclusively
-  - More reliable for fresh installations
-  - Bypasses migration synchronization issues
-  - Ensures tables are created directly from schema
-  
-- **Admin User:** Changed default name from "Administrador" (Portuguese) to "Administrator" (English)
-- **Default Credentials:** Fixed to use:
-  - Email: `admin@local.system`
-  - Password: `admin123`
+### ✨ Funcionalidades Principais
+- Website de Conversão com landing otimizada
+- CRM completo com filtros avançados
+- Email Marketing com templates profissionais
+- Analytics em tempo real
+- Remarketing Automation
 
-### Post-Installation Warnings
-- **RED Security Warning:** Added prominent warning to change default credentials immediately after first login
-- **SMTP Recommendation:** Added detailed explanation that without SMTP configured, users cannot:
-  - Receive password reset emails
-  - Send email marketing campaigns
-  - Send automatic lead notifications
+### 🛡️ Segurança
+- Credenciais aleatórias geradas automaticamente
+- Sem dados sensíveis expostos
+- Proteção brute-force
 
-### Credentials File
-- Updated with comprehensive post-installation instructions
-- Includes navigation paths for changing credentials and configuring SMTP
+### 📦 Instalação
+```bash
+curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
+```
+
+**Credenciais:**
+- Email: admin@local.system
+- Senha: admin123
+
+⚠️ **Mude imediatamente após o primeiro login!**
 
 ---
+
+**Veja o CHANGELOG.md para detalhes completos de todas as mudanças.**
 
 ## 📋 Files Changed
 
