@@ -30,8 +30,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false, // Disable body parsing, handle as stream for file uploads
-  },
-};
+// Route segment config - disable body parsing for file uploads
+export const runtime = 'nodejs';
+export const bodyParser = false;
