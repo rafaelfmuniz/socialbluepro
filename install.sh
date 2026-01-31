@@ -395,11 +395,25 @@ install_npm_dependencies() {
     
     cd "$INSTALL_DIR" || exit 1
     
+    # Criar .npmrc para forçar versões corretas
+    log_info "Configurando npm..."
+    cat > "$INSTALL_DIR/.npmrc" <<'EOF'
+cache=/tmp/npm-cache
+prefer-offline=false
+legacy-peer-deps=true
+loglevel=warn
+fetch-timeout=60000
+fetch-retry-mintimeout=20000
+fetch-retry-maxtimeout=120000
+EOF
+    
     # Limpar cache do npm para evitar versões antigas
     log_info "Limpando cache do npm..."
     npm cache clean --force || true
     
-    npm install || {
+    # Instalar com --force para garantir versões corretas
+    log_info "Instalando pacotes..."
+    npm install --force || {
         log_error "Falha no npm install"
         exit 1
     }
@@ -413,6 +427,9 @@ install_npm_dependencies() {
         log_error "Falha nas migrações"
         exit 1
     }
+    
+    # Remover .npmrc após instalação
+    rm -f "$INSTALL_DIR/.npmrc"
     
     log_success "Dependências instaladas"
 }
@@ -508,37 +525,44 @@ health_check() {
     
     log_success "Serviço está rodando"
     
-    # Tentar verificar se responde na porta
-    local max_attempts=10
-    local attempt=0
-    local success=false
-    
-    if command -v curl &>/dev/null; then
+    # Usar Node.js para testar a aplicação
+    if command -v node &>/dev/null; then
         log_info "Aguardando aplicação responder..."
+        
+        local max_attempts=10
+        local attempt=0
+        local success=false
         
         while [[ $attempt -lt $max_attempts ]]; do
             ((attempt++))
             
-            if curl -s -m 3 http://localhost:3000 &>/dev/null; then
+            if node -e "
+                const http = require('http');
+                http.get('http://localhost:3000', (res) => {
+                    process.exit(0);
+                }).on('error', () => {
+                    process.exit(1);
+                }).setTimeout(2000);
+            " 2>/dev/null; then
                 success=true
                 break
             fi
             
-            if [[ $((attempt % 5)) -eq 0 ]]; then
+            if [[ $((attempt % 3)) -eq 0 ]]; then
                 log_info "Aguardando... ($attempt/$max_attempts)"
             fi
             
-            sleep 2
+            sleep 1
         done
         
         if [[ "$success" == "true" ]]; then
             log_success "Aplicação funcionando e respondendo"
         else
-            log_warning "Serviço rodando mas não respondendo na porta 3000"
+            log_warning "Aplicação pode não estar respondendo"
             log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
         fi
     else
-        log_warning "curl não encontrado, não é possível verificar resposta HTTP"
+        log_warning "Node.js não encontrado"
         log_success "Serviço está rodando"
     fi
     
@@ -739,15 +763,30 @@ update() {
     
     log_info "Atualizando dependências..."
     
+    # Criar .npmrc para forçar versões corretas
+    cat > "$INSTALL_DIR/.npmrc" <<'EOF'
+cache=/tmp/npm-cache
+prefer-offline=false
+legacy-peer-deps=true
+loglevel=warn
+fetch-timeout=60000
+fetch-retry-mintimeout=20000
+fetch-retry-maxtimeout=120000
+EOF
+    
     # Limpar cache do npm para evitar versões antigas
     log_info "Limpando cache do npm..."
     npm cache clean --force || true
     
-    npm install || {
+    # Instalar com --force para garantir versões corretas
+    npm install --force || {
         log_error "Falha ao atualizar dependências"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
     }
+    
+    # Remover .npmrc após instalação
+    rm -f "$INSTALL_DIR/.npmrc"
     
     log_info "Executando migrações..."
     npx prisma migrate deploy || {
