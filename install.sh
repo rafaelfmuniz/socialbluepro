@@ -493,9 +493,9 @@ EOF
     rm -f package-lock.json 2>/dev/null || true
     rm -rf node_modules 2>/dev/null || true
     
-    # Instalar com --force para garantir versões corretas
+    # Instalar com --legacy-peer-deps para garantir compatibilidade
     log_info "Instalando pacotes..."
-    npm install --force --legacy-peer-deps --no-audit --no-fund || {
+    npm install --legacy-peer-deps --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
@@ -921,8 +921,8 @@ EOF
     log_info "Limpando cache do npm..."
     npm cache clean --force || true
     
-    # Instalar com --force para garantir versões corretas
-    npm install --force || {
+    # Instalar com --legacy-peer-deps para garantir compatibilidade
+    npm install --legacy-peer-deps --no-audit --no-fund || {
         log_error "Falha ao atualizar dependências"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
