@@ -157,17 +157,17 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
                         <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-black text-accent">LANDSCAPING</span>
                       </h2>
                    </div>
-                    <Link href="/admin" className="sm:hidden flex items-center gap-2">
-                      <img 
-                        src={IMAGES.logoColor}
-                        alt="Logo" 
-                        className="h-6 w-auto object-contain"
-                      />
-                      <div className="flex flex-col items-start">
-                        <span className="text-base font-black tracking-tighter text-slate-900">SOCIALBLUEPRO</span>
-                        <span className="text-[9px] uppercase tracking-[0.3em] font-black text-accent">LANDSCAPING</span>
-                      </div>
-                    </Link>
+                     <Link href="/admin" className="sm:hidden flex items-center gap-2">
+                       <img 
+                         src={IMAGES.logoColor}
+                         alt="Logo" 
+                         className="h-6 w-auto object-contain"
+                       />
+                       <h2 className="flex flex-col items-start">
+                         <span className="text-base font-black tracking-tighter text-slate-900">SOCIALBLUEPRO</span>
+                         <span className="text-[9px] uppercase tracking-[0.3em] font-black text-accent">LANDSCAPING</span>
+                       </h2>
+                     </Link>
                </div>
               
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
