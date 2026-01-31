@@ -494,36 +494,48 @@ EOF
 health_check() {
     log_info "Verificando aplicação..."
     
-    local max_attempts=15
+    # Primeiro verificar se o serviço está rodando
+    if ! systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+        log_warning "Serviço não está rodando"
+        log_warning "Verifique: sudo systemctl status $SERVICE_NAME"
+        log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
+        return 0
+    fi
+    
+    log_success "Serviço está rodando"
+    
+    # Tentar verificar se responde na porta
+    local max_attempts=10
     local attempt=0
     local success=false
     
-    while [[ $attempt -lt $max_attempts ]]; do
-        ((attempt++))
+    if command -v curl &>/dev/null; then
+        log_info "Aguardando aplicação responder..."
         
-        if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
-            if command -v curl &>/dev/null; then
-                if curl -s -m 2 http://localhost:3000 &>/dev/null; then
-                    success=true
-                    break
-                fi
-            else
-                if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
-                    success=true
-                    break
-                fi
+        while [[ $attempt -lt $max_attempts ]]; do
+            ((attempt++))
+            
+            if curl -s -m 3 http://localhost:3000 &>/dev/null; then
+                success=true
+                break
             fi
-        fi
+            
+            if [[ $((attempt % 5)) -eq 0 ]]; then
+                log_info "Aguardando... ($attempt/$max_attempts)"
+            fi
+            
+            sleep 2
+        done
         
-        sleep 2
-    done
-    
-    if [[ "$success" == "true" ]]; then
-        log_success "Aplicação funcionando"
+        if [[ "$success" == "true" ]]; then
+            log_success "Aplicação funcionando e respondendo"
+        else
+            log_warning "Serviço rodando mas não respondendo na porta 3000"
+            log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
+        fi
     else
-        log_warning "Aplicação pode não estar funcionando corretamente"
-        log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
-        log_warning "Verifique o status: sudo systemctl status $SERVICE_NAME"
+        log_warning "curl não encontrado, não é possível verificar resposta HTTP"
+        log_success "Serviço está rodando"
     fi
     
     return 0
@@ -580,7 +592,9 @@ EOF
 # LIMPEZA
 # ============================================
 cleanup() {
+    log_info "Limpando arquivos temporários..."
     rm -rf "$TEMP_DIR" 2>/dev/null || true
+    log_success "Limpeza concluída"
 }
 
 # ============================================
@@ -631,6 +645,8 @@ install_new() {
     save_credentials
     cleanup
     
+    log_info "Instalação concluída com sucesso!"
+    echo ""
     show_success
 }
 
