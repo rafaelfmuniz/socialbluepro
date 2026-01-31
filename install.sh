@@ -1225,7 +1225,7 @@ restore_backup() {
     
     # Restore database
     log_info "Restaurando banco de dados..."
-    if sudo -u postgres psql <<EOF 2>/dev/null; then
+    if sudo -u postgres psql <<EOF 2>/dev/null
 DROP DATABASE IF EXISTS socialbluepro;
 CREATE DATABASE socialbluepro;
 EOF
