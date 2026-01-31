@@ -401,6 +401,7 @@ install_npm_dependencies() {
     rm -rf .next/cache 2>/dev/null || true
     npm cache clean --force || true
     rm -rf ~/.npm/_cacache 2>/dev/null || true
+    rm -rf ~/.npm/.npmrc 2>/dev/null || true
     
     # Criar .npmrc para forçar versões corretas
     log_info "Configurando npm..."
@@ -414,17 +415,39 @@ fetch-retries=3
 fetch-retry-factor=2
 fetch-retry-mintimeout=10000
 fetch-retry-maxtimeout=60000
+save-exact=false
 EOF
     
-    # Remover package-lock.json se existir (forçar resolução nova)
+    # Remover package-lock.json e node_modules se existir (forçar nova resolução)
     rm -f package-lock.json 2>/dev/null || true
+    rm -rf node_modules 2>/dev/null || true
     
-    # Instalar com --force para garantir versões corretas
+    # Instalar com --force e --legacy-peer-deps para garantir versões corretas
     log_info "Instalando pacotes..."
-    npm install --force --no-audit --no-fund || {
+    npm install --force --legacy-peer-deps --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
+    
+    npx prisma generate || {
+        log_error "Falha ao gerar Prisma Client"
+        exit 1
+    }
+    
+    npx prisma migrate deploy || {
+        log_error "Falha nas migrações"
+        exit 1
+    }
+    
+    # Remover .npmrc após instalação
+    rm -f "$INSTALL_DIR/.npmrc"
+    
+    log_success "Dependências instaladas"
+    
+    # Dar tempo para o Node.js e caches se estabilizarem
+    log_info "Aguardando estabilização do Node.js..."
+    sleep 3
+}
     
     npx prisma generate || {
         log_error "Falha ao gerar Prisma Client"

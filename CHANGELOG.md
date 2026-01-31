@@ -11,6 +11,8 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
 - **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
 - **next.config.ts:** Adicionado `output: 'standalone'` (CRÍTICO para serviço systemd)
+- **package.json:** Adicionado pacotes @swc/* explícitos para forçar versões compatíveis
+- **package.json:** Adicionado overrides para forçar @swc/* versões corretas
 - **Instalador health_check:** Removido loop infinito que causava travamento
 - **Instalador health_check:** Simplificado para uma única verificação HTTP (3 segundos)
 - **Instalador health_check:** Adicionado sleep 5 segundos antes da verificação (estabilização do serviço)
@@ -25,13 +27,14 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **package.json:** Atualizar `@next/bundle-analyzer` de 16.1.6 para 15.5.11
 - **package.json:** Atualizar `eslint-config-next` de 15.0.3 para 15.5.11
 - **Instalador:** `npm install --production` → `npm install` (instala todas as dependências)
-- **Erro de build:** Corrigido "Cannot find module '@tailwindcss/postcss'"
 - **Erro de serviço:** Corrigido "Cannot find module '.../standalone/server.js'"
 - **Aviso SWC:** Corrigido mismatch de versões do @next/swc (15.5.7 vs 15.5.11)
 - **Instalador travado:** Corrigido problema onde instalador parava sem mostrar mensagem final
 
 ### Mudanças
-- **next.config.ts:** Adicionado `output: 'standalone'` para gerar servidor standalone
+- **next.config.ts:** Adicionado `output: 'standalone'` para gerar servidor independente
+- **package.json:** Adicionados pacotes @swc/* explícitos em dependencies
+- **package.json:** Adicionado overrides para @swc/* forçar versões compatíveis com Next.js 15.5.11
 - **health_check():** Removido loop while (causava travamento)
 - **npm install:** Adicionado --no-audit --no-fund (mais rápido)
 - **Ambiente de build:** Adicionadas variáveis para desabilitar warnings do Next.js
