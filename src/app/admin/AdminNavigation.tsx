@@ -151,22 +151,23 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
                  >
                    <Menu size={28} className="sm:w-6 sm:h-6" />
                  </button>
-                  <div className="hidden sm:block">
-                     <h2 className="flex flex-col items-start">
-                         <span className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter text-slate-900">SOCIALBLUEPRO</span>
-                         <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-black text-accent">LANDSCAPING</span>
-                       </h2>
-                  </div>
-                   <Link href="/admin" className="sm:hidden flex items-center gap-2">
-                     <img 
-                       src={IMAGES.logoColor}
-                       alt="Logo" 
-                       className="h-6 w-auto object-contain"
-                     />
-                     <span className="text-base font-black text-slate-900 tracking-tighter uppercase truncate max-w-[140px]">
-                       Admin Panel
-                     </span>
-                   </Link>
+                   <div className="hidden sm:block">
+                      <h2 className="flex flex-col items-start">
+                        <span className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter text-slate-900">SOCIALBLUEPRO</span>
+                        <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-black text-accent">LANDSCAPING</span>
+                      </h2>
+                   </div>
+                    <Link href="/admin" className="sm:hidden flex items-center gap-2">
+                      <img 
+                        src={IMAGES.logoColor}
+                        alt="Logo" 
+                        className="h-6 w-auto object-contain"
+                      />
+                      <div className="flex flex-col items-start">
+                        <span className="text-base font-black tracking-tighter text-slate-900">SOCIALBLUEPRO</span>
+                        <span className="text-[9px] uppercase tracking-[0.3em] font-black text-accent">LANDSCAPING</span>
+                      </div>
+                    </Link>
                </div>
               
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
