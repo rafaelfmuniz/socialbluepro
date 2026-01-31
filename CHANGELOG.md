@@ -4,15 +4,20 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
 ## [2.0.1] - 2026-01-30
 
-### Corrigido
+### Removido
+- **Supabase do projeto:** Removido todos os pacotes e referências do Supabase
+  - Removido `@supabase/ssr` de package.json
+  - Removido `@supabase/supabase-js` de package.json  
+  - Removido arquivo `src/lib/supabase-ssr.ts`
+  - Removido `@supabase/storage-js` de next.config.ts (externals)
+  - Removido `@supabase/storage-js` de next.config.ts (webpack externals)
 - **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
 - **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
 - **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
 - **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
 - **next.config.ts:** Adicionado `output: 'standalone'` (CRÍTICO para serviço systemd)
-- **next.config.ts:** Adicionado `@supabase/storage-js` a externals para evitar erro de build
-- **package.json:** Adicionado pacotes @swc/* explícitos para forçar versões compatíveis
+- **package.json:** Adicionados pacotes @swc/* explícitos para forçar versões compatíveis
 - **package.json:** Adicionado overrides para forçar @swc/* versões corretas
 - **Instalador health_check:** Removido loop infinito que causava travamento
 - **Instalador health_check:** Simplificado para uma única verificação HTTP (3 segundos)
@@ -29,35 +34,26 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **package.json:** Atualizar `eslint-config-next` de 15.0.3 para 15.5.11
 - **Instalador:** `npm install --production` → `npm install` (instala todas as dependências)
 - **Erro de build:** Corrigido "Cannot find module '@tailwindcss/postcss'"
-- **Erro de build:** Corrigido "Cannot read 'image.png'" (erro falso positivo do Supabase Storage-JS)
+- **Erro de build:** Corrigido "Cannot read 'image.png'" (falso positivo do Supabase Storage-JS)
 - **Erro de serviço:** Corrigido "Cannot find module '.../standalone/server.js'"
 - **Aviso SWC:** Corrigido mismatch de versões do @next/swc (15.5.7 vs 15.5.11)
 - **Instalador travado:** Corrigido problema onde instalador parava sem mostrar mensagem final
 
 ### Mudanças
 - **next.config.ts:** Adicionado `output: 'standalone'` para gerar servidor independente
-- **next.config.ts:** Adicionado `@supabase/storage-js` a serverExternalPackages
-- **next.config.ts:** Adicionado webpack externals para Supabase (apenas no build server)
-- **package.json:** Adicionados pacotes @swc/* explícitos em dependencies
-- **package.json:** Adicionado overrides para @swc/* forçar versões compatíveis
+- **package.json:** Removidos pacotes Supabase
+- **src/lib/:** Removido arquivo `supabase-ssr.ts`
 - **health_check():** Removido loop while (causava travamento)
 - **npm install:** Adicionado --no-audit --no-fund (mais rápido)
 - **Ambiente de build:** Adicionadas variáveis para desabilitar warnings do Next.js
 - **Caches:** Limpeza completa de node_modules/.cache, .next/cache, npm cache, ~/.npm/_cacache
+- **install.sh:** Removido ~/.npm/.npmrc durante limpeza de cache
 
 ### CRÍTICO
 - **output: 'standalone'** é obrigatório para o serviço systemd funcionar
 - Sem essa opção, o Next.js não gera `.next/standalone/server.js`
 - O serviço systemd falharia com: "Cannot find module '.../standalone/server.js'"
-
-### Supabase
-- **O projeto SIM usa Supabase** (veja package.json)
-- **Pacotes Supabase em uso:**
-  - `@supabase/ssr` (v0.8.0)
-  - `@supabase/supabase-js` (v2.91.1)
-- **Adicionado `@supabase/storage-js` a externals** para evitar erro de build
-- **Erro "Cannot read 'image.png'"** era um falso positivo do Supabase Storage-JS durante build
-- **Correção:** Excluir Supabase do bundle via webpack externals
+- Supabase removido completamente do projeto (user request)
 - **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
 - **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
