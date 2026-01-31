@@ -272,23 +272,47 @@ update_existing() {
 # REINSTALAÇÃO (limpa tudo)
 # ============================================
 reinstall() {
-    log "Preparando reinstalação limpa..."
+    log "Preparando reinstalação LIMPA TOTAL..."
+    echo ""
+    warning "Isso removerá TUDO: banco de dados, usuário, serviço e arquivos!"
+    echo ""
     
-    # Parar serviço
+    # Parar e remover serviço systemd
+    log "Parando serviço..."
     systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    systemctl disable "$SERVICE_NAME" 2>/dev/null || true
+    rm -f "/etc/systemd/system/${SERVICE_NAME}.service"
+    systemctl daemon-reload 2>/dev/null || true
+    success "Serviço removido"
     
-    # Backup
+    # Backup do banco (última chance)
     if [[ -d "$INSTALL_DIR" ]]; then
-        log "Fazendo backup do banco..."
-        cd "$INSTALL_DIR" 2>/dev/null && sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-reinstall-backup.sql" || warning "Falha no backup"
+        log "Fazendo backup final do banco..."
+        sudo -u postgres pg_dump socialbluepro 2>/dev/null > "/tmp/sbp-final-backup-$(date +%Y%m%d-%H%M%S).sql" || warning "Não foi possível fazer backup"
     fi
     
-    # Remover diretório
-    log "Removendo instalação antiga..."
+    # Dropar banco de dados
+    log "Removendo banco de dados..."
+    sudo -u postgres psql -c "DROP DATABASE IF EXISTS socialbluepro;" 2>/dev/null || warning "Erro ao dropar banco"
+    success "Banco de dados removido"
+    
+    # Dropar usuário PostgreSQL
+    log "Removendo usuário PostgreSQL..."
+    sudo -u postgres psql -c "DROP USER IF EXISTS sbp_user;" 2>/dev/null || warning "Erro ao dropar usuário"
+    success "Usuário PostgreSQL removido"
+    
+    # Remover diretório de instalação
+    log "Removendo arquivos..."
     cd / || true
     rm -rf "$INSTALL_DIR"
+    success "Arquivos removidos"
     
-    success "Instalação antiga removida"
+    # Limpar caches npm
+    log "Limpando caches..."
+    npm cache clean --force 2>/dev/null || true
+    
+    echo ""
+    success "Limpeza completa! Iniciando instalação nova..."
     echo ""
     
     # Instalar do zero
