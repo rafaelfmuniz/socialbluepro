@@ -191,9 +191,19 @@ check_existing_installation() {
 
 get_installed_version() {
     if [[ -f "$INSTALL_DIR/package.json" ]]; then
-        # Read version from package.json
+        # Try using node to read package.json (most reliable)
+        if command -v node &>/dev/null; then
+            local version
+            version=$(node -e "console.log(require('$INSTALL_DIR/package.json').version)" 2>/dev/null)
+            if [[ -n "$version" && "$version" != "undefined" ]]; then
+                echo "v$version"
+                return
+            fi
+        fi
+        
+        # Fallback to grep
         local version
-        version=$(grep -o '"version": "[^"]*"' "$INSTALL_DIR/package.json" | head -1 | cut -d'"' -f4)
+        version=$(grep '"version"' "$INSTALL_DIR/package.json" 2>/dev/null | head -1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
         if [[ -n "$version" ]]; then
             echo "v$version"
         else
@@ -1018,10 +1028,12 @@ show_menu() {
     
     if check_existing_installation; then
         local current_version
+        local latest_version
         current_version=$(get_installed_version)
+        latest_version=$(get_latest_version)
         echo "Instalação detectada em: $INSTALL_DIR"
         echo "Versão atual:  $current_version"
-        echo "Nova versão:   $REPO_BRANCH"
+        echo "Nova versão:   $latest_version"
         echo ""
     fi
     
