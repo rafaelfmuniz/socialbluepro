@@ -473,13 +473,11 @@ install_npm_dependencies() {
     rm -rf /tmp/npm-* 2>/dev/null || true
     npm cache clean --force || true
     
-    # Criar .npmrc para forçar versões corretas
+    # Criar .npmrc para configurações seguras
     log_info "Configurando npm..."
     cat > "$INSTALL_DIR/.npmrc" <<'EOF'
 cache=/tmp/npm-cache
 prefer-offline=false
-legacy-peer-deps=false
-strict-peer-deps=false
 loglevel=warn
 fetch-retries=3
 fetch-retry-factor=2
@@ -493,9 +491,9 @@ EOF
     rm -f package-lock.json 2>/dev/null || true
     rm -rf node_modules 2>/dev/null || true
     
-    # Instalar com --legacy-peer-deps para garantir compatibilidade
+    # Instalar pacotes sem flags inseguras
     log_info "Instalando pacotes..."
-    npm install --legacy-peer-deps --no-audit --no-fund || {
+    npm install --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
@@ -906,11 +904,10 @@ update() {
     
     log_info "Atualizando dependências..."
     
-    # Criar .npmrc para forçar versões corretas
+    # Criar .npmrc para configurações seguras
     cat > "$INSTALL_DIR/.npmrc" <<'EOF'
 cache=/tmp/npm-cache
 prefer-offline=false
-legacy-peer-deps=true
 loglevel=warn
 fetch-timeout=60000
 fetch-retry-mintimeout=20000
@@ -921,8 +918,8 @@ EOF
     log_info "Limpando cache do npm..."
     npm cache clean --force || true
     
-    # Instalar com --legacy-peer-deps para garantir compatibilidade
-    npm install --legacy-peer-deps --no-audit --no-fund || {
+    # Instalar pacotes sem flags inseguras
+    npm install --no-audit --no-fund || {
         log_error "Falha ao atualizar dependências"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
