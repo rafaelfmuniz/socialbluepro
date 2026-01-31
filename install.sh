@@ -79,13 +79,15 @@ get_latest_version() {
         return
     fi
     
-    # Remove the "v" prefix if present
-    version="${version#v}"
+    # Ensure "v" prefix is present
+    if [[ ! "$version" =~ ^v ]]; then
+        version="v$version"
+    fi
     
-    # Validate version format (should be semver-like: x.y.z)
-    if [[ ! "$version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+    # Validate version format (should be semver-like: vx.y.z)
+    if [[ ! "$version" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
         log_warning "Formato de versão inválido: $version"
-        echo "$SCRIPT_VERSION"
+        echo "v$SCRIPT_VERSION"
         return
     fi
     
