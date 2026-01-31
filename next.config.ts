@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '1gb',
     },
   },
+  output: 'standalone',
   serverExternalPackages: ['pg', '@prisma/adapter-pg', '@prisma/client'],
   compress: false,
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
