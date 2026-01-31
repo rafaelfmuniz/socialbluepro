@@ -52,12 +52,26 @@ Execute em seu servidor:
 curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash
 ```
 
+**O instalador oferece 4 opções:**
+1. **Instalar** - Nova instalação limpa
+2. **Reinstalar** - Remove tudo e reinstala (com backup automático)
+3. **Atualizar** - Atualiza código mantendo dados
+4. **Desinstalar** - Remove completamente o sistema
+
+**Recursos do instalador:**
+- ✅ Validação de sistema (RAM, disco, portas, conectividade)
+- ✅ Backup automático antes de operações destrutivas
+- ✅ Rollback automático em caso de falha
+- ✅ Logging detalhado para debug
+- ✅ Verificação de saúde pós-instalação
+- ✅ Mensagens de erro específicas com soluções
+
 **O que o script faz:**
-- Instala Node.js 18+, PostgreSQL e dependências
+- Instala Node.js 20 LTS, PostgreSQL e dependências
 - Cria banco de dados e usuário dedicado
 - Gera credenciais de admin **aleatórias e seguras**
 - Configura e inicia o serviço automaticamente
-- Roda em `localhost:3000` (acessível via IP:3000)
+- Cria arquivo de credenciais em `/root/.socialbluepro-credentials`
 
 **Credenciais serão mostradas no terminal ao final da instalação.**
 
@@ -73,8 +87,16 @@ curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/ins
 ```bash
 sudo systemctl start socialbluepro   # Iniciar
 sudo systemctl stop socialbluepro    # Parar
+sudo systemctl restart socialbluepro  # Reiniciar
 sudo systemctl status socialbluepro  # Status
+sudo journalctl -u socialbluepro -f   # Logs em tempo real
 ```
+
+### Logs e Debug
+
+- **Log de instalação**: `/var/log/socialbluepro-install.log`
+- **Logs do serviço**: `sudo journalctl -u socialbluepro -n 50`
+- **Credenciais**: `/root/.socialbluepro-credentials`
 
 ---
 
