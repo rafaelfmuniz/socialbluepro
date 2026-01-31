@@ -19,6 +19,8 @@ readonly REPO_BRANCH="main"
 readonly TEMP_DIR="/tmp/socialbluepro-install"
 readonly LOG_FILE="/var/log/socialbluepro-install.log"
 readonly CREDENTIALS_FILE="/root/.socialbluepro-credentials"
+readonly BACKUP_BASE_DIR="/opt/socialbluepro-backups"
+readonly MAX_BACKUPS=5
 
 # ============================================
 # VARIÁVEIS GLOBAIS
@@ -302,24 +304,92 @@ check_port() {
 # ============================================
 create_backup() {
     local backup_type=$1
-    BACKUP_DIR="/tmp/socialbluepro-backup-$(date +%Y%m%d-%H%M%S)"
+    local BACKUP_BASE_DIR="/opt/socialbluepro-backups"
+    local MAX_BACKUPS=5
     
-    log_info "Criando backup ($backup_type)..."
+    # Ask user
+    echo ""
+    log_info "Deseja criar backup antes de $backup_type?"
+    local backup_choice
+    backup_choice=$(read_tty "Digite 's' para sim ou 'n' para não (padrão: s): ")
+    
+    if [[ "$backup_choice" =~ ^[Nn]$ ]]; then
+        log_info "Backup ignorado pelo usuário"
+        BACKUP_DIR=""
+        return
+    fi
+    
+    # Create backup in permanent location
+    mkdir -p "$BACKUP_BASE_DIR"
+    BACKUP_DIR="$BACKUP_BASE_DIR/socialbluepro-backup-$(date +%Y%m%d-%H%M%S)"
+    
+    log_info "Criando backup em: $BACKUP_DIR"
     mkdir -p "$BACKUP_DIR"
     
+    # Backup database
     if sudo -u postgres psql -lqt 2>/dev/null | cut -d \| -f 1 | grep -qw socialbluepro; then
-        sudo -u postgres pg_dump socialbluepro > "$BACKUP_DIR/database.sql" 2>/dev/null || true
+        log_info "Fazendo backup do banco de dados..."
+        sudo -u postgres pg_dump socialbluepro > "$BACKUP_DIR/database.sql" 2>/dev/null || {
+            log_warning "Não foi possível fazer backup do banco de dados"
+        }
     fi
     
+    # Backup installation directory
     if [[ -d "$INSTALL_DIR" ]]; then
-        cp -r "$INSTALL_DIR" "$BACKUP_DIR/installation" 2>/dev/null || true
+        log_info "Fazendo backup do diretório de instalação..."
+        cp -r "$INSTALL_DIR" "$BACKUP_DIR/installation" 2>/dev/null || {
+            log_warning "Não foi possível fazer backup da instalação"
+        }
     fi
     
+    # Backup .env file
     if [[ -f "$INSTALL_DIR/.env" ]]; then
-        cp "$INSTALL_DIR/.env" "$BACKUP_DIR/.env" 2>/dev/null || true
+        log_info "Fazendo backup do arquivo .env..."
+        cp "$INSTALL_DIR/.env" "$BACKUP_DIR/.env" 2>/dev/null || {
+            log_warning "Não foi possível fazer backup do .env"
+        }
     fi
     
-    log_success "Backup criado"
+    log_success "Backup criado em: $BACKUP_DIR"
+    
+    # Rotate old backups
+    rotate_backups "$BACKUP_BASE_DIR" $MAX_BACKUPS
+}
+
+rotate_backups() {
+    local backup_dir=$1
+    local max_backups=$2
+    
+    log_info "Gerenciando rotação de backups (mantendo os $max_backups mais recentes)..."
+    
+    # List all backup directories sorted by date (newest first)
+    local backups
+    backups=$(ls -1td "$backup_dir"/socialbluepro-backup-* 2>/dev/null || true)
+    
+    if [[ -z "$backups" ]]; then
+        log_info "Nenhum backup encontrado para rotação"
+        return
+    fi
+    
+    # Count total backups
+    local total_count
+    total_count=$(echo "$backups" | wc -l)
+    
+    # Calculate how many to remove
+    local to_remove=$((total_count - max_backups))
+    
+    if [[ $to_remove -gt 0 ]]; then
+        log_info "Removendo $to_remove backup(s) antigo(s)..."
+        echo "$backups" | tail -n "$to_remove" | while read -r old_backup; do
+            if [[ -d "$old_backup" ]]; then
+                rm -rf "$old_backup"
+                log_info "Removido: $(basename "$old_backup")"
+            fi
+        done
+        log_success "Rotação de backups concluída"
+    else
+        log_info "Nenhum backup antigo para remover ($total_count total, máximo: $max_backups)"
+    fi
 }
 
 perform_rollback() {
@@ -1069,12 +1139,171 @@ show_menu() {
     echo "  2) Reinstalar (remove tudo e reinstala)"
     echo "  3) Atualizar (mantém dados)"
     echo "  4) Desinstalar (remove tudo)"
-    echo "  5) Sair"
+    echo "  5) Restaurar backup"
+    echo "  6) Sair"
     echo ""
 }
 
 get_choice() {
-    read_tty "Digite uma opção (1-5): "
+    read_tty "Digite uma opção (1-6): "
+}
+
+# ============================================
+# RESTORE BACKUP
+# ============================================
+restore_backup() {
+    log_info "Iniciando restauração de backup..."
+    
+    if [[ ! -d "$BACKUP_BASE_DIR" ]]; then
+        log_error "Nenhum diretório de backup encontrado em: $BACKUP_BASE_DIR"
+        echo "Verifique se existem backups disponíveis."
+        exit 1
+    fi
+    
+    # List available backups
+    local backups=($(ls -1t "$BACKUP_BASE_DIR" 2>/dev/null | grep "^socialbluepro-backup-"))
+    if [[ ${#backups[@]} -eq 0 ]]; then
+        log_error "Nenhum backup disponível em: $BACKUP_BASE_DIR"
+        exit 1
+    fi
+    
+    echo ""
+    echo "Backups disponíveis:"
+    echo "-------------------"
+    for i in "${!backups[@]}"; do
+        local backup_date=$(echo "${backups[$i]}" | sed 's/socialbluepro-backup-//' | sed 's/-/ /g')
+        echo "  $((i+1))) ${backups[$i]} (criado em: $backup_date)"
+    done
+    echo ""
+    
+    local choice
+    choice=$(read_tty "Escolha o backup para restaurar (1-${#backups[@]}): ")
+    
+    # Validate choice
+    if ! [[ "$choice" =~ ^[0-9]+$ ]] || [[ $choice -lt 1 ]] || [[ $choice -gt ${#backups[@]} ]]; then
+        log_error "Opção inválida"
+        exit 1
+    fi
+    
+    local selected_backup="${backups[$((choice-1))]}"
+    local backup_path="$BACKUP_BASE_DIR/$selected_backup"
+    
+    echo ""
+    echo "========================================"
+    echo "Backup selecionado: $selected_backup"
+    echo "Caminho: $backup_path"
+    echo "========================================"
+    echo ""
+    echo "ATENÇÃO: Esta operação irá:"
+    echo "  - Parar o serviço SocialBluePro"
+    echo "  - Substituir o banco de dados atual"
+    echo "  - Substituir os arquivos de instalação"
+    echo "  - Substituir o arquivo .env"
+    echo ""
+    
+    local confirm
+    confirm=$(read_tty "Deseja continuar? (Digite 'SIM' para confirmar): ")
+    
+    if [[ "$confirm" != "SIM" ]]; then
+        log_info "Restauração cancelada pelo usuário"
+        exit 0
+    fi
+    
+    # Check if backup has required files
+    if [[ ! -f "$backup_path/database.sql" ]]; then
+        log_error "Backup selecionado não contém arquivo de banco de dados"
+        exit 1
+    fi
+    
+    if [[ ! -d "$backup_path/installation" ]]; then
+        log_warning "Backup não contém diretório de instalação"
+    fi
+    
+    # Stop service
+    log_info "Parando serviço SocialBluePro..."
+    systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    
+    # Restore database
+    log_info "Restaurando banco de dados..."
+    if sudo -u postgres psql <<EOF 2>/dev/null; then
+DROP DATABASE IF EXISTS socialbluepro;
+CREATE DATABASE socialbluepro;
+EOF
+    then
+        if sudo -u postgres psql socialbluepro < "$backup_path/database.sql" 2>/dev/null; then
+            log_success "Banco de dados restaurado com sucesso"
+        else
+            log_error "Falha ao restaurar banco de dados"
+            systemctl start "$SERVICE_NAME" 2>/dev/null || true
+            exit 1
+        fi
+    else
+        log_error "Falha ao recriar banco de dados"
+        systemctl start "$SERVICE_NAME" 2>/dev/null || true
+        exit 1
+    fi
+    
+    # Restore installation files
+    if [[ -d "$backup_path/installation" ]]; then
+        log_info "Restaurando arquivos de instalação..."
+        if [[ -d "$INSTALL_DIR" ]]; then
+            rm -rf "$INSTALL_DIR"
+        fi
+        if cp -r "$backup_path/installation" "$INSTALL_DIR" 2>/dev/null; then
+            log_success "Arquivos de instalação restaurados"
+        else
+            log_error "Falha ao restaurar arquivos de instalação"
+            exit 1
+        fi
+    fi
+    
+    # Restore .env
+    if [[ -f "$backup_path/.env" ]]; then
+        log_info "Restaurando arquivo .env..."
+        if cp "$backup_path/.env" "$INSTALL_DIR/.env" 2>/dev/null; then
+            log_success "Arquivo .env restaurado"
+        else
+            log_warning "Não foi possível restaurar o arquivo .env"
+        fi
+    fi
+    
+    # Update permissions
+    if [[ -d "$INSTALL_DIR" ]]; then
+        chown -R "sbp_user:sbp_user" "$INSTALL_DIR" 2>/dev/null || true
+        chmod +x "$INSTALL_DIR/init.sh" 2>/dev/null || true
+    fi
+    
+    # Start service
+    log_info "Iniciando serviço SocialBluePro..."
+    systemctl daemon-reload 2>/dev/null || true
+    systemctl start "$SERVICE_NAME" 2>/dev/null || true
+    systemctl enable "$SERVICE_NAME" 2>/dev/null || true
+    
+    # Verify restoration
+    sleep 2
+    if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+        log_success "Serviço iniciado com sucesso"
+    else
+        log_warning "Serviço pode não ter iniciado corretamente"
+        echo "Verifique o status com: systemctl status $SERVICE_NAME"
+    fi
+    
+    echo ""
+    echo "========================================"
+    echo "Restauração concluída!"
+    echo "========================================"
+    echo ""
+    echo "Backup restaurado: $selected_backup"
+    
+    if [[ -d "$backup_path/installation" ]]; then
+        local current_version
+        current_version=$(cd "$INSTALL_DIR" && git describe --tags 2>/dev/null || echo "desconhecida")
+        echo "Versão restaurada: $current_version"
+    fi
+    
+    echo ""
+    echo "Acesse o sistema em: http://localhost:3000"
+    echo ""
 }
 
 # ============================================
@@ -1124,6 +1353,10 @@ main() {
             uninstall
             ;;
         5)
+            echo ""
+            restore_backup
+            ;;
+        6)
             echo ""
             log_info "Instalação cancelada"
             exit 0
