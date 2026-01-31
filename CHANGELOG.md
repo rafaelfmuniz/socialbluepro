@@ -2,7 +2,26 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
-## [2.0.1] - 2026-01-30
+## [2.0.1] - 2026-01-31
+
+### Admin Panel UI Improvements
+- **Admin Navigation:** Changed "Painel Admin" to "Admin Panel" (English translation)
+- **Admin Navigation:** Mobile menu now shows logo + "Admin Panel" text
+- **Admin Navigation:** Desktop header changed from "SocialBluePro" to "SocialBluePro Landscaping" (matching landing page)
+- **Admin Navigation:** Sidebar now displays real user name and role instead of "Admin User / Super User"
+- **Admin Navigation:** User avatar now shows first letter of user's name instead of fixed "A"
+- **Admin Footer:** Fixed footer positioning - now properly stays at bottom of page using `mt-auto`
+- **Admin Footer:** Updated version to v2.0.1
+
+### Installer Fixes
+- **Database Setup:** Changed from `prisma migrate deploy` to `prisma db push` exclusively (more reliable for fresh installs)
+- **Admin User Creation:** Changed default name from "Administrador" (Portuguese) to "Administrator" (English)
+- **Admin User Creation:** Fixed credentials - now uses admin@local.system / admin123
+- **Install Success Message:** Added RED warning to change default credentials after first login
+- **Install Success Message:** Added SMTP configuration recommendation with explanation
+- **Credentials File:** Updated with detailed post-install instructions
+
+## [2.0.0] - 2026-01-30
 
 ### Removido
 - **Supabase do projeto:** Removido todos os pacotes e referências do Supabase

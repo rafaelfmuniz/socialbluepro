@@ -27,7 +27,7 @@ export default async function AdminLayout({
     <ErrorBoundary>
       <ToastProvider>
         {session.user?.isDefaultPassword && <DefaultPasswordWarning userId={session.user.id} />}
-        <AdminNavigation>
+        <AdminNavigation user={session.user}>
           {children}
         </AdminNavigation>
       </ToastProvider>

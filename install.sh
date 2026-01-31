@@ -490,7 +490,7 @@ DELETE FROM admin_users WHERE email = '${ADMIN_EMAIL}';
 INSERT INTO admin_users (id, name, email, password_hash, role, is_active, failed_attempts, is_default_password, created_at, updated_at)
 VALUES (
     gen_random_uuid(),
-    'Administrador',
+    'Administrator',
     '${ADMIN_EMAIL}',
     crypt('${ADMIN_PASSWORD}', gen_salt('bf')),
     'admin',

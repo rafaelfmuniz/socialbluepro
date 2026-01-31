@@ -17,7 +17,18 @@ const navItems = [
    { name: "Settings", href: "/admin/settings", icon: Settings },
  ]; 
 
-export default function AdminNavigation({ children }: { children: React.ReactNode }) {
+interface AdminNavigationProps {
+  children: React.ReactNode;
+  user?: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    role?: string | null;
+    isDefaultPassword?: boolean;
+  };
+}
+
+export default function AdminNavigation({ children, user }: AdminNavigationProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
     const { addToast } = useToast();
@@ -66,7 +77,7 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
                 alt="Logo" 
                 className="h-6 sm:h-8 w-auto object-contain"
               />
-              <span className="text-lg sm:text-xl font-black tracking-tighter uppercase">Painel Admin</span>
+              <span className="text-lg sm:text-xl font-black tracking-tighter uppercase">Admin Panel</span>
             </Link>
             <button 
               className="lg:hidden p-2 text-slate-400 hover:text-green-600"
@@ -113,10 +124,10 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
  
           <div className="p-4 sm:p-6 border-t border-slate-100">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-              <div className="w-10 h-10 bg-accent text-white rounded-full flex items-center justify-center font-black shrink-0">A</div>
+              <div className="w-10 h-10 bg-accent text-white rounded-full flex items-center justify-center font-black shrink-0">{(user?.name || 'A').charAt(0).toUpperCase()}</div>
               <div className="overflow-hidden text-center sm:text-left">
-                <p className="text-xs font-black uppercase text-slate-900 truncate">Admin User</p>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest truncate">Super User</p>
+                <p className="text-xs font-black uppercase text-slate-900 truncate">{user?.name || 'Administrator'}</p>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest truncate">{user?.role || 'Admin'}</p>
               </div>
             </div>
             <button
@@ -131,7 +142,7 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
  
          {/* Main Content */}
          <div className="flex-1 flex flex-col min-w-0">
-             <header className="bg-white border-b border-slate-200 h-16 sm:h-20 md:h-24 flex items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-12 sticky top-0 z-50 lg:relative">
+              <header className="bg-white border-b border-slate-200 h-16 sm:h-20 md:h-24 flex items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-12 sticky lg:relative top-0 z-50">
                <div className="flex items-center gap-3 sm:gap-4">
                  <button 
                    className="lg:hidden p-3 sm:p-3 text-slate-400 hover:text-slate-900 active:scale-95 transition-transform min-h-[44px] min-w-[44px] flex items-center justify-center"
@@ -141,15 +152,20 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
                    <Menu size={28} className="sm:w-6 sm:h-6" />
                  </button>
                  <div className="hidden sm:block">
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
-                      SocialBluePro
-                    </h2>
+                     <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px] lg:max-w-none">
+                       SocialBluePro Landscaping
+                     </h2>
                  </div>
-                  <div className="sm:hidden">
-                    <h2 className="text-base font-black text-slate-900 tracking-tighter uppercase truncate max-w-[140px]">
-                      Painel
-                    </h2>
-                  </div>
+                   <Link href="/admin" className="sm:hidden flex items-center gap-2">
+                     <img 
+                       src={IMAGES.logoColor}
+                       alt="Logo" 
+                       className="h-6 w-auto object-contain"
+                     />
+                     <span className="text-base font-black text-slate-900 tracking-tighter uppercase truncate max-w-[140px]">
+                       Admin Panel
+                     </span>
+                   </Link>
                </div>
               
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
@@ -173,9 +189,9 @@ export default function AdminNavigation({ children }: { children: React.ReactNod
               </div>
            </header>
  
-           <main className="p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
-            {children}
-          </main>
+            <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
+             {children}
+           </main>
 
           {/* Scroll to Top Button */}
           {showScrollTop && (
