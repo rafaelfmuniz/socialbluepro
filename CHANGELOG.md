@@ -2,6 +2,41 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.1.0] - 2026-01-30
+
+### Adicionado
+- **Instalador Profissional v2.1.0:** Rewrite completo com features modernas
+- **4 Modos de Instalação:** Install, Reinstall, Update, Uninstall
+- **Validações de Sistema:** RAM, disco, portas, conectividade
+- **Backup Automático:** Criado antes de operações destrutivas
+- **Rollback Automático:** Restaura estado anterior em caso de falha
+- **Logging Avançado:** Logs detalhados com timestamps e níveis (INFO, DEBUG, TRACE)
+- **Health Check:** Verificação de saúde pós-instalação
+- **Menu Interativo:** Interface amigável com opções claras
+- **Mensagens de Erro Específicas:** Com soluções sugeridas
+- **Progress Indicators:** Spinners e feedback visual
+- **Debug Mode:** Opção para execução com logs detalhados
+- **Log de Instalação:** Salvo em `/var/log/socialbluepro-install.log`
+
+### Corrigido
+- **TEMP_DIR não criado:** Diretório temporário agora é criado antes de qualquer uso
+- **Erro de navegação:** Problemas com diretório `/tmp` resolvidos
+- **Erro no db_password:** Arquivo de senha não encontrado - corrigido com criação garantida
+- **Portas ocupadas:** Agora detecta e pede confirmação para matar processos
+- **Recursos insuficientes:** Valida RAM e disco antes de iniciar instalação
+
+### Mudanças
+- **Node.js:** Atualizado para 20 LTS (de 24.x不稳定)
+- **Experiência do Usuário:** Diálogos claros e confirmações antes de operações destrutivas
+- **Segurança:** Credenciais salvas em arquivo com permissões 600
+- **Depuração:** Stack trace completo em caso de erro fatal
+- **Documentação:** README atualizado com novos comandos e features
+
+### Instalador
+- Instalação: `curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/install.sh | sudo bash`
+- Logs: `/var/log/socialbluepro-install.log`
+- Credenciais: `/root/.socialbluepro-credentials`
+
 ## [2.0.0] - 2026-01-30
 
 ### Adicionado
@@ -133,7 +168,7 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
 ## Versão
 
-Versão atual: **2.0.0**
+Versão atual: **2.1.0**
 
 ## Próximas Lançamentos
 
