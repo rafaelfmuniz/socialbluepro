@@ -10,9 +10,16 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
 - **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
 - **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
+- **Instalador health_check:** Melhorado para não causar falha na instalação
+- **Instalador health_check:** Adicionado timeout ao curl e redirecionamento de stderr
 - **package.json:** Mover `@tailwindcss/postcss` e `tailwindcss` de devDependencies para dependencies
+- **package.json:** Atualizar `next` de 15.0.3 para 15.5.11
+- **package.json:** Atualizar `@next/bundle-analyzer` de 16.1.6 para 15.5.11
+- **package.json:** Atualizar `eslint-config-next` de 15.0.3 para 15.5.11
 - **Instalador:** `npm install --production` → `npm install` (instala todas as dependências)
 - **Erro de build:** Corrigido "Cannot find module '@tailwindcss/postcss'"
+- **Aviso SWC:** Corrigido mismatch de versões do @next/swc (15.5.7 vs 15.5.11)
+- **Instalador travado:** Corrigido problema onde instalador parava sem mostrar mensagem final
 - **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
 - **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
