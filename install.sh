@@ -891,7 +891,10 @@ EOF
 cleanup() {
     log_info "Limpando arquivos temporários..."
     rm -rf "$TEMP_DIR" 2>/dev/null || true
-    log_success "Limpeza concluída"
+    rm -rf /tmp/npm-cache 2>/dev/null || true
+    rm -f /tmp/sbp-env-backup 2>/dev/null || true
+    rm -f /tmp/socialbluepro-last-backup 2>/dev/null || true
+    log_success "Arquivos temporários removidos"
 }
 
 # ============================================
