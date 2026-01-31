@@ -121,10 +121,20 @@ setup_postgresql() {
     local DB_PASS
     DB_PASS=$(openssl rand -hex 16)
     
-    # Criar banco e usuário
+    # Criar banco (se não existir)
     sudo -u postgres psql -c "CREATE DATABASE socialbluepro;" 2>/dev/null || warning "Banco já existe"
-    sudo -u postgres psql -c "CREATE USER sbp_user WITH PASSWORD '$DB_PASS';" 2>/dev/null || true
-    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE socialbluepro TO sbp_user;"
+    
+    # Dropar usuário se existir (para garantir senha nova)
+    sudo -u postgres psql -c "DROP USER IF EXISTS sbp_user;" 2>/dev/null || true
+    
+    # Criar usuário com senha nova
+    sudo -u postgres psql -c "CREATE USER sbp_user WITH PASSWORD '$DB_PASS';" || error "Falha ao criar usuário PostgreSQL"
+    
+    # Conceder privilégios
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE socialbluepro TO sbp_user;" || error "Falha ao conceder privilégios"
+    
+    # Grant schema permissions for Prisma
+    sudo -u postgres psql socialbluepro -c "GRANT ALL ON SCHEMA public TO sbp_user;" || warning "Falha ao conceder permissões no schema"
     
     echo "$DB_PASS"
 }
