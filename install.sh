@@ -434,29 +434,11 @@ EOF
     rm -rf node_modules 2>/dev/null || true
     
     # Instalar com --force para garantir versões corretas
-    log_info "Instalando pacotes (forçando @next/swc 15.5.11)..."
-    npm install @next/swc@15.5.11 --force --legacy-peer-deps --no-audit --no-fund || {
-        log_error "Falha ao instalar @next/swc"
-        exit 1
-    }
-    
+    log_info "Instalando pacotes..."
     npm install --force --legacy-peer-deps --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
-    
-    # Verificar versão do @next/swc
-    log_info "Verificando versões dos pacotes..."
-    SWC_VERSION=$(node -e "console.log(require('@next/swc/package.json').version)" 2>/dev/null || echo "não instalado")
-    NEXT_VERSION=$(node -e "console.log(require('next/package.json').version)" 2>/dev/null || echo "não instalado")
-    log_info "@next/swc versão: $SWC_VERSION"
-    log_info "Next.js versão: $NEXT_VERSION"
-    
-    if [[ "$SWC_VERSION" != "$NEXT_VERSION" ]]; then
-        log_warning "Versões do @next/swc ($SWC_VERSION) e Next.js ($NEXT_VERSION) não coincidem"
-    else
-        log_success "@next/swc e Next.js versões coincidem"
-    fi
     
     # Verificar se Prisma Client foi gerado
     if [[ -d node_modules/@prisma/client ]]; then
