@@ -395,6 +395,10 @@ install_npm_dependencies() {
     
     cd "$INSTALL_DIR" || exit 1
     
+    # Limpar cache do npm para evitar versões antigas
+    log_info "Limpando cache do npm..."
+    npm cache clean --force || true
+    
     npm install || {
         log_error "Falha no npm install"
         exit 1
@@ -734,6 +738,11 @@ update() {
     cp /tmp/sbp-env-backup .env 2>/dev/null || true
     
     log_info "Atualizando dependências..."
+    
+    # Limpar cache do npm para evitar versões antigas
+    log_info "Limpando cache do npm..."
+    npm cache clean --force || true
+    
     npm install || {
         log_error "Falha ao atualizar dependências"
         perform_rollback "$ROLLBACK_POINT"
