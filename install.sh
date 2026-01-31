@@ -697,43 +697,131 @@ EOF
 # VERIFICAÇÃO DE SAÚDE
 # ============================================
 health_check() {
-    log_info "Verificando aplicação..."
+    log_info "Realizando verificações de saúde..."
+    echo ""
     
-    # Verificar se o serviço está rodando
-    if ! systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
-        log_warning "Serviço não está rodando"
-        log_warning "Verifique: sudo systemctl status $SERVICE_NAME"
-        log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
-        return 0
-    fi
-    
-    log_success "Serviço está rodando"
-    
-    # Verificar se a aplicação está respondendo (tentativa única, sem loop)
-    if command -v node &>/dev/null; then
-        log_info "Verificando resposta HTTP..."
-        
-        if node -e "
-            const http = require('http');
-            http.get('http://localhost:3000', (res) => {
-                console.log('OK');
-                process.exit(0);
-            }).on('error', () => {
-                console.log('ERROR');
-                process.exit(1);
-            }).setTimeout(3000);
-        " 2>/dev/null | grep -q "OK"; then
-            log_success "Aplicação funcionando e respondendo"
-        else
-            log_warning "Aplicação pode não estar respondendo"
-            log_warning "Verifique os logs: sudo journalctl -u $SERVICE_NAME -n 50"
-        fi
+    # Check 1: Service status
+    echo -n "[    ] Serviço systemd..."
+    if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+        echo -e "\r[ OK ]"
     else
-        log_warning "Node.js não encontrado"
-        log_success "Serviço está rodando"
+        echo -e "\r[FALHA]"
+        echo "   → Verifique: sudo systemctl status $SERVICE_NAME"
+        return 1
     fi
     
+    # Check 2: HTTP response (with retries)
+    echo -n "[    ] Resposta HTTP na porta 3000..."
+    local attempts=0
+    local max_attempts=10
+    local http_ok=false
+    
+    while [[ $attempts -lt $max_attempts ]]; do
+        if command -v curl &>/dev/null; then
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200\|301\|302"; then
+                http_ok=true
+                break
+            fi
+        elif command -v node &>/dev/null; then
+            if node -e "const http = require('http'); http.get('http://localhost:3000', (res) => { process.exit(res.statusCode >= 200 && res.statusCode < 400 ? 0 : 1); }).on('error', () => process.exit(1)).setTimeout(2000);" 2>/dev/null; then
+                http_ok=true
+                break
+            fi
+        fi
+        attempts=$((attempts + 1))
+        sleep 1
+    done
+    
+    if [[ "$http_ok" == "true" ]]; then
+        echo -e "\r[ OK ]"
+    else
+        echo -e "\r[FALHA]"
+        echo "   → A aplicação não respondeu após $max_attempts tentativas"
+        echo "   → Últimas linhas do log:"
+        sudo journalctl -u "$SERVICE_NAME" -n 5 --no-pager 2>/dev/null | tail -5 | sed 's/^/     /'
+        return 1
+    fi
+    
+    # Check 3: Database connection
+    echo -n "[    ] Conexão com PostgreSQL..."
+    if sudo -u postgres psql -c "SELECT 1" socialbluepro 2>/dev/null | grep -q "1"; then
+        echo -e "\r[ OK ]"
+    else
+        echo -e "\r[FALHA]"
+        echo "   → Verifique: sudo systemctl status postgresql"
+    fi
+    
+    echo ""
     return 0
+}
+
+# ============================================
+# RESUMO FINAL
+# ============================================
+show_final_summary() {
+    local operation=$1  # "install", "update", "reinstall"
+    
+    echo ""
+    echo "========================================"
+    echo "  RESUMO DA OPERAÇÃO"
+    echo "========================================"
+    echo ""
+    
+    # Show checkboxes with status
+    echo "Verificações realizadas:"
+    echo ""
+    
+    # Service check
+    if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+        echo "  [✓] Serviço SocialBluePro ativo"
+    else
+        echo "  [✗] Serviço SocialBluePro (falha)"
+    fi
+    
+    # HTTP check
+    local http_status
+    if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null | grep -q "200"; then
+        http_status="200 OK"
+        echo "  [✓] Aplicação respondendo ($http_status)"
+    else
+        echo "  [✗] Aplicação HTTP (verificar logs)"
+    fi
+    
+    # Database check
+    if sudo -u postgres psql -c "SELECT 1" socialbluepro 2>/dev/null | grep -q "1"; then
+        echo "  [✓] Banco de dados PostgreSQL conectado"
+    else
+        echo "  [✗] Banco de dados (verificar PostgreSQL)"
+    fi
+    
+    # Build check
+    if [[ -d "$INSTALL_DIR/.next" ]]; then
+        echo "  [✓] Build Next.js gerado"
+    else
+        echo "  [✗] Build Next.js (falha na compilação)"
+    fi
+    
+    # Static files check
+    if [[ -d "$INSTALL_DIR/.next/static" ]]; then
+        echo "  [✓] Arquivos estáticos copiados"
+    else
+        echo "  [✗] Arquivos estáticos (falha na cópia)"
+    fi
+    
+    echo ""
+    echo "Acesso: http://$(hostname -I | awk '{print $1}'):3000"
+    echo ""
+    
+    if [[ "$operation" == "install" ]]; then
+        echo "Credenciais:"
+        echo "  Email: $ADMIN_EMAIL"
+        echo "  Senha: $ADMIN_PASSWORD"
+        echo ""
+        echo -e "${RED}⚠️  Mude a senha após o primeiro login!${NC}"
+    fi
+    
+    echo "========================================"
+    echo ""
 }
 
 # ============================================
@@ -874,9 +962,7 @@ install_new() {
     save_credentials
     cleanup
     
-    log_info "Instalação concluída com sucesso!"
-    echo ""
-    show_success
+    show_final_summary "install"
 }
 
 # ============================================
@@ -921,6 +1007,7 @@ EOF
     echo ""
     
     install_new
+    show_final_summary "reinstall"
 }
 
 # ============================================
@@ -965,6 +1052,8 @@ update() {
         perform_rollback "$ROLLBACK_POINT"
         exit 1
     }
+    
+    log_success "Código atualizado para a versão mais recente"
     
     log_info "Restaurando configurações..."
     cp /tmp/sbp-env-backup .env 2>/dev/null || true
@@ -1037,9 +1126,7 @@ EOF
     health_check
     cleanup
     
-    log_success "Atualização concluída!"
-    echo ""
-    echo "Acesse: http://$(hostname -I | awk '{print $1}'):3000"
+    show_final_summary "update"
 }
 
 # ============================================
