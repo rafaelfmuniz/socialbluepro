@@ -68,10 +68,20 @@ const nextConfig: NextConfig = {
   },
 };
 
-import withBundleAnalyzer from '@next/bundle-analyzer';
+const config = nextConfig;
 
-const withBundleAnalyzerConfig = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-});
+const withBundleAnalyzer = process.env.ANALYZE === 'true'
+  ? (() => {
+      try {
+        const withBundleAnalyzerFn = require('@next/bundle-analyzer')?.withBundleAnalyzer;
+        if (withBundleAnalyzerFn) {
+          return withBundleAnalyzerFn({ enabled: process.env.ANALYZE === 'true' });
+        }
+      } catch (error) {
+        console.warn('Bundle analyzer not available, skipping...');
+      }
+      return (config: NextConfig) => config;
+    })()
+  : (config: NextConfig) => config;
 
-export default withBundleAnalyzerConfig(nextConfig);
+export default withBundleAnalyzer(config);
