@@ -875,7 +875,15 @@ update() {
     cd "$INSTALL_DIR" || exit 1
     
     log_info "Parando serviço..."
-    systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    # Check if service is running first
+    if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+        # Stop with timeout
+        timeout 10 systemctl stop "$SERVICE_NAME" 2>/dev/null || {
+            log_warning "Serviço não parou em 10s, forçando..."
+            systemctl kill "$SERVICE_NAME" 2>/dev/null || true
+            sleep 1
+        }
+    fi
     
     log_info "Salvando configurações..."
     cp .env /tmp/sbp-env-backup 2>/dev/null || true
