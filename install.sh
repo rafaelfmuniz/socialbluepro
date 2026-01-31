@@ -395,6 +395,14 @@ install_npm_dependencies() {
     
     cd "$INSTALL_DIR" || exit 1
     
+    # Debug: verificar se .env existe
+    if [[ -f "$INSTALL_DIR/.env" ]]; then
+        log_success "Arquivo .env encontrado"
+        log_info "DATABASE_URL configurada"
+    else
+        log_warning "Arquivo .env não encontrado"
+    fi
+    
     # Limpar caches completamente
     log_info "Limpando caches..."
     rm -rf node_modules/.cache 2>/dev/null || true
@@ -429,33 +437,26 @@ EOF
         exit 1
     }
     
-    npx prisma generate || {
+    # Verificar se Prisma Client foi gerado
+    if [[ -d node_modules/@prisma/client ]]; then
+        log_success "Prisma Client gerado"
+    else
+        log_warning "Prisma Client não encontrado em node_modules/@prisma/client"
+    fi
+    
+    # Executar prisma generate com caminho completo
+    log_info "Gerando Prisma Client..."
+    npx prisma generate --schema=./prisma/schema.prisma || {
         log_error "Falha ao gerar Prisma Client"
+        log_error "Verifique se o arquivo prisma/schema.prisma existe"
         exit 1
     }
     
-    npx prisma migrate deploy || {
+    # Executar migrações
+    log_info "Executando migrações..."
+    npx prisma migrate deploy --schema=./prisma/schema.prisma || {
         log_error "Falha nas migrações"
-        exit 1
-    }
-    
-    # Remover .npmrc após instalação
-    rm -f "$INSTALL_DIR/.npmrc"
-    
-    log_success "Dependências instaladas"
-    
-    # Dar tempo para o Node.js e caches se estabilizarem
-    log_info "Aguardando estabilização do Node.js..."
-    sleep 3
-}
-    
-    npx prisma generate || {
-        log_error "Falha ao gerar Prisma Client"
-        exit 1
-    }
-    
-    npx prisma migrate deploy || {
-        log_error "Falha nas migrações"
+        log_error "Verifique se o DATABASE_URL está correto em .env"
         exit 1
     }
     
