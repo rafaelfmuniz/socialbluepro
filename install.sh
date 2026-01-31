@@ -180,7 +180,7 @@ validate_system() {
     
     if [[ "$ID" != "ubuntu" ]] && [[ "$ID" != "debian" ]]; then
         log_warning "Sistema não oficialmente suportado: $ID"
-        read -rp "Deseja continuar mesmo assim? (s/N): " confirm
+        confirm=$(read_tty "Deseja continuar mesmo assim? (s/N): ")
         if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
             log_info "Instalação cancelada pelo usuário"
             exit 0
@@ -193,7 +193,7 @@ validate_system() {
     
     if [[ $total_mem_mb -lt 2048 ]]; then
         log_warning "RAM abaixo do recomendado (mínimo: 2GB, atual: ${total_mem_mb}MB)"
-        read -rp "Deseja continuar mesmo assim? (s/N): " confirm
+        confirm=$(read_tty "Deseja continuar mesmo assim? (s/N): ")
         if [[ ! "$confirm" =~ ^[Ss]$ ]]; then
             log_info "Instalação cancelada pelo usuário"
             exit 0
@@ -224,7 +224,7 @@ check_port() {
     if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
         local pid=$(lsof -Pi :$port -sTCP:LISTEN -t)
         log_warning "Porta $port já está em uso pelo processo $pid ($service)"
-        read -rp "Deseja matar o processo e continuar? (s/N): " confirm
+        confirm=$(read_tty "Deseja matar o processo e continuar? (s/N): ")
         if [[ "$confirm" =~ ^[Ss]$ ]]; then
             kill -9 $pid 2>/dev/null || log_warning "Não foi possível matar o processo $pid"
         else
@@ -735,7 +735,7 @@ reinstall() {
     log_warning "Iniciando reinstalação (limpa tudo)..."
     
     echo -e "\n${RED}⚠️  ATENÇÃO: Isso removerá TODOS os dados permanentemente!${NC}\n"
-    read -rp "Digite 'SIM' para confirmar: " confirm
+    confirm=$(read_tty "Digite 'SIM' para confirmar: ")
     
     if [[ "$confirm" != "SIM" ]]; then
         log_info "Reinstalação cancelada"
@@ -863,7 +863,7 @@ uninstall() {
     echo "  • Serviço systemd"
     echo ""
     
-    read -rp "Deseja continuar? (Digite 'SIM' para confirmar): " confirm
+    confirm=$(read_tty "Deseja continuar? (Digite 'SIM' para confirmar): ")
     
     if [[ "$confirm" != "SIM" ]]; then
         log_info "Desinstalação cancelada"
@@ -933,10 +933,21 @@ show_menu() {
     echo ""
 }
 
+read_tty() {
+    local prompt="$1"
+    local response
+    
+    if [[ -t 0 ]]; then
+        read -rp "$prompt" response
+    else
+        read -rp "$prompt" response < /dev/tty
+    fi
+    
+    echo "$response"
+}
+
 get_choice() {
-    local choice
-    read -rp "Digite uma opção (1-5): " choice
-    echo "$choice"
+    read_tty "Digite uma opção (1-5): "
 }
 
 # ============================================
