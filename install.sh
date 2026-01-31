@@ -937,6 +937,14 @@ EOF
         exit 1
     }
     
+    # Copiar arquivos estáticos para o standalone output
+    log_info "Copiando arquivos estáticos para standalone..."
+    if [[ -d "$INSTALL_DIR/.next/standalone" ]]; then
+        cp -r "$INSTALL_DIR/public" "$INSTALL_DIR/.next/standalone/" 2>/dev/null || true
+        cp -r "$INSTALL_DIR/.next/static" "$INSTALL_DIR/.next/standalone/.next/" 2>/dev/null || true
+        log_success "Arquivos estáticos copiados"
+    fi
+    
     log_info "Iniciando serviço..."
     systemctl start "$SERVICE_NAME" || {
         log_error "Falha ao iniciar serviço"
