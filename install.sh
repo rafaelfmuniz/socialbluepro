@@ -938,10 +938,15 @@ EOF
         exit 1
     }
     
-    # Limpar cache do Next.js para garantir build limpo
-    log_info "Limpando cache do Next.js..."
-    rm -rf "$INSTALL_DIR/.next/cache" 2>/dev/null || true
-    rm -rf "$INSTALL_DIR/.next/standalone" 2>/dev/null || true
+    # Limpar TODOS os caches do Next.js para garantir build limpo
+    log_info "Limpando todos os caches..."
+    rm -rf "$INSTALL_DIR/.next" 2>/dev/null || true
+    rm -rf "$INSTALL_DIR/node_modules/.cache" 2>/dev/null || true
+    rm -rf /tmp/next-* 2>/dev/null || true
+    
+    # Matar qualquer processo node antigo
+    pkill -f "next" 2>/dev/null || true
+    sleep 2
     
     log_info "Recompilando..."
     npm run build || {
