@@ -861,9 +861,9 @@ EOF
     # Remover .npmrc após instalação
     rm -f "$INSTALL_DIR/.npmrc"
     
-    log_info "Executando migrações..."
-    npx prisma migrate deploy || {
-        log_error "Falha nas migrações"
+    log_info "Atualizando schema do banco de dados..."
+    npx prisma db push --accept-data-loss || {
+        log_error "Falha ao atualizar banco de dados"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
     }
