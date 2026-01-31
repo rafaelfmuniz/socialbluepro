@@ -123,7 +123,7 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
           </nav>
  
           <div className="p-4 sm:p-6 border-t border-slate-100">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+            <div className="flex flex-col items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
               <div className="w-10 h-10 bg-accent text-white rounded-full flex items-center justify-center font-black shrink-0">{(user?.name || 'A').charAt(0).toUpperCase()}</div>
               <div className="overflow-hidden text-center sm:text-left">
                 <p className="text-xs font-black uppercase text-slate-900 truncate">{user?.name || 'Administrator'}</p>
@@ -183,13 +183,13 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
                  </button>
                 <div className="h-8 sm:h-10 w-px bg-slate-200 mx-1 hidden md:block" />
                 <div className="hidden md:flex flex-col items-end">
-                  <span className="text-sm font-black text-slate-900 uppercase tracking-tighter">SocialBluePro</span>
+                   <span className="text-sm font-black text-accent uppercase tracking-tighter">SocialBluePro</span>
                   <span className="text-xs text-accent font-bold uppercase tracking-widest">Authorized</span>
                 </div>
               </div>
            </header>
  
-            <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
+             <main className="flex-1 flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
              {children}
            </main>
 
