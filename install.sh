@@ -518,6 +518,16 @@ build_and_start_service() {
         exit 1
     }
     
+    # Copiar arquivos estáticos para o standalone output
+    log_info "Copiando arquivos estáticos para standalone..."
+    if [[ -d "$INSTALL_DIR/.next/standalone" ]]; then
+        # Copiar pasta public (imagens, etc)
+        cp -r "$INSTALL_DIR/public" "$INSTALL_DIR/.next/standalone/" 2>/dev/null || true
+        # Copiar .next/static (CSS, JS compilados)
+        cp -r "$INSTALL_DIR/.next/static" "$INSTALL_DIR/.next/standalone/.next/" 2>/dev/null || true
+        log_success "Arquivos estáticos copiados"
+    fi
+    
     mkdir -p "$INSTALL_DIR/public/uploads"
     chown -R root:root "$INSTALL_DIR/public/uploads"
     
