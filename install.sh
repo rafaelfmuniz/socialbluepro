@@ -395,25 +395,33 @@ install_npm_dependencies() {
     
     cd "$INSTALL_DIR" || exit 1
     
+    # Limpar caches completamente
+    log_info "Limpando caches..."
+    rm -rf node_modules/.cache 2>/dev/null || true
+    rm -rf .next/cache 2>/dev/null || true
+    npm cache clean --force || true
+    rm -rf ~/.npm/_cacache 2>/dev/null || true
+    
     # Criar .npmrc para forçar versões corretas
     log_info "Configurando npm..."
     cat > "$INSTALL_DIR/.npmrc" <<'EOF'
 cache=/tmp/npm-cache
 prefer-offline=false
-legacy-peer-deps=true
+legacy-peer-deps=false
+strict-peer-deps=false
 loglevel=warn
-fetch-timeout=60000
-fetch-retry-mintimeout=20000
-fetch-retry-maxtimeout=120000
+fetch-retries=3
+fetch-retry-factor=2
+fetch-retry-mintimeout=10000
+fetch-retry-maxtimeout=60000
 EOF
     
-    # Limpar cache do npm para evitar versões antigas
-    log_info "Limpando cache do npm..."
-    npm cache clean --force || true
+    # Remover package-lock.json se existir (forçar resolução nova)
+    rm -f package-lock.json 2>/dev/null || true
     
     # Instalar com --force para garantir versões corretas
     log_info "Instalando pacotes..."
-    npm install --force || {
+    npm install --force --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
@@ -432,6 +440,10 @@ EOF
     rm -f "$INSTALL_DIR/.npmrc"
     
     log_success "Dependências instaladas"
+    
+    # Dar tempo para o Node.js e caches se estabilizarem
+    log_info "Aguardando estabilização do Node.js..."
+    sleep 3
 }
 
 # ============================================
@@ -468,6 +480,12 @@ build_and_start_service() {
     log_info "Compilando aplicação..."
     
     cd "$INSTALL_DIR" || exit 1
+    
+    # Configurar ambiente para o build
+    export NODE_ENV=production
+    export NEXT_TELEMETRY_DISABLED=1
+    export TURBOWATCHPACK_NOTIFY=0
+    export SWC_BINARY_PATH="$INSTALL_DIR/node_modules/.bin/swc"
     
     npm run build || {
         log_error "Falha no build"
@@ -515,7 +533,7 @@ EOF
 health_check() {
     log_info "Verificando aplicação..."
     
-    # Primeiro verificar se o serviço está rodando
+    # Verificar se o serviço está rodando
     if ! systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
         log_warning "Serviço não está rodando"
         log_warning "Verifique: sudo systemctl status $SERVICE_NAME"
@@ -525,37 +543,20 @@ health_check() {
     
     log_success "Serviço está rodando"
     
-    # Usar Node.js para testar a aplicação
+    # Verificar se a aplicação está respondendo (tentativa única, sem loop)
     if command -v node &>/dev/null; then
-        log_info "Aguardando aplicação responder..."
+        log_info "Verificando resposta HTTP..."
         
-        local max_attempts=10
-        local attempt=0
-        local success=false
-        
-        while [[ $attempt -lt $max_attempts ]]; do
-            ((attempt++))
-            
-            if node -e "
-                const http = require('http');
-                http.get('http://localhost:3000', (res) => {
-                    process.exit(0);
-                }).on('error', () => {
-                    process.exit(1);
-                }).setTimeout(2000);
-            " 2>/dev/null; then
-                success=true
-                break
-            fi
-            
-            if [[ $((attempt % 3)) -eq 0 ]]; then
-                log_info "Aguardando... ($attempt/$max_attempts)"
-            fi
-            
-            sleep 1
-        done
-        
-        if [[ "$success" == "true" ]]; then
+        if node -e "
+            const http = require('http');
+            http.get('http://localhost:3000', (res) => {
+                console.log('OK');
+                process.exit(0);
+            }).on('error', () => {
+                console.log('ERROR');
+                process.exit(1);
+            }).setTimeout(3000);
+        " 2>/dev/null | grep -q "OK"; then
             log_success "Aplicação funcionando e respondendo"
         else
             log_warning "Aplicação pode não estar respondendo"
@@ -669,6 +670,11 @@ install_new() {
     install_npm_dependencies
     create_admin_user
     build_and_start_service
+    
+    # Dar tempo ao serviço iniciar completamente
+    log_info "Aguardando serviço estabilizar..."
+    sleep 5
+    
     health_check
     save_credentials
     cleanup
