@@ -182,10 +182,10 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
                    <span className="absolute top-3 right-3 sm:top-3 sm:right-3 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
                  </button>
                 <div className="h-8 sm:h-10 w-px bg-slate-200 mx-1 hidden md:block" />
-                <div className="hidden md:flex flex-col items-end">
-                   <span className="text-sm font-black text-accent uppercase tracking-tighter">SocialBluePro</span>
-                  <span className="text-xs text-accent font-bold uppercase tracking-widest">Authorized</span>
-                </div>
+                 <div className="hidden md:flex flex-col items-end">
+                    <span className="text-sm font-black text-slate-900 uppercase tracking-tighter">SocialBluePro</span>
+                   <span className="text-xs text-accent font-bold uppercase tracking-widest">Authorized</span>
+                 </div>
               </div>
            </header>
  
