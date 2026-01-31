@@ -489,12 +489,14 @@ EOF
 # CRIAÇÃO DE USUÁRIO ADMIN
 # ============================================
 create_admin_user() {
-    log_info "Criando usuário administrador..."
+    log_info "Criando usuário administrador padrão..."
     
-    ADMIN_EMAIL="admin-$(openssl rand -hex 4)@local.system"
-    ADMIN_PASSWORD=$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-16)
+    # Credenciais padrão - usuário DEVE mudar após primeiro login
+    ADMIN_EMAIL="admin@local.system"
+    ADMIN_PASSWORD="admin123"
     
     sudo -u postgres psql socialbluepro <<EOF 2>/dev/null || true
+DELETE FROM admin_users WHERE email = '${ADMIN_EMAIL}';
 INSERT INTO admin_users (id, name, email, password_hash, role, is_active, failed_attempts, is_default_password, created_at, updated_at)
 VALUES (
     gen_random_uuid(),
@@ -507,8 +509,7 @@ VALUES (
     true,
     NOW(),
     NOW()
-)
-ON CONFLICT (email) DO NOTHING;
+);
 EOF
     
     log_success "Usuário administrador criado"
@@ -646,10 +647,24 @@ ACESSO:
   Local:    http://localhost:3000
   Rede:     http://${ip_address}:3000
 
-IMPORTANTE:
-- Altere a senha do admin após o primeiro login
+⚠️  IMPORTANTE - AÇÕES OBRIGATÓRIAS APÓS PRIMEIRO LOGIN:
+
+1. MUDE EMAIL E SENHA DO ADMIN:
+   • Vá em: Admin > Settings > Users
+   • Email atual: ${ADMIN_EMAIL}
+   • Senha atual: ${ADMIN_PASSWORD}
+
+2. CONFIGURE O SMTP (ESSENCIAL):
+   • Vá em: Admin > Settings > Email
+   • Sem SMTP você NÃO poderá:
+     - Receber emails de recuperação de senha
+     - Enviar campanhas de marketing
+     - Notificar leads automaticamente
+
+SEGURANÇA:
 - Este arquivo está em: ${CREDENTIALS_FILE}
 - Delete este arquivo após anotar as credenciais
+- Use senhas fortes e únicas
 
 COMANDOS:
   sudo systemctl start ${SERVICE_NAME}
@@ -691,16 +706,28 @@ show_success() {
     echo "Versão:   ${SCRIPT_VERSION}"
     echo "Data:      $(date '+%d/%m/%Y %H:%M')"
     echo ""
-    echo "Credenciais:"
+    echo "Credenciais padrão:"
     echo "  Email:   ${ADMIN_EMAIL}"
     echo "  Senha:   ${ADMIN_PASSWORD}"
+    echo ""
+    echo -e "${RED}⚠️  AVISO IMPORTANTE - AÇÕES NECESSÁRIAS APÓS LOGIN:${NC}"
+    echo ""
+    echo -e "${RED}1. MUDE O EMAIL E SENHA DO ADMINISTRADOR IMEDIATAMENTE${NC}"
+    echo "   Vá em: Admin > Settings > Users"
+    echo ""
+    echo -e "${RED}2. CONFIGURE O SMTP PARA RECEBER EMAILS${NC}"
+    echo "   Vá em: Admin > Settings > Email"
+    echo "   ⚠️  Sem SMTP configurado, você NÃO poderá:"
+    echo "      • Receber emails de recuperação de senha"
+    echo "      • Enviar campanhas de email marketing"
+    echo "      • Notificar leads automaticamente"
     echo ""
     echo "Acesse:"
     echo "  Local:   http://localhost:3000"
     echo "  Rede:    http://${ip_address}:3000"
     echo ""
-    echo "Credenciais completas: ${CREDENTIALS_FILE}"
-    echo "Log: ${LOG_FILE}"
+    echo "Credenciais salvas em: ${CREDENTIALS_FILE}"
+    echo "Log de instalação: ${LOG_FILE}"
     echo ""
 }
 
