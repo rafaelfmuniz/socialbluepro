@@ -2,6 +2,45 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.0.1] - 2026-01-30
+
+### Corrigido
+- **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
+- **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
+- **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
+- **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
+- **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
+- **next.config.ts:** Módulo `@next/bundle-analyzer` agora é opcional (não causa erro se não instalado)
+- **next.config.ts:** Resolve problema de build com `npm install --production`
+
+### Mudanças
+- **Instalador:** Reduzido de 764 linhas para 531 linhas (mais limpo e eficiente)
+- **Instalador:** Cores simplificadas - apenas uma cor principal, cores diferentes apenas para avisos e erros
+- **Instalador:** Detecção de instalação baseada em 4 indicadores (diretório git, serviço systemd, arquivo de serviço, banco de dados)
+- **Instalador:** Opção de desinstalação agora pergunta se deseja remover Node.js e PostgreSQL
+
+### Detecção de Instalação
+O instalador agora verifica 4 indicadores:
+1. Diretório `/opt/socialbluepro/.git` existe
+2. Serviço systemd `socialbluepro` está ativo
+3. Arquivo `/etc/systemd/system/socialbluepro.service` existe
+4. Banco de dados PostgreSQL `socialbluepro` existe
+
+Se qualquer um destes indicadores existir, a instalação é detectada.
+
+### Desinstalação Completa
+A opção 4 (Desinstalar) agora:
+- Permite remover todas as dependências do sistema (opcional)
+- Remove: Node.js, PostgreSQL, npm, build-essential, python3
+- Remove completamente: banco de dados, usuário PostgreSQL, serviço systemd, arquivos
+
+### Esquema de Cores
+- **Principal:** Branco/Cinza (aparência profissional limpa)
+- **Aviso:** Amarelo (para avisos importantes)
+- **Erro:** Vermelho (para erros)
+- **Sucesso:** Verde (para mensagens de sucesso)
+- **Sem carrossel de cores** - tema profissional único
+
 ## [2.1.0] - 2026-01-30
 
 ### Adicionado
@@ -168,7 +207,7 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
 ## Versão
 
-Versão atual: **2.1.0**
+Versão atual: **2.0.1**
 
 ## Próximas Lançamentos
 
