@@ -540,7 +540,6 @@ install_npm_dependencies() {
     rm -rf ~/.npm/_cacache 2>/dev/null || true
     rm -rf ~/.npm/.npmrc 2>/dev/null || true
     rm -rf /tmp/npm-* 2>/dev/null || true
-    npm cache clean || true
     
     # Criar .npmrc para configurações seguras
     log_info "Configurando npm..."
@@ -917,7 +916,6 @@ EOF
     log_info "Removendo arquivos..."
     rm -rf "$INSTALL_DIR"
     rm -rf "$TEMP_DIR"
-    npm cache clean --force 2>/dev/null || true
     
     log_success "Limpeza concluída"
     echo ""
@@ -985,7 +983,6 @@ EOF
     
     # Limpar cache do npm para evitar versões antigas
     log_info "Limpando cache do npm..."
-    npm cache clean || true
     
     # Instalar pacotes sem flags inseguras
     npm install --no-audit --no-fund || {
@@ -1098,7 +1095,6 @@ EOF
     rm -rf "$INSTALL_DIR"
     rm -rf "$TEMP_DIR"
     rm -f "$CREDENTIALS_FILE"
-    npm cache clean --force 2>/dev/null || true
     
     cleanup
     
