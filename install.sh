@@ -930,6 +930,11 @@ EOF
         exit 1
     }
     
+    # Limpar cache do Next.js para garantir build limpo
+    log_info "Limpando cache do Next.js..."
+    rm -rf "$INSTALL_DIR/.next/cache" 2>/dev/null || true
+    rm -rf "$INSTALL_DIR/.next/standalone" 2>/dev/null || true
+    
     log_info "Recompilando..."
     npm run build || {
         log_error "Falha no build"
@@ -945,9 +950,10 @@ EOF
         log_success "Arquivos estáticos copiados"
     fi
     
-    log_info "Iniciando serviço..."
-    systemctl start "$SERVICE_NAME" || {
-        log_error "Falha ao iniciar serviço"
+    # Reiniciar serviço para garantir que usa os novos arquivos
+    log_info "Reiniciando serviço..."
+    systemctl restart "$SERVICE_NAME" || {
+        log_error "Falha ao reiniciar serviço"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
     }
