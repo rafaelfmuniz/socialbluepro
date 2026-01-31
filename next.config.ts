@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     },
   },
   output: 'standalone',
-  serverExternalPackages: ['pg', '@prisma/adapter-pg', '@prisma/client', '@supabase/storage-js'],
+  serverExternalPackages: ['pg', '@prisma/adapter-pg', '@prisma/client'],
   compress: false,
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
    images: {
@@ -66,12 +66,6 @@ const nextConfig: NextConfig = {
         ],
       },
     ]
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = [...(config.externals || []), '@supabase/storage-js'];
-    }
-    return config;
   },
 };
 
