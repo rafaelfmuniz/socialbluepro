@@ -44,6 +44,77 @@
 
 ---
 
+## 🔄 Estado Atual do Trabalho
+
+**⚠️ CRITICAL: Esta seção deve ser mantida atualizada a cada milestone!**
+
+**SEMPRE que iniciar uma sessão, verifique o que está em andamento:**
+
+### Tarefa Atual
+- Atualizando AGENTS.md para melhorar continuidade entre modelos e workflow vibe-coding
+
+### Progresso
+- [x] Análise da documentação OpenCode
+- [x] Planejamento das novas seções
+- [x] Implementação das seções no AGENTS.md
+- [ ] Teste e validação
+
+### Arquivos em Modificação
+- `AGENTS.md` - Documento principal de guidelines
+
+### Contexto Importante
+- Novas seções focam em: continuidade entre modelos, controle de esquentamento (Google models), automação Git
+- Manter versão 2.0.0 (não alterar até autorização)
+- Commits automáticos em português
+- Checkpoints a cada 3-5 ações
+
+### Último Commit
+- Hash: `97f0de9`
+- Mensagem: "Fix mobile header spacing - use h2 element like desktop"
+
+**Para próximo modelo:** Leia esta seção primeiro, verifique `git log --oneline -3`, e confirme: "Continuando atualização do AGENTS.md. Correto?"
+
+---
+
+## 🧠 Controle de Contexto
+
+### Regras Anti-Esquentamento (IMPORTANTE para modelos Google/Gemini)
+
+**SEJA ultra-conciso:**
+- Respostas máximo 3-4 linhas
+- Uma linha = ideal
+- NUNCA parágrafos longos
+
+**Limite de ações por ciclo:**
+- Máximo 5 ações consecutivas sem pausa
+- Após 5 ações: pause e confirme com usuário
+- Pergunta: "✅ 5 ações completadas. Continuar ou pausar?"
+
+**Cooldown inteligente:**
+- Trabalhos complexos: pause naturalmente
+- Ex: "Analisando estrutura..." → aguarde → "Próximo passo..."
+- Evita acúmulo de contexto desnecessário
+
+**Economia de tokens:**
+- NÃO repita o que o usuário já sabe
+- NÃO explique o óbvio ("Estou abrindo o arquivo...")
+- NÃO faça múltiplas ações sem confirmação
+
+**Ferramentas por resposta:**
+- Máximo 2-3 ferramentas por vez
+- Se precisar de mais: divida em múltiplas respostas
+- Ordem: Leitura → Análise → Execução (nunca tudo junto)
+
+### Exemplos de Comunicação Concisa
+
+**❌ INCORRETO (esquentando):**
+"Vou analisar o código cuidadosamente para entender a estrutura do componente AdminNavigation. Primeiro, deixe-me abrir o arquivo para ver como ele está implementado atualmente..."
+
+**✅ CORRETO:**
+"Analisando AdminNavigation..."
+
+---
+
 ## 2. Stack Tecnológico
 
 ### Framework e Core
@@ -113,6 +184,82 @@ npm run build    # Verifica build de produção
 | `./init.sh prod` | Build + start produção |
 | `./init.sh stop` | Para servidor |
 | `./init.sh clean` | Remove caches (.next, logs) |
+
+---
+
+## 🔄 Automação Git/GitHub
+
+### Política de Commits Automáticos
+
+**Para alterações SIMPLES (correções, refatorações pequenas):**
+- ✅ Commit AUTOMATICO após validação (lint + build passando)
+- ✅ Mensagem em PORTUGUÊS
+- ✅ Push automático para main
+- ❌ NUNCA pergunte antes - apenas execute
+
+**Para alterações GRANDES (novas features, mudanças arquiteturais):**
+- ✅ Crie branch automaticamente: `git checkout -b feature/<nome>`
+- ✅ Commits incrementais automáticos
+- ✅ Push com `-u` flag
+- ✅ Crie Pull Request AUTOMATICO via `gh pr create`
+- ✅ Forneça URL do PR ao usuário
+
+### Regras de Commit
+
+**SEMPRE execute ANTES de commitar:**
+```bash
+npm run lint     # Deve passar sem erros
+npm run build    # Deve completar com sucesso
+```
+
+**Formato da mensagem (Português):**
+```
+<tipo>: <descrição breve>
+
+[detalhes opcionais]
+```
+
+Tipos permitidos:
+- `fix:` - Correção de bug
+- `feat:` - Nova funcionalidade
+- `refactor:` - Refatoração
+- `docs:` - Documentação
+- `style:` - Estilização/CSS
+- `chore:` - Tarefas de manutenção
+
+### Exemplos de Execução
+
+**Alteração simples (automática):**
+```bash
+# Após editar arquivo...
+npm run lint && npm run build
+git add .
+git commit -m "fix: corrige espaçamento do header mobile"
+git push origin main
+# Informar usuário: "✅ Alteração commitada e enviada!"
+```
+
+**Alteração grande (PR automático):**
+```bash
+# Criar branch...
+git checkout -b feature/nova-funcionalidade
+# ... múltiplos commits ...
+git push -u origin feature/nova-funcionalidade
+gh pr create --title "feat: adiciona nova funcionalidade" --body "..."
+# Informar usuário: "🚀 PR criado: https://github.com/..."
+```
+
+### Segurança
+
+**NUNCA:**
+- Force push em main/master
+- Commite arquivos sensíveis (.env, credentials.json)
+- Altere versões do projeto sem permissão explícita
+
+**SEMPRE:**
+- Valide antes de commitar
+- Mensagens em português
+- Informe usuário do commit
 
 ---
 
@@ -494,6 +641,9 @@ npx prisma generate
 5. **NUNCA** use `console.log` sem prefixo de módulo
 6. **NUNCA** deixe de tratar erros em try/catch
 7. **NUNCA** use `any` sem justificativa
+8. **NUNCA** force push em main/master
+9. **NUNCA** commite arquivos sensíveis (.env, credentials.json)
+10. **NUNCA** altere versões do projeto sem permissão explícita
 
 ### ⚠️ OBRIGATÓRIO:
 
@@ -504,6 +654,11 @@ npx prisma generate
 5. **SEMPRE** use `console.error` com prefixo em erros
 6. **SEMPRE** use `useToast` para feedback ao usuário
 7. **SEMPRE** execute `npm run lint` e `npm run build` antes de commit
+8. **SEMPRE** commite automaticamente alterações simples (lint/build OK)
+9. **SEMPRE** use mensagens de commit em PORTUGUÊS
+10. **SEMPRE** atualize "Estado Atual do Trabalho" a cada milestone
+11. **SEMPRE** pause após 5 ações e confirme com usuário
+12. **SEMPRE** seja ultra-conciso nas respostas (máx 3-4 linhas)
 
 ---
 
