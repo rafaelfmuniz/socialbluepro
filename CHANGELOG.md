@@ -10,6 +10,7 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
 - **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
 - **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
+- **next.config.ts:** Adicionado `output: 'standalone'` (CRÍTICO para serviço systemd)
 - **Instalador health_check:** Removido loop infinito que causava travamento
 - **Instalador health_check:** Simplificado para uma única verificação HTTP (3 segundos)
 - **Instalador health_check:** Adicionado sleep 5 segundos antes da verificação (estabilização do serviço)
@@ -25,13 +26,21 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **package.json:** Atualizar `eslint-config-next` de 15.0.3 para 15.5.11
 - **Instalador:** `npm install --production` → `npm install` (instala todas as dependências)
 - **Erro de build:** Corrigido "Cannot find module '@tailwindcss/postcss'"
+- **Erro de serviço:** Corrigido "Cannot find module '.../standalone/server.js'"
+- **Aviso SWC:** Corrigido mismatch de versões do @next/swc (15.5.7 vs 15.5.11)
 - **Instalador travado:** Corrigido problema onde instalador parava sem mostrar mensagem final
 
 ### Mudanças
+- **next.config.ts:** Adicionado `output: 'standalone'` para gerar servidor standalone
 - **health_check():** Removido loop while (causava travamento)
 - **npm install:** Adicionado --no-audit --no-fund (mais rápido)
 - **Ambiente de build:** Adicionadas variáveis para desabilitar warnings do Next.js
 - **Caches:** Limpeza completa de node_modules/.cache, .next/cache, npm cache, ~/.npm/_cacache
+
+### CRÍTICO
+- **output: 'standalone'** é obrigatório para o serviço systemd funcionar
+- Sem essa opção, o Next.js não gera `.next/standalone/server.js`
+- O serviço systemd falharia com: "Cannot find module '.../standalone/server.js'"
 - **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
 - **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
