@@ -10,23 +10,28 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
 - **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
 - **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
-- **Instalador health_check:** Substituído curl por Node.js HTTP client (mais confiável)
-- **Instalador health_check:** Corrigido problema de travamento após "Aguardando aplicação responder..."
-- **Instalador npm:** Adicionado arquivo .npmrc para forçar versões exatas
-- **Instalador npm:** Usar npm install --force para garantir versões corretas
-- **Instalador npm:** Set legacy-peer-deps=true para evitar warnings de peer dependencies
+- **Instalador health_check:** Removido loop infinito que causava travamento
+- **Instalador health_check:** Simplificado para uma única verificação HTTP (3 segundos)
+- **Instalador health_check:** Adicionado sleep 5 segundos antes da verificação (estabilização do serviço)
+- **Instalador npm:** Limpeza agressiva de todos os caches (node_modules, .next, npm, ~/.npm)
+- **Instalador npm:** Remover package-lock.json para forçar nova resolução
+- **Instalador npm:** Set legacy-peer-deps=false (permitir resolução de peer deps)
+- **Instalador npm:** Adicionado sleep 3 segundos após npm install (estabilização do Node.js)
+- **Instalador build:** Desabilitar warnings do Next.js (NEXT_TELEMETRY_DISABLED=1)
+- **Instalador build:** Set SWC_BINARY_PATH para forçar binário correto
 - **package.json:** Mover `@tailwindcss/postcss` e `tailwindcss` de devDependencies para dependencies
 - **package.json:** Atualizar `next` de 15.0.3 para 15.5.11
 - **package.json:** Atualizar `@next/bundle-analyzer` de 16.1.6 para 15.5.11
 - **package.json:** Atualizar `eslint-config-next` de 15.0.3 para 15.5.11
 - **Instalador:** `npm install --production` → `npm install` (instala todas as dependências)
 - **Erro de build:** Corrigido "Cannot find module '@tailwindcss/postcss'"
-- **Aviso SWC:** Corrigido mismatch de versões do @next/swc (15.5.7 vs 15.5.11)
 - **Instalador travado:** Corrigido problema onde instalador parava sem mostrar mensagem final
 
 ### Mudanças
-- **.npmrc:** Novo arquivo de configuração do npm para instalação correta
-- **.gitignore:** Removido .npmrc (necessário para instalação)
+- **health_check():** Removido loop while (causava travamento)
+- **npm install:** Adicionado --no-audit --no-fund (mais rápido)
+- **Ambiente de build:** Adicionadas variáveis para desabilitar warnings do Next.js
+- **Caches:** Limpeza completa de node_modules/.cache, .next/cache, npm cache, ~/.npm/_cacache
 - **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
 - **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
