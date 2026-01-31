@@ -304,8 +304,7 @@ check_port() {
 # ============================================
 create_backup() {
     local backup_type=$1
-    local BACKUP_BASE_DIR="/opt/socialbluepro-backups"
-    local MAX_BACKUPS=5
+    # BACKUP_BASE_DIR e MAX_BACKOPS são readonly globais definidos nas constantes
     
     # Ask user
     echo ""
