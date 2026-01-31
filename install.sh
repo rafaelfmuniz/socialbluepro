@@ -456,24 +456,14 @@ EOF
         exit 1
     }
     
-    # Verificar se existem migrações
-    if [[ -d "prisma/migrations" ]] && [[ "$(ls -A prisma/migrations 2>/dev/null)" ]]; then
-        # Executar migrações existentes
-        log_info "Executando migrações..."
-        npx prisma migrate deploy --schema=./prisma/schema.prisma || {
-            log_error "Falha nas migrações"
-            log_error "Verifique se o DATABASE_URL está correto em .env"
-            exit 1
-        }
-    else
-        # Se não houver migrações, usar db push para criar as tabelas
-        log_info "Nenhuma migração encontrada. Criando tabelas do schema..."
-        npx prisma db push --schema=./prisma/schema.prisma --accept-data-loss || {
-            log_error "Falha ao criar tabelas do banco"
-            log_error "Verifique se o DATABASE_URL está correto em .env"
-            exit 1
-        }
-    fi
+    # Criar/atualizar tabelas do banco usando db push
+    # db push é mais confiável que migrate deploy para instalações frescas
+    log_info "Criando tabelas do banco de dados..."
+    npx prisma db push --schema=./prisma/schema.prisma --accept-data-loss || {
+        log_error "Falha ao criar tabelas do banco"
+        log_error "Verifique se o DATABASE_URL está correto em .env"
+        exit 1
+    }
     
     # Remover .npmrc após instalação
     rm -f "$INSTALL_DIR/.npmrc"
