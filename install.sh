@@ -342,6 +342,7 @@ CREATE DATABASE socialbluepro;
 CREATE USER sbp_user WITH PASSWORD '${DB_PASSWORD}';
 GRANT ALL PRIVILEGES ON DATABASE socialbluepro TO sbp_user;
 \c socialbluepro
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 GRANT ALL ON SCHEMA public TO sbp_user;
 EOF
     
