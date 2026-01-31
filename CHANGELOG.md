@@ -10,6 +10,14 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 - **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
 - **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
 - **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
+- **package.json:** Mover `@tailwindcss/postcss` e `tailwindcss` de devDependencies para dependencies
+- **Instalador:** `npm install --production` → `npm install` (instala todas as dependências)
+- **Erro de build:** Corrigido "Cannot find module '@tailwindcss/postcss'"
+- **Instalador v2.0.0:** Cores profissionais - esquema simples com uma única cor principal
+- **Instalador v2.0.0:** Layout formatado - códigos de escape não aparecem mais literalmente
+- **Instalador v2.0.0:** Versão do instalador agora segue a versão do sistema (2.0.0)
+- **Instalador v2.0.0:** Detecção robusta de instalação existente (4 indicadores)
+- **Instalador v2.0.0:** Desinstalação completa com opção de remover dependências do sistema
 - **next.config.ts:** Módulo `@next/bundle-analyzer` agora é opcional (não causa erro se não instalado)
 - **next.config.ts:** Resolve problema de build com `npm install --production`
 
