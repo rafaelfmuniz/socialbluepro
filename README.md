@@ -56,15 +56,24 @@ curl -fsSL https://raw.githubusercontent.com/rafaelfmuniz/socialbluepro/main/ins
 1. **Instalar** - Nova instalação limpa
 2. **Reinstalar** - Remove tudo e reinstala (com backup automático)
 3. **Atualizar** - Atualiza código mantendo dados
-4. **Desinstalar** - Remove completamente o sistema
+4. **Desinstalar** - Remove completamente o sistema (com opção de remover dependências)
 
 **Recursos do instalador:**
 - ✅ Validação de sistema (RAM, disco, portas, conectividade)
+- ✅ Detecção robusta de instalação existente (4 indicadores)
 - ✅ Backup automático antes de operações destrutivas
 - ✅ Rollback automático em caso de falha
 - ✅ Logging detalhado para debug
 - ✅ Verificação de saúde pós-instalação
-- ✅ Mensagens de erro específicas com soluções
+- ✅ Desinstalação completa com opção de remover Node.js e PostgreSQL
+- ✅ Design profissional com cores simples e limpas
+
+**Detecção de instalação:**
+O instalador verifica 4 indicadores:
+1. Diretório `/opt/socialbluepro/.git` existe
+2. Serviço systemd `socialbluepro` está ativo
+3. Arquivo `/etc/systemd/system/socialbluepro.service` existe
+4. Banco de dados PostgreSQL `socialbluepro` existe
 
 **O que o script faz:**
 - Instala Node.js 20 LTS, PostgreSQL e dependências
