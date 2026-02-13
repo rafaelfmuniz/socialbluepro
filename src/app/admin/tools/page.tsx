@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { 
-  Link2, QrCode, ExternalLink, Copy, Trash2, Plus, Eye, 
+  Link2, QrCode, ExternalLink, Copy, Trash2, Plus, Power, 
   Download, Loader2, Settings, Globe, Share2
 } from "lucide-react";
 import { createShortLink, getShortLinks, deleteShortLink, toggleShortLink, ShortLink } from "@/actions/shortlinks";
@@ -488,10 +488,14 @@ export default function MarketingToolsPage() {
                           </button>
                           <button
                             onClick={() => handleToggleLink(link.id)}
-                            className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title={link.active ? "Deactivate" : "Activate"}
+                            className={`p-2 rounded-lg transition-colors ${
+                              link.active 
+                                ? "text-green-600 hover:bg-green-50" 
+                                : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                            }`}
+                            title={link.active ? "Deactivate Link" : "Activate Link"}
                           >
-                            <Eye size={16} />
+                            <Power size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteLink(link.id)}
@@ -562,9 +566,13 @@ export default function MarketingToolsPage() {
                       </button>
                       <button
                         onClick={() => handleToggleLink(link.id)}
-                        className="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg transition-all"
+                        className={`p-2 rounded-lg transition-all ${
+                          link.active 
+                            ? "text-green-600 bg-green-50" 
+                            : "text-slate-400 bg-slate-50"
+                        }`}
                       >
-                        <Eye size={18} />
+                        <Power size={18} />
                       </button>
                       <button
                         onClick={() => handleDeleteLink(link.id)}

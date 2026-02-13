@@ -7,6 +7,8 @@ import { getContactMessages, markMessageAsRead, deleteContactMessage, getContact
 import { useToast } from "@/lib/toast";
 import { Check, Trash2, Eye, Mail, Phone, Calendar, ArrowUpDown } from "lucide-react";
 
+import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
+
 export default function MessagesPage() {
   const router = useRouter();
   const { addToast } = useToast();
@@ -95,16 +97,14 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Contact Messages</h1>
-          <p className="text-slate-500 text-sm font-bold mt-1">
-            {counts.unread} unread / {counts.total} total
-          </p>
-        </div>
+    <PageContainer>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <PageHeader 
+          title="Contact Messages" 
+          description={`${counts.unread} unread / ${counts.total} total messages`}
+        />
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 self-start sm:self-center">
           <button
             onClick={() => setFilter("all")}
             className={cn(
@@ -141,7 +141,7 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -336,6 +336,6 @@ export default function MessagesPage() {
           </>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

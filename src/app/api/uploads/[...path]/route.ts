@@ -31,13 +31,21 @@ function ensureWithinUploadDir(candidate: string) {
 export async function GET(_request: NextRequest, props: { params: Promise<{ path?: string[] }> }) {
   const params = await props.params;
   const segments = params?.path;
+  
+  console.log("[API] Upload request segments:", segments);
+
   if (!segments || segments.length === 0) {
+    console.error("[API] Missing attachment path segments");
     return NextResponse.json({ error: "Missing attachment path" }, { status: 400 });
   }
 
   const requestedPath = join(UPLOAD_BASE, ...segments);
+  console.log("[API] Requested path:", requestedPath);
+
   const safePath = ensureWithinUploadDir(requestedPath);
+  
   if (!safePath) {
+    console.error("[API] Invalid/Unsafe path:", requestedPath);
     return NextResponse.json({ error: "Invalid attachment" }, { status: 400 });
   }
 
