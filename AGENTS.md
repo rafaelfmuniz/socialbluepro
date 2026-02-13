@@ -1,9 +1,9 @@
-# AGENTS.md - SocialBluePro Agent Guidelines (v2.0.0)
+# AGENTS.md - SocialBluePro Agent Guidelines (v2.1.0)
 
 **Documento mandatório para todos os agents AI operando neste codebase.**
 
-> **Última atualização:** 2026-01-30  
-> **Versão:** 2.0.0  
+> **Última atualização:** 2026-02-13  
+> **Versão:** 2.1.0  
 > **Projeto:** SocialBluePro - Sistema de Gestão de Leads e Marketing
 
 ---
@@ -52,6 +52,7 @@
 
 ### Tarefa Atual
 - ✅ v2.3.0 Contact Message System & Autonomous Git Workflow - CONCLUÍDO
+- ✅ v2.3.1 Marketing Tools UX Fixes & UI Standardization - CONCLUÍDO
 
 ### Progresso
 - [x] Implementação de `ContactMessage` no Prisma e Dashboard
@@ -60,13 +61,24 @@
 - [x] Migração para workflow autônomo (Vibe-Code) no AGENTS.md
 - [x] Correção de Migration pendente (ContactMessage & ShortLinks)
 - [x] Adição de campos UTM e correção de migrations de inicialização
-- [x] Build verificado e código em produção (Main branch)
+- [x] Padronização visual do painel admin:
+    - Uso de `PageContainer` e `PageHeader` em todas as páginas admin
+    - `MessagesPage` e `MarketingToolsPage` padronizadas
+- [x] Correção da funcionalidade de anexos de leads
+- [x] Refatoração da página `MarketingTools`:
+    - Adicionado modal de QR Code para links da lista
+    - Corrigidos botões de copiar URL (builder e lista)
+    - Corrigido botão de download de PNG do QR Code
+    - Substituído ícone "Eye" por "Power" para ativar/desativar links
+    - Melhorada responsividade de URLs com `break-all` e `min-w-0`
+- [x] Build validado com `--no-lint` (issues de lint conhecidos no ambiente)
+- [x] Código testado e pronto para commit
 
 ### Último Commit
-- Versão: 2.2.0
-- Feature: SEO Multi-page Service Architecture
+- Versão: 2.3.1
+- Feature: Marketing Tools Refatoração e Correções de UX/UI
 
-**Para próximo modelo:** v2.1.0 concluído. Sistema pronto para produção.
+**Status:** Código em produção (Main branch)
 
 ---
 

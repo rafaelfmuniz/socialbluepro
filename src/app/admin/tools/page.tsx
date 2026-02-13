@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Link2, QrCode, ExternalLink, Copy, Trash2, Plus, Power, 
-  Download, Loader2, Settings, Globe, Share2
+import {
+  Link2, QrCode, ExternalLink, Copy, Trash2, Plus, Power,
+  Download, Loader2, Settings, Globe, Share2, X
 } from "lucide-react";
 import { createShortLink, getShortLinks, deleteShortLink, toggleShortLink, ShortLink } from "@/actions/shortlinks";
 import { useToast } from "@/lib/toast";
+import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 
 
 const COMMON_SOURCES = [
@@ -32,6 +33,11 @@ export default function MarketingToolsPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [activeTab, setActiveTab] = useState<"builder" | "links">("builder");
+
+  // QR Modal State
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrModalLink, setQrModalLink] = useState<ShortLink | null>(null);
+  const [qrModalUrl, setQrModalUrl] = useState("");
   
   // URL Builder State
   const [baseUrl, setBaseUrl] = useState("/request");
@@ -147,24 +153,46 @@ export default function MarketingToolsPage() {
     }
   };
 
-  const downloadQR = () => {
-    const link = document.createElement("a");
-    link.href = qrCodeUrl;
-    link.download = `qr-${shortLink ? shortLink.slug : "tracking"}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+   const downloadQR = () => {
+     const urlToUse = qrModalOpen && qrModalLink
+       ? qrModalUrl
+       : qrCodeUrl;
 
-  return (
-    <div className="flex-1 space-y-6 pb-8">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-black tracking-tighter uppercase text-slate-900">Marketing Tools</h1>
-          <p className="text-slate-500 text-sm">URL Builder, Link Shortener & QR Generator</p>
-        </div>
-      </div>
+     if (!urlToUse) {
+       addToast("No QR code to download", "error");
+       return;
+     }
+
+     const link = document.createElement("a");
+     link.href = urlToUse;
+     const filename = qrModalOpen && qrModalLink
+       ? `qr-${qrModalLink.slug}.png`
+       : `qr-${shortLink ? shortLink.slug : "tracking"}.png`;
+     link.download = filename;
+     document.body.appendChild(link);
+     link.click();
+     document.body.removeChild(link);
+   };
+
+   const openQrModal = (link: ShortLink) => {
+     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://socialbluepro.com/r/${link.slug}`)}`;
+     setQrModalUrl(qrUrl);
+     setQrModalLink(link);
+     setQrModalOpen(true);
+   };
+
+   const closeQrModal = () => {
+     setQrModalOpen(false);
+     setQrModalLink(null);
+     setQrModalUrl("");
+   };
+
+   return (
+     <PageContainer>
+       <PageHeader
+         title="Marketing Tools"
+         description="URL Builder, Link Shortener & QR Generator"
+       />
 
       {/* Tabs */}
       <div className="flex gap-2 border-b border-slate-200">
@@ -565,13 +593,13 @@ export default function MarketingToolsPage() {
                       >
                         <Copy size={18} />
                       </button>
-                      <button
-                        onClick={() => setQrModalLink(link)}
-                        className="p-2 text-slate-400 hover:text-slate-900 bg-slate-50 rounded-lg transition-all"
-                        title="View QR Code"
-                      >
-                        <QrCode size={18} />
-                      </button>
+                       <button
+                         onClick={() => openQrModal(link)}
+                         className="p-2 text-slate-400 hover:text-slate-900 bg-slate-50 rounded-lg transition-all"
+                         title="View QR Code"
+                       >
+                         <QrCode size={18} />
+                       </button>
                       <button
                         onClick={() => handleToggleLink(link.id)}
                         className={`p-2 rounded-lg transition-all ${
@@ -591,13 +619,52 @@ export default function MarketingToolsPage() {
                     </div>
                   </div>
                 </div>
-              ))
-            )}
+               ))
+             )}
+           </div>
+         </div>
+      )}
+
+      {/* QR Code Modal */}
+      {qrModalOpen && qrModalLink && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={closeQrModal}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900">
+                QR Code
+              </h3>
+              <button
+                onClick={closeQrModal}
+                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <X size={24} className="text-slate-500" />
+              </button>
+            </div>
+
+            <div className="text-center space-y-2">
+              <p className="text-sm text-slate-600">
+                <span className="font-bold">Link:</span> /r/{qrModalLink!.slug}
+              </p>
+              <p className="text-xs text-slate-500 break-all">
+                {qrModalLink!.destination}
+              </p>
+            </div>
+
+            <div className="flex justify-center bg-white p-4 rounded-xl border-2 border-slate-100">
+              <img src={qrModalUrl} alt={`QR Code for /r/${qrModalLink!.slug}`} className="w-48 h-48 sm:w-56 sm:h-56 object-contain" />
+            </div>
+
+            <button
+              onClick={downloadQR}
+              className="w-full flex items-center justify-center gap-2 bg-accent text-white px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20 active:scale-95"
+            >
+              <Download size={16} />
+              Download PNG
+            </button>
           </div>
         </div>
       )}
 
-
-    </div>
+    </PageContainer>
   );
 }
