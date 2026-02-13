@@ -32,7 +32,7 @@ export default function Footer({ onGetQuote }: FooterProps) {
               <span className="text-lg font-black tracking-tighter">SOCIALBLUEPRO</span>
             </Link>
             <p className="text-slate-400 leading-relaxed text-xs max-w-xs">
-              Expert landscaping, sod installation, hardscaping, and snow removal services since 2020.
+              Expert one-time landscaping, sod installation, decorative rock, mulch, hardscaping, and snow removal services since 2020.
             </p>
             <div className="flex gap-2">
               <Link href="https://www.instagram.com/socialbluepro/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:border-accent transition-all duration-300 group">
