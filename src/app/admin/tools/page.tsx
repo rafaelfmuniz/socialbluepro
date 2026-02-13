@@ -10,20 +10,20 @@ import { useToast } from "@/lib/toast";
 
 
 const COMMON_SOURCES = [
-  { value: "panfleto", label: "Panfleto (Offline)" },
+  { value: "flyer", label: "Flyer (Offline)" },
   { value: "google_ads", label: "Google Ads" },
   { value: "facebook", label: "Facebook Ads" },
   { value: "instagram", label: "Instagram Ads" },
   { value: "email", label: "Email Marketing" },
-  { value: "referral", label: "Indicação" },
+  { value: "referral", label: "Referral" },
 ];
 
 const COMMON_MEDIUMS = [
-  { value: "cpc", label: "CPC (Pago)" },
-  { value: "offline", label: "Offline (Físico)" },
+  { value: "cpc", label: "CPC (Paid)" },
+  { value: "offline", label: "Offline (Physical)" },
   { value: "email", label: "Email" },
   { value: "social", label: "Social Media" },
-  { value: "referral", label: "Indicação" },
+  { value: "referral", label: "Referral" },
 ];
 
 export default function MarketingToolsPage() {
@@ -76,7 +76,7 @@ export default function MarketingToolsPage() {
 
   const handleCreateShortLink = async () => {
     if (!slug || !generatedUrl) {
-      addToast("Preencha o slug e gere a URL primeiro", "error");
+      addToast("Please enter a slug and generate the URL first", "error");
       return;
     }
 
@@ -94,37 +94,37 @@ export default function MarketingToolsPage() {
     });
 
     if (result.success) {
-      addToast("✅ Link curto criado com sucesso!", "success");
+      addToast("✅ Short link created successfully!", "success");
       setSlug("");
       fetchLinks();
     } else {
-      addToast(result.error || "Erro ao criar link", "error");
+      addToast(result.error || "Error creating link", "error");
     }
     setCreating(false);
   };
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url);
-    addToast("✅ URL copiada!", "success");
+    addToast("✅ URL copied!", "success");
   };
 
   const handleDeleteLink = async (id: string) => {
     const result = await deleteShortLink(id);
     if (result.success) {
-      addToast("✅ Link removido", "success");
+      addToast("✅ Link removed", "success");
       fetchLinks();
     } else {
-      addToast("Erro ao remover link", "error");
+      addToast("Error removing link", "error");
     }
   };
 
   const handleToggleLink = async (id: string) => {
     const result = await toggleShortLink(id);
     if (result.success) {
-      addToast("✅ Status atualizado", "success");
+      addToast("✅ Status updated", "success");
       fetchLinks();
     } else {
-      addToast("Erro ao atualizar status", "error");
+      addToast("Error updating status", "error");
     }
   };
 
@@ -169,7 +169,7 @@ export default function MarketingToolsPage() {
           }`}
         >
           <Link2 size={16} className="inline mr-2" />
-          Meus Links ({links.length})
+          My Links ({links.length})
         </button>
       </div>
 
@@ -185,27 +185,27 @@ export default function MarketingToolsPage() {
 
             {/* Base URL */}
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-500">Página de Destino</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-500">Destination Page</label>
               <select
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
               >
-                <option value="/request">/request (Formulário Principal)</option>
+                <option value="/request">/request (Main Form)</option>
                 <option value="/">/ (Homepage)</option>
               </select>
             </div>
 
             {/* UTM Source */}
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Source (Origem)</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Source</label>
               <div className="flex flex-col sm:flex-row gap-2">
                 <select
                   value={utmSource}
                   onChange={(e) => setUtmSource(e.target.value)}
                   className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 >
-                  <option value="">Selecione ou digite</option>
+                  <option value="">Select or type</option>
                   {COMMON_SOURCES.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
@@ -214,7 +214,7 @@ export default function MarketingToolsPage() {
                   type="text"
                   value={utmSource}
                   onChange={(e) => setUtmSource(e.target.value)}
-                  placeholder="Ou digite..."
+                  placeholder="Or type..."
                   className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 />
               </div>
@@ -222,13 +222,13 @@ export default function MarketingToolsPage() {
 
             {/* UTM Medium */}
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Medium (Mídia)</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Medium</label>
               <select
                 value={utmMedium}
                 onChange={(e) => setUtmMedium(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
               >
-                <option value="">Selecione</option>
+                <option value="">Select</option>
                 {COMMON_MEDIUMS.map((m) => (
                   <option key={m.value} value={m.value}>{m.label}</option>
                 ))}
@@ -237,12 +237,12 @@ export default function MarketingToolsPage() {
 
             {/* UTM Campaign */}
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Campaign (Campanha)</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Campaign</label>
               <input
                 type="text"
                 value={utmCampaign}
                 onChange={(e) => setUtmCampaign(e.target.value)}
-                placeholder="ex: verao2026, panfleto_bairro_x"
+                placeholder="e.g. summer2026, neighborhood_flyer"
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
               />
             </div>
@@ -250,22 +250,22 @@ export default function MarketingToolsPage() {
             {/* Optional Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Term (Opcional)</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Term (Optional)</label>
                 <input
                   type="text"
                   value={utmTerm}
                   onChange={(e) => setUtmTerm(e.target.value)}
-                  placeholder="palavra-chave"
+                  placeholder="keyword"
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Content (Opcional)</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Content (Optional)</label>
                 <input
                   type="text"
                   value={utmContent}
                   onChange={(e) => setUtmContent(e.target.value)}
-                  placeholder="variante"
+                  placeholder="variant"
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 />
               </div>
@@ -275,7 +275,7 @@ export default function MarketingToolsPage() {
               onClick={generateUrl}
               className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95 flex items-center justify-center gap-2"
             >
-              <Settings size={18} /> Gerar URL Rastreável
+              <Settings size={18} /> Generate Tracking URL
             </button>
           </div>
 
@@ -286,7 +286,7 @@ export default function MarketingToolsPage() {
               <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
                 <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2">
                   <Share2 size={20} />
-                  URL Gerada
+                  Generated URL
                 </h2>
                 
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -301,13 +301,13 @@ export default function MarketingToolsPage() {
                     className="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-slate-800 transition-colors"
                   >
                     <Copy size={16} />
-                    Copiar URL
+                    Copy URL
                   </button>
                 </div>
 
                 {/* Short Link Creator */}
                 <div className="pt-4 border-t border-slate-200 space-y-4">
-                  <h3 className="font-black uppercase tracking-widest text-slate-500 text-xs">Criar Link Curto</h3>
+                  <h3 className="font-black uppercase tracking-widest text-slate-500 text-xs">Create Short Link</h3>
                   <div className="flex gap-2">
                     <div className="flex items-center bg-slate-50 px-4 rounded-xl border border-slate-200 text-slate-500 text-sm">
                       socialbluepro.com/r/
@@ -316,7 +316,7 @@ export default function MarketingToolsPage() {
                       type="text"
                       value={slug}
                       onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
-                      placeholder="meu-link"
+                      placeholder="my-link"
                       className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
                     />
                   </div>
@@ -326,7 +326,7 @@ export default function MarketingToolsPage() {
                     className="w-full bg-accent text-white font-bold py-3 rounded-xl uppercase tracking-wider hover:bg-green-600 transition-colors disabled:opacity-50"
                   >
                     {creating ? <Loader2 className="animate-spin inline mr-2" size={16} /> : <Plus size={16} className="inline mr-2" />}
-                    Criar Link Curto
+                    Create Short Link
                   </button>
                 </div>
               </div>
@@ -357,7 +357,7 @@ export default function MarketingToolsPage() {
         </div>
       )}
 
-      {/* Links List Tab */}
+            {/* Links List Tab */}
       {activeTab === "links" && (
         <div className="space-y-4">
           {/* Desktop Table */}
@@ -369,18 +369,18 @@ export default function MarketingToolsPage() {
             ) : links.length === 0 ? (
               <div className="p-12 text-center text-slate-500">
                 <Link2 size={48} className="mx-auto mb-4 opacity-50" />
-                <p className="font-bold">Nenhum link criado ainda</p>
-                <p className="text-sm">Use o URL Builder para criar seu primeiro link</p>
+                <p className="font-bold">No links created yet</p>
+                <p className="text-sm">Use the URL Builder to create your first link</p>
               </div>
             ) : (
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Link Curto</th>
-                    <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Destino</th>
-                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Cliques</th>
+                    <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Short Link</th>
+                    <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Destination</th>
+                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Clicks</th>
                     <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Status</th>
-                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Ações</th>
+                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -413,7 +413,7 @@ export default function MarketingToolsPage() {
                             ? "bg-green-50 text-green-700" 
                             : "bg-slate-100 text-slate-500"
                         }`}>
-                          {link.active ? "Ativo" : "Inativo"}
+                          {link.active ? "Active" : "Inactive"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -421,21 +421,21 @@ export default function MarketingToolsPage() {
                           <button
                             onClick={() => handleCopyUrl(`https://socialbluepro.com/r/${link.slug}`)}
                             className="p-2 text-slate-500 hover:text-accent hover:bg-slate-100 rounded-lg transition-colors"
-                            title="Copiar link"
+                            title="Copy link"
                           >
                             <Copy size={16} />
                           </button>
                           <button
                             onClick={() => handleToggleLink(link.id)}
                             className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title={link.active ? "Desativar" : "Ativar"}
+                            title={link.active ? "Deactivate" : "Activate"}
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteLink(link.id)}
                             className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Excluir"
+                            title="Delete"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -457,8 +457,8 @@ export default function MarketingToolsPage() {
             ) : links.length === 0 ? (
               <div className="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
                 <Link2 size={48} className="mx-auto mb-4 opacity-50" />
-                <p className="font-bold">Nenhum link criado ainda</p>
-                <p className="text-sm">Use o URL Builder para criar seu primeiro link</p>
+                <p className="font-bold">No links created yet</p>
+                <p className="text-sm">Use the URL Builder to create your first link</p>
               </div>
             ) : (
               links.map((link) => (
@@ -483,13 +483,13 @@ export default function MarketingToolsPage() {
                         ? "bg-green-50 text-green-700" 
                         : "bg-slate-100 text-slate-500"
                     }`}>
-                      {link.active ? "Ativo" : "Inativo"}
+                      {link.active ? "Active" : "Inactive"}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-4 py-2 border-y border-slate-100">
                     <div className="flex-1 text-center border-r border-slate-100">
-                      <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold">Cliques</span>
+                      <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold">Clicks</span>
                       <span className="block text-lg font-black text-slate-900">{link.clicks}</span>
                     </div>
                     <div className="flex-1 flex justify-around">
