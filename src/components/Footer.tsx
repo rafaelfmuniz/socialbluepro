@@ -9,7 +9,7 @@ interface FooterProps {
 }
 
 export default function Footer({ onGetQuote }: FooterProps) {
-  const topLocations = Object.values(locationsData).slice(0, 6);
+  const allLocations = Object.values(locationsData);
 
   return (
     <footer className="bg-slate-900 text-white pt-12 md:pt-16 pb-8 relative overflow-hidden border-t border-white/5">
@@ -44,8 +44,8 @@ export default function Footer({ onGetQuote }: FooterProps) {
           {/* Service Areas */}
           <div>
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-accent mb-6">Service Areas</h4>
-            <ul className="space-y-3">
-              {topLocations.map((loc) => (
+            <ul className="space-y-3 max-h-64 overflow-y-auto">
+              {allLocations.map((loc) => (
                 <li key={loc.slug}>
                   <Link 
                     href={`/locations/${loc.slug}`} 

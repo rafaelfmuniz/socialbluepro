@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Phone, Menu, X, ChevronRight } from "lucide-react";
+import { Phone, Menu, X, ChevronRight, ChevronDown, MapPin } from "lucide-react";
 import { IMAGES } from "@/lib/constants";
+import { getAllLocations } from "@/lib/locations-data";
 import ProgressiveImage from "@/components/ui/ProgressiveImage";
 
 interface NavbarProps {
@@ -15,6 +16,7 @@ interface NavbarProps {
 export default function Navbar({ onGetQuote }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isServiceAreaOpen, setIsServiceAreaOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -87,9 +89,47 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
                    {item.label}
                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
                  </Link>
-               ))}
+                ))}
+               
+               {/* Service Area Dropdown */}
+               <div 
+                 className="relative"
+                 onMouseEnter={() => setIsServiceAreaOpen(true)}
+                 onMouseLeave={() => setIsServiceAreaOpen(false)}
+               >
+                 <button
+                   className={cn(
+                     "text-[10px] uppercase tracking-[0.2em] font-bold transition-all hover:text-accent relative group flex items-center gap-1",
+                     "text-white/90"
+                   )}
+                   aria-expanded={isServiceAreaOpen}
+                   aria-haspopup="true"
+                 >
+                   Service Areas
+                   <ChevronDown size={12} className={cn("transition-transform", isServiceAreaOpen && "rotate-180")} />
+                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+                 </button>
+                 
+                 {isServiceAreaOpen && (
+                   <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 rounded-xl shadow-2xl border border-slate-700/50 py-2 z-50">
+                     <div className="max-h-64 overflow-y-auto">
+                       {getAllLocations().slice(0, 8).map((location) => (
+                         <Link
+                           key={location.slug}
+                           href={`/locations/${location.slug}`}
+                           className="flex items-center gap-2 px-4 py-2 text-[10px] uppercase tracking-widest font-bold text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+                           onClick={() => setIsServiceAreaOpen(false)}
+                         >
+                           <MapPin size={10} className="text-accent" />
+                           {location.name}
+                         </Link>
+                       ))}
+                     </div>
+                   </div>
+                 )}
+               </div>
              </div>
-            
+             
             <div className="h-6 w-px bg-slate-600/30 mx-2" />
 
             <a

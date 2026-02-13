@@ -82,21 +82,16 @@ export default function AboutSection({ onGetQuote }: AboutSectionProps) {
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="text-center space-y-4">
-          <button 
-            onClick={onGetQuote}
-            className="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-green-600 transition-all shadow-xl shadow-accent/20 active:scale-95 group"
-          >
-            Request an Estimate
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-
-          {/* SEO Line */}
-          <p className="text-slate-500 text-[10px] md:text-xs font-medium uppercase tracking-wider max-w-4xl mx-auto">
-            Proudly serving Denver, Aurora, Centennial, Parker, Highlands Ranch, Littleton, and surrounding Denver Metro communities.
-          </p>
-        </div>
+          {/* CTA Section */}
+          <div className="text-center space-y-4">
+            <button 
+              onClick={onGetQuote}
+              className="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-green-600 transition-all shadow-xl shadow-accent/20 active:scale-95 group"
+            >
+              Request an Estimate
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
       </div>
     </section>
   );

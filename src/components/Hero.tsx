@@ -54,19 +54,15 @@ export default function Hero({ onGetQuote }: HeroProps) {
              </p>
 
              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                <button 
-                  onClick={onGetQuote}
-                  className="w-full sm:w-auto bg-accent text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-green-600 transition-all shadow-xl shadow-accent/30 flex items-center justify-center gap-3 group active:scale-95"
-                  aria-label="Get free landscaping estimate"
-                >
-                Get Free Estimate
-                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-               </button>
-               
-                <a href="#projects" className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white border border-white/10 hover:bg-white/5 transition-all text-xs flex items-center justify-center gap-2 group" aria-label="View landscaping project gallery">
-                  View Gallery
-                </a>
-             </div>
+                 <button 
+                   onClick={onGetQuote}
+                   className="w-full sm:w-auto bg-accent text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-green-600 transition-all shadow-xl shadow-accent/30 flex items-center justify-center gap-3 group active:scale-95"
+                   aria-label="Get free landscaping estimate"
+                 >
+                 Get Free Estimate
+                 <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
 
              <div className="mt-8 md:mt-12 flex items-center justify-center lg:justify-start gap-6 md:gap-8 text-slate-400">
                <div className="flex items-center gap-2">

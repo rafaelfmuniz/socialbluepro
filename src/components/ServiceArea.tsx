@@ -1,19 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { MapPin, CheckCircle2, ChevronRight } from "lucide-react";
 
 import { IMAGES } from "@/lib/constants";
+import { getAllLocations } from "@/lib/locations-data";
 
 interface ServiceAreaProps {
   onGetQuote?: () => void;
 }
-
-const cities = [
-  "Denver", "Aurora", "Lakewood", "Littleton", "Highlands Ranch", 
-  "Centennial", "Parker", "Castle Rock", "Boulder", "Fort Collins",
-  "Longmont", "Broomfield", "Arvada", "Golden", "Brighton", 
-  "Thornton", "Northglenn"
-];
 
 export default function ServiceArea({ onGetQuote }: ServiceAreaProps) {
   const scrollToQuote = () => {
@@ -70,11 +65,15 @@ export default function ServiceArea({ onGetQuote }: ServiceAreaProps) {
              </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
-              {cities.map(city => (
-                <div key={city} className="flex items-center gap-2 group">
+              {getAllLocations().map((location) => (
+                <Link 
+                  key={location.slug} 
+                  href={`/locations/${location.slug}`}
+                  className="flex items-center gap-2 group hover:bg-slate-50 p-1.5 rounded-lg transition-colors"
+                >
                   <CheckCircle2 className="text-accent shrink-0 group-hover:scale-110 transition-transform" size={14} />
-                  <span className="text-slate-700 font-bold text-[10px] md:text-xs uppercase tracking-widest group-hover:text-slate-900 transition-colors">{city}</span>
-                </div>
+                  <span className="text-slate-700 font-bold text-[10px] md:text-xs uppercase tracking-widest group-hover:text-slate-900 transition-colors">{location.name}</span>
+                </Link>
               ))}
             </div>
             

@@ -170,6 +170,134 @@ export const locationsData: Record<string, LocationData> = {
       "Candelas and West Woods experience",
       "Comprehensive seasonal services"
     ]
+  },
+  "castle-rock": {
+    slug: "castle-rock",
+    name: "Castle Rock",
+    seoTitle: "Landscaping Services in Castle Rock, CO | SocialBluePro",
+    metaDescription: "Professional landscaping in Castle Rock, Colorado. Sod installation, hardscaping, snow removal & property maintenance. Serving Castle Rock homeowners with premium outdoor solutions.",
+    h1: "Expert Landscaping in Castle Rock, CO",
+    intro: "Castle Rock's distinctive terrain and growing communities demand specialized landscaping knowledge. From The Meadows to Crystal Valley Ranch, we provide sod installation, custom hardscaping, and comprehensive property care that complements Castle Rock's scenic beauty and elevated lifestyle.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d98328.9676201431!2d-104.87458855!3d39.37245865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876c5c5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sCastle%20Rock%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["The Meadows", "Crystal Valley Ranch", "Castlewood Ranch", "Founders Village", "Sagewood"],
+    highlights: [
+      "Castle Rock terrain specialists",
+      "The Meadows community expertise",
+      "Elevated property landscaping",
+      "Mountain-modern design solutions"
+    ]
+  },
+  "boulder": {
+    slug: "boulder",
+    name: "Boulder",
+    seoTitle: "Landscaping in Boulder, CO | Sod & Hardscaping Services",
+    metaDescription: "Expert landscaping services in Boulder, Colorado. Professional sod installation, hardscaping, xeriscaping & snow removal. Serving Boulder homeowners with eco-conscious solutions.",
+    h1: "Professional Landscaping in Boulder, CO",
+    intro: "Boulder's commitment to sustainability and outdoor living calls for innovative landscaping solutions. From historic Mapleton Hill to new developments in Gunbarrel, we provide sod installation, hardscaping, and xeriscaping services that align with Boulder's environmental values and active lifestyle.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d196281.13054844178!2d-105.26950135!3d40.014002450000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b8c5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sBoulder%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Downtown Boulder", "Gunbarrel", "Mapleton Hill", "Chautauqua", "Table Mesa"],
+    highlights: [
+      "Eco-friendly landscaping solutions",
+      "Boulder xeriscaping specialists",
+      "Sustainable design practices",
+      "Foothills property expertise"
+    ]
+  },
+  "fort-collins": {
+    slug: "fort-collins",
+    name: "Fort Collins",
+    seoTitle: "Landscaping Services in Fort Collins, CO | SocialBluePro",
+    metaDescription: "Professional landscaping in Fort Collins, Colorado. Sod installation, hardscaping, seasonal maintenance & snow removal. Trusted landscapers serving Fort Collins homeowners.",
+    h1: "Expert Landscaping in Fort Collins, CO",
+    intro: "Fort Collins blends collegiate energy with natural beauty, requiring landscaping that respects both. From Old Town to Harmony Corridor, we provide sod installation, hardscaping, and year-round property care that enhances Fort Collins' distinctive character and outdoor appeal.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d196281.13054844178!2d-105.06950135!3d40.584002450000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694a8c5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sFort%20Collins%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Old Town", "Harmony Corridor", "Midtown", "Rigden Farm", "Waterglen"],
+    highlights: [
+      "Fort Collins climate specialists",
+      "Old Town historic property care",
+      "Commercial and residential services",
+      "Year-round property maintenance"
+    ]
+  },
+  "longmont": {
+    slug: "longmont",
+    name: "Longmont",
+    seoTitle: "Landscaping in Longmont, CO | Sod Installation & Hardscaping",
+    metaDescription: "Quality landscaping services in Longmont, Colorado. Professional sod, hardscaping, mulch & snow removal. Serving Longmont homeowners with reliable outdoor solutions.",
+    h1: "Professional Landscaping in Longmont, CO",
+    intro: "Longmont's agricultural heritage and modern growth create unique landscaping opportunities. From historic Downtown to new communities on the edges of town, we provide sod installation, hardscaping, and comprehensive property care that honors Longmont's roots while embracing its future.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d196281.13054844178!2d-105.11950135!3d40.174002450000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b9c5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sLongmont%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Downtown Longmont", "Hover Ridge", "Sunset", "Southmoor Park", "Northwest Longmont"],
+    highlights: [
+      "Longmont agricultural heritage",
+      "Rural and suburban expertise",
+      "Irrigation and water management",
+      "Seasonal cleanup specialists"
+    ]
+  },
+  "broomfield": {
+    slug: "broomfield",
+    name: "Broomfield",
+    seoTitle: "Landscaping Services in Broomfield, CO | SocialBluePro",
+    metaDescription: "Expert landscaping in Broomfield, Colorado. Sod installation, hardscaping, property maintenance & snow removal. Serving Broomfield homeowners with quality care.",
+    h1: "Landscaping in Broomfield, CO",
+    intro: "Broomfield's strategic location and master-planned communities require landscaping that maintains high standards. From Interlocken to Broadlands, we provide sod installation, hardscaping, and reliable property maintenance that keeps Broomfield properties looking their best year-round.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d98328.9676201431!2d-105.07458855!3d39.92245865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b8f5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sBroomfield%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Interlocken", "Broadlands", "McKay Landing", "Arista", "Aspen Creek"],
+    highlights: [
+      "Broomfield community specialists",
+      "Master-planned community expertise",
+      "Interlocken commercial services",
+      "HOA-compliant landscaping"
+    ]
+  },
+  "brighton": {
+    slug: "brighton",
+    name: "Brighton",
+    seoTitle: "Landscaping in Brighton, CO | Sod & Hardscaping Services",
+    metaDescription: "Professional landscaping services in Brighton, Colorado. Sod installation, hardscaping, mulch & snow removal. Trusted landscapers serving Brighton homeowners.",
+    h1: "Expert Landscaping in Brighton, CO",
+    intro: "Brighton's blend of rural charm and suburban development offers diverse landscaping possibilities. From historic downtown to newer subdivisions, we provide sod installation, hardscaping, and property maintenance that enhances Brighton's unique character and growing neighborhoods.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d98328.9676201431!2d-104.81458855!3d39.98245865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b9d5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sBrighton%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Downtown Brighton", "Adams County", "Riverdale", "Todd Creek", "Barr Lake"],
+    highlights: [
+      "Brighton rural property expertise",
+      "Large lot and acreage specialists",
+      "Agricultural area knowledge",
+      "Reliable seasonal services"
+    ]
+  },
+  "thornton": {
+    slug: "thornton",
+    name: "Thornton",
+    seoTitle: "Landscaping Services in Thornton, CO | SocialBluePro",
+    metaDescription: "Expert landscaping in Thornton, Colorado. Sod installation, hardscaping, property maintenance & snow removal. Quality care for Thornton homeowners.",
+    h1: "Professional Landscaping in Thornton, CO",
+    intro: "Thornton's rapid growth and diverse neighborhoods require adaptable landscaping expertise. From original Thornton to newer developments like Trailmark, we provide sod installation, hardscaping, and comprehensive property care that meets the needs of this dynamic community.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d98328.9676201431!2d-104.93458855!3d39.87245865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b9e5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sThornton%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Original Thornton", "Trailmark", "Carpenter Park", "Eastlake", "Grange Creek"],
+    highlights: [
+      "Thornton growth area specialists",
+      "New construction landscaping",
+      "Trailmark community expertise",
+      "Comprehensive property maintenance"
+    ]
+  },
+  "northglenn": {
+    slug: "northglenn",
+    name: "Northglenn",
+    seoTitle: "Landscaping in Northglenn, CO | Sod Installation & Hardscaping",
+    metaDescription: "Quality landscaping services in Northglenn, Colorado. Professional sod, hardscaping, mulch & snow removal. Serving Northglenn homeowners with dependable care.",
+    h1: "Landscaping Services in Northglenn, CO",
+    intro: "Northglenn's established neighborhoods and community-focused atmosphere deserve landscaping that enhances its suburban appeal. From Fox Run to Huron Crossing, we provide sod installation, hardscaping, and reliable property maintenance that keeps Northglenn homes looking beautiful throughout the seasons.",
+    mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d98328.9676201431!2d-104.97458855!3d39.88245865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b9f5f5f8a6c5d%3A0x6b8e3b5f6e9c4d7a!2sNorthglenn%2C%20CO!5e0!3m2!1sen!2sus!4v1707686400000!5m2!1sen!2sus",
+    nearbyAreas: ["Fox Run", "Huron Crossing", "Northwest", "Malley", "E.B. Rains Jr. Memorial Park"],
+    highlights: [
+      "Northglenn established neighborhood experts",
+      "Community-focused landscaping",
+      "Suburban property specialists",
+      "Year-round maintenance services"
+    ]
   }
 };
 
