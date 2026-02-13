@@ -196,9 +196,10 @@ install_new() {
     # Configurar variáveis de ambiente
     setup_environment
     
-    # Instalar dependências
-    log "Instalando dependências npm..."
-    npm install
+    # Instalar apenas dependências de produção
+    log "Instalando dependências npm (produção)..."
+    export NODE_ENV=production
+    npm install --omit=dev
     
     # Configurar Prisma
     log "Configurando Prisma ORM..."
@@ -247,9 +248,10 @@ update_existing() {
         cp /tmp/socialbluepro-env-backup .env
     fi
     
-    # Atualizar dependências
-    log "Atualizando dependências..."
-    npm install
+    # Atualizar apenas dependências de produção
+    log "Atualizando dependências (produção)..."
+    export NODE_ENV=production
+    npm install --omit=dev
     
     # Atualizar banco de dados
     log "Atualizando banco de dados..."

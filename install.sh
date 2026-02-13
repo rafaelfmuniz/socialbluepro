@@ -559,9 +559,10 @@ EOF
     rm -f package-lock.json 2>/dev/null || true
     rm -rf node_modules 2>/dev/null || true
     
-    # Instalar pacotes sem flags inseguras
-    log_info "Instalando pacotes..."
-    npm install --no-audit --no-fund || {
+    # Instalar apenas dependências de produção (omitir devDependencies)
+    log_info "Instalando pacotes de produção..."
+    export NODE_ENV=production
+    npm install --omit=dev --no-audit --no-fund || {
         log_error "Falha no npm install"
         exit 1
     }
@@ -1076,8 +1077,9 @@ EOF
     # Limpar cache do npm para evitar versões antigas
     log_info "Limpando cache do npm..."
     
-    # Instalar pacotes sem flags inseguras
-    npm install --no-audit --no-fund || {
+    # Instalar apenas dependências de produção (omitir devDependencies)
+    export NODE_ENV=production
+    npm install --omit=dev --no-audit --no-fund || {
         log_error "Falha ao atualizar dependências"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
