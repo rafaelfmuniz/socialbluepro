@@ -24,6 +24,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://socialbluepro.com"),
   title: "SocialBluePro | Professional Landscaping & Sod Installation in Denver, CO",
   description: "SocialBluePro is Denver's top-rated landscaping company specializing in sod installation, hardscaping, decorative rock, mulch, and snow removal. Get a free estimate today!",
   keywords: [
