@@ -62,4 +62,8 @@ lighthouse-*.json
 .config/
 .npm/
 .interface-design/
+
+# Database SQL (excluding migrations)
 *.sql
+!prisma/migrations/**/*.sql
+
