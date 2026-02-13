@@ -189,7 +189,7 @@ export default function MarketingToolsPage() {
               <select
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
               >
                 <option value="/request">/request (Formulário Principal)</option>
                 <option value="/">/ (Homepage)</option>
@@ -199,11 +199,11 @@ export default function MarketingToolsPage() {
             {/* UTM Source */}
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Source (Origem)</label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <select
                   value={utmSource}
                   onChange={(e) => setUtmSource(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 >
                   <option value="">Selecione ou digite</option>
                   {COMMON_SOURCES.map((s) => (
@@ -215,7 +215,7 @@ export default function MarketingToolsPage() {
                   value={utmSource}
                   onChange={(e) => setUtmSource(e.target.value)}
                   placeholder="Ou digite..."
-                  className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 />
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function MarketingToolsPage() {
               <select
                 value={utmMedium}
                 onChange={(e) => setUtmMedium(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
               >
                 <option value="">Selecione</option>
                 {COMMON_MEDIUMS.map((m) => (
@@ -243,12 +243,12 @@ export default function MarketingToolsPage() {
                 value={utmCampaign}
                 onChange={(e) => setUtmCampaign(e.target.value)}
                 placeholder="ex: verao2026, panfleto_bairro_x"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
               />
             </div>
 
             {/* Optional Fields */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-widest text-slate-500">UTM Term (Opcional)</label>
                 <input
@@ -256,7 +256,7 @@ export default function MarketingToolsPage() {
                   value={utmTerm}
                   onChange={(e) => setUtmTerm(e.target.value)}
                   placeholder="palavra-chave"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 />
               </div>
               <div className="space-y-2">
@@ -266,16 +266,16 @@ export default function MarketingToolsPage() {
                   value={utmContent}
                   onChange={(e) => setUtmContent(e.target.value)}
                   placeholder="variante"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
                 />
               </div>
             </div>
 
             <button
               onClick={generateUrl}
-              className="w-full bg-accent text-white font-bold py-3 rounded-xl uppercase tracking-wider hover:bg-green-600 transition-colors"
+              className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95 flex items-center justify-center gap-2"
             >
-              Gerar URL
+              <Settings size={18} /> Gerar URL Rastreável
             </button>
           </div>
 

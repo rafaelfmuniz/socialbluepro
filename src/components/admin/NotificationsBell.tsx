@@ -32,6 +32,13 @@ export function NotificationsBell() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Force refresh when opening dropdown
+  useEffect(() => {
+    if (isOpen) {
+      refetch();
+    }
+  }, [isOpen, refetch]);
+
   const handleNavigate = (path: string) => {
     setIsOpen(false);
     router.push(path);
@@ -67,7 +74,10 @@ export function NotificationsBell() {
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 animate-fade-up overflow-hidden">
           <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
-            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Notifications</h3>
+            <div>
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Notifications</h3>
+              <p className="text-[10px] text-slate-400 font-medium mt-0.5">Pending items requiring action</p>
+            </div>
             {loading && <Loader2 size={12} className="animate-spin text-slate-400" />}
           </div>
           

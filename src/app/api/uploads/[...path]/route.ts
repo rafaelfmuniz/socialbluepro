@@ -28,7 +28,8 @@ function ensureWithinUploadDir(candidate: string) {
   return normalized.startsWith(UPLOAD_BASE) ? normalized : null;
 }
 
-export async function GET(_request: NextRequest, { params }: { params: { path?: string[] } }) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ path?: string[] }> }) {
+  const params = await props.params;
   const segments = params?.path;
   if (!segments || segments.length === 0) {
     return NextResponse.json({ error: "Missing attachment path" }, { status: 400 });
