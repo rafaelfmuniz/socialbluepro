@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { createShortLink, getShortLinks, deleteShortLink, toggleShortLink, ShortLink } from "@/actions/shortlinks";
 import { useToast } from "@/lib/toast";
-import { AdminFooter } from "@/components/admin/AdminFooter";
+
 
 const COMMON_SOURCES = [
   { value: "panfleto", label: "Panfleto (Offline)" },
@@ -361,7 +361,7 @@ export default function MarketingToolsPage() {
       {activeTab === "links" && (
         <div className="space-y-4">
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 overflow-hidden">
             {loading ? (
               <div className="p-12 text-center">
                 <Loader2 className="animate-spin mx-auto text-accent" size={32} />
@@ -449,7 +449,7 @@ export default function MarketingToolsPage() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-4">
+          <div className="lg:hidden space-y-4">
             {loading ? (
               <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
                 <Loader2 className="animate-spin mx-auto text-accent" size={32} />
@@ -520,7 +520,7 @@ export default function MarketingToolsPage() {
         </div>
       )}
 
-      <AdminFooter />
+
     </div>
   );
 }

@@ -21,7 +21,7 @@ import {
     Trash2,
     Pencil,
    } from "lucide-react";
-import { AdminFooter } from "@/components/admin/AdminFooter";
+
 
 interface Lead {
   id: string;
@@ -674,7 +674,7 @@ export default function RemarketingPage() {
         confirmText="Delete"
         variant="danger"
       />
-      <AdminFooter />
+
     </PageContainer>
   );
 }

@@ -7,7 +7,7 @@ import { getContactMessageById, markMessageAsRead, deleteContactMessage } from "
 import { useToast } from "@/lib/toast";
 import { ArrowLeft, Check, X, Phone, Mail, Calendar, Trash2 } from "lucide-react";
 
-export default async function MessageDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function MessageDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { addToast } = useToast();
   const [message, setMessage] = useState<any>(null);

@@ -17,7 +17,7 @@ export function NotificationsBell() {
       const result = await getNotificationCounts();
       return result.success ? result.data : undefined;
     },
-    interval: 30000,
+    interval: 10000,
     enabled: true
   });
 
@@ -57,7 +57,9 @@ export function NotificationsBell() {
         </div>
         
         {hasNotifications && (
-          <span className="absolute top-3 right-3 sm:top-3 sm:right-3 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white shadow-sm"></span>
+          <span className="absolute top-1.5 right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white shadow-sm animate-in zoom-in-50 duration-300">
+            {counts!.total > 99 ? '99+' : counts!.total}
+          </span>
         )}
       </button>
 

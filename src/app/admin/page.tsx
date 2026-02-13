@@ -5,7 +5,7 @@ import { getCampaigns } from "@/actions/campaigns"
 import { Users, Mail, TrendingUp, Clock, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AdminFooter } from "@/components/admin/AdminFooter";
+
 
 interface Lead {
   id: string;
@@ -166,7 +166,6 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <AdminFooter />
       </div>
     );
   }

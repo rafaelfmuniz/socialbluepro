@@ -11,7 +11,7 @@ import {
   Mail, Eye, MousePointer, AlertCircle, CheckCircle,
   Filter, Download, TrendingUp, Smartphone, X, Link2, Users, Target, Globe
 } from "lucide-react";
-import { AdminFooter } from "@/components/admin/AdminFooter";
+
 
 const SOURCE_COLORS: Record<string, string> = {
   direct: "bg-slate-100 text-slate-700",
@@ -653,7 +653,7 @@ export default function AnalyticsDashboard() {
           </div>
         )}
       </div>
-      <AdminFooter />
+
     </PageContainer>
   );
 }
