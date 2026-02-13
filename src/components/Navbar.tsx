@@ -29,6 +29,27 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const dropdown = document.getElementById('service-area-dropdown');
+      if (dropdown && !dropdown.contains(event.target as Node)) {
+        setIsServiceAreaOpen(false);
+      }
+    };
+
+    if (isServiceAreaOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isServiceAreaOpen]);
+
+  const locations = getAllLocations().slice().sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
   return (
     <>
       <nav
@@ -93,17 +114,18 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
                
                {/* Service Area Dropdown */}
                <div 
+                 id="service-area-dropdown"
                  className="relative"
-                 onMouseEnter={() => setIsServiceAreaOpen(true)}
-                 onMouseLeave={() => setIsServiceAreaOpen(false)}
                >
                  <button
+                   type="button"
                    className={cn(
                      "text-[10px] uppercase tracking-[0.2em] font-bold transition-all hover:text-accent relative group flex items-center gap-1",
                      "text-white/90"
                    )}
                    aria-expanded={isServiceAreaOpen}
                    aria-haspopup="true"
+                   onClick={() => setIsServiceAreaOpen(!isServiceAreaOpen)}
                  >
                    Service Areas
                    <ChevronDown size={12} className={cn("transition-transform", isServiceAreaOpen && "rotate-180")} />
@@ -111,13 +133,13 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
                  </button>
                  
                  {isServiceAreaOpen && (
-                   <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 rounded-xl shadow-2xl border border-slate-700/50 py-2 z-50">
-                     <div className="max-h-64 overflow-y-auto">
-                       {getAllLocations().slice(0, 8).map((location) => (
+                   <div className="absolute top-full left-0 mt-2 w-64 bg-slate-900 rounded-xl shadow-2xl border border-slate-700/50 py-2 z-50">
+                     <div className="max-h-80 overflow-y-auto">
+                       {locations.map((location) => (
                          <Link
                            key={location.slug}
                            href={`/locations/${location.slug}`}
-                           className="flex items-center gap-2 px-4 py-2 text-[10px] uppercase tracking-widest font-bold text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+                           className="flex items-center gap-2 px-4 py-2.5 text-[10px] uppercase tracking-widest font-bold text-white/80 hover:text-white hover:bg-white/5 transition-colors"
                            onClick={() => setIsServiceAreaOpen(false)}
                          >
                            <MapPin size={10} className="text-accent" />

@@ -9,7 +9,9 @@ interface FooterProps {
 }
 
 export default function Footer({ onGetQuote }: FooterProps) {
-  const allLocations = Object.values(locationsData);
+  const allLocations = Object.values(locationsData).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
   return (
     <footer className="bg-slate-900 text-white pt-12 md:pt-16 pb-8 relative overflow-hidden border-t border-white/5">
@@ -42,17 +44,17 @@ export default function Footer({ onGetQuote }: FooterProps) {
           </div> 
 
           {/* Service Areas */}
-          <div>
+          <div className="md:col-span-1">
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-accent mb-6">Service Areas</h4>
-            <ul className="space-y-3 max-h-64 overflow-y-auto">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
               {allLocations.map((loc) => (
                 <li key={loc.slug}>
                   <Link 
                     href={`/locations/${loc.slug}`} 
                     className="text-slate-400 hover:text-white transition-colors text-[10px] uppercase tracking-widest font-bold flex items-center gap-2 group"
                   >
-                     <MapPin size={10} className="text-accent/50 group-hover:text-accent" />
-                     {loc.name}
+                     <MapPin size={10} className="text-accent/50 group-hover:text-accent shrink-0" />
+                     <span className="truncate">{loc.name}</span>
                   </Link>
                 </li>
               ))}
