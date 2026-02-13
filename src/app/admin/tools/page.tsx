@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { 
   Link2, QrCode, ExternalLink, Copy, Trash2, Plus, Eye, 
-  Download, Loader2, CheckCircle, Settings, Globe, Share2
+  Download, Loader2, Settings, Globe, Share2
 } from "lucide-react";
 import { createShortLink, getShortLinks, deleteShortLink, toggleShortLink, ShortLink } from "@/actions/shortlinks";
 import { useToast } from "@/lib/toast";
@@ -40,7 +40,10 @@ export default function MarketingToolsPage() {
   const [utmCampaign, setUtmCampaign] = useState("");
   const [utmTerm, setUtmTerm] = useState("");
   const [utmContent, setUtmContent] = useState("");
+  
+  // Results State
   const [generatedUrl, setGeneratedUrl] = useState("");
+  const [shortLink, setShortLink] = useState<ShortLink | null>(null); // Store current session short link
   const [slug, setSlug] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
@@ -69,14 +72,18 @@ export default function MarketingToolsPage() {
     const fullUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
     setGeneratedUrl(fullUrl);
     
-    // Generate QR code URL
+    // Reset short link state when regenerating long URL
+    setShortLink(null);
+    setSlug("");
+    
+    // Generate QR code for LONG URL initially
     const fullDomainUrl = `https://socialbluepro.com${fullUrl}`;
     setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(fullDomainUrl)}`);
   };
 
   const handleCreateShortLink = async () => {
     if (!slug || !generatedUrl) {
-      addToast("Please enter a slug and generate the URL first", "error");
+      addToast("Please enter a slug first", "error");
       return;
     }
 
@@ -93,10 +100,17 @@ export default function MarketingToolsPage() {
       utm_content: utmContent || undefined,
     });
 
-    if (result.success) {
+    if (result.success && result.data) {
       addToast("✅ Short link created successfully!", "success");
       setSlug("");
       fetchLinks();
+      
+      // Update local state to show SHORT LINK
+      setShortLink(result.data);
+      
+      // Update QR Code to point to SHORT LINK
+      const shortUrl = `https://socialbluepro.com/r/${result.data.slug}`;
+      setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shortUrl)}`);
     } else {
       addToast(result.error || "Error creating link", "error");
     }
@@ -131,7 +145,7 @@ export default function MarketingToolsPage() {
   const downloadQR = () => {
     const link = document.createElement("a");
     link.href = qrCodeUrl;
-    link.download = `qr-${slug || "link"}.png`;
+    link.download = `qr-${shortLink ? shortLink.slug : "tracking"}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -177,7 +191,7 @@ export default function MarketingToolsPage() {
       {activeTab === "builder" && (
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Builder Form */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 h-fit">
             <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2">
               <Globe size={20} />
               URL Builder
@@ -280,76 +294,118 @@ export default function MarketingToolsPage() {
           </div>
 
           {/* Generated URL & QR */}
-          <div className="space-y-6">
-            {/* Generated URL */}
+          <div className="space-y-6 w-full min-w-0">
+            {/* Generated URL Results */}
             {generatedUrl && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-                <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2">
-                  <Share2 size={20} />
-                  Generated URL
-                </h2>
+              <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-6 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                   <div className={`p-2 rounded-lg ${shortLink ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-600'}`}>
+                    {shortLink ? <Link2 size={24} /> : <Share2 size={24} />}
+                   </div>
+                   <div>
+                      <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900 leading-tight">
+                        {shortLink ? "Short Link Ready" : "Tracking URL Ready"}
+                      </h2>
+                      <p className="text-xs text-slate-500 font-medium">
+                        {shortLink ? "Use this short link for your campaigns" : "Long URL generated with UTM parameters"}
+                      </p>
+                   </div>
+                </div>
                 
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                  <p className="text-sm font-mono text-slate-700 break-all">
-                    socialbluepro.com{generatedUrl}
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleCopyUrl(`https://socialbluepro.com${generatedUrl}`)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-slate-800 transition-colors"
-                  >
-                    <Copy size={16} />
-                    Copy URL
-                  </button>
-                </div>
-
-                {/* Short Link Creator */}
-                <div className="pt-4 border-t border-slate-200 space-y-4">
-                  <h3 className="font-black uppercase tracking-widest text-slate-500 text-xs">Create Short Link</h3>
-                  <div className="flex gap-2">
-                    <div className="flex items-center bg-slate-50 px-4 rounded-xl border border-slate-200 text-slate-500 text-sm">
-                      socialbluepro.com/r/
-                    </div>
-                    <input
-                      type="text"
-                      value={slug}
-                      onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
-                      placeholder="my-link"
-                      className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900"
-                    />
+                {/* Active URL Display */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    {shortLink ? "Active Short Link" : "Long Tracking URL"}
+                  </label>
+                  <div className={`p-4 rounded-xl border text-sm font-mono break-all whitespace-normal ${
+                    shortLink 
+                      ? "bg-green-50 border-green-200 text-green-800" 
+                      : "bg-slate-50 border-slate-200 text-slate-700"
+                  }`}>
+                    {shortLink 
+                      ? `socialbluepro.com/r/${shortLink.slug}`
+                      : `socialbluepro.com${generatedUrl}`
+                    }
                   </div>
-                  <button
-                    onClick={handleCreateShortLink}
-                    disabled={creating}
-                    className="w-full bg-accent text-white font-bold py-3 rounded-xl uppercase tracking-wider hover:bg-green-600 transition-colors disabled:opacity-50"
-                  >
-                    {creating ? <Loader2 className="animate-spin inline mr-2" size={16} /> : <Plus size={16} className="inline mr-2" />}
-                    Create Short Link
-                  </button>
+                  
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleCopyUrl(shortLink ? `https://socialbluepro.com/r/${shortLink.slug}` : `https://socialbluepro.com${generatedUrl}`)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/10 active:scale-95"
+                    >
+                      <Copy size={16} />
+                      {shortLink ? "Copy Short Link" : "Copy Long URL"}
+                    </button>
+                  </div>
                 </div>
+
+                {/* Create Short Link Section - Only show if NO short link yet */}
+                {!shortLink && (
+                  <div className="pt-6 border-t border-slate-100 space-y-4 animate-in fade-in slide-in-from-top-4">
+                    <div className="flex items-center gap-2 text-accent">
+                      <Plus size={16} className="shrink-0" />
+                      <h3 className="font-black uppercase tracking-widest text-xs">Create Short Link (Recommended)</h3>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex items-center bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 text-slate-500 text-sm whitespace-nowrap">
+                          socialbluepro.com/r/
+                        </div>
+                        <input
+                          type="text"
+                          value={slug}
+                          onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+                          placeholder="my-custom-link"
+                          className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all min-w-0"
+                        />
+                      </div>
+                      <button
+                        onClick={handleCreateShortLink}
+                        disabled={creating}
+                        className="w-full bg-accent text-white font-bold py-3 rounded-xl uppercase tracking-wider hover:bg-green-600 transition-colors disabled:opacity-50 shadow-lg shadow-green-500/20 active:scale-95"
+                      >
+                        {creating ? <Loader2 className="animate-spin inline mr-2" size={16} /> : <Plus size={16} className="inline mr-2" />}
+                        Generate Short Link & QR
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-medium text-center">
+                      This will also update the QR code below
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* QR Code */}
+            {/* QR Code Card */}
             {qrCodeUrl && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-                <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2">
-                  <QrCode size={20} />
-                  QR Code
-                </h2>
-                
-                <div className="flex justify-center bg-white p-4 rounded-xl border border-slate-200">
-                  <img src={qrCodeUrl} alt="QR Code" className="w-48 h-48" />
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm h-fit">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-4 mb-2">
+                   <QrCode size={20} className="text-slate-900" />
+                   <h2 className="text-lg font-black uppercase tracking-tighter text-slate-900">
+                     QR Code
+                   </h2>
+                   {shortLink && (
+                     <span className="ml-auto bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full">
+                       Short Link
+                     </span>
+                   )}
                 </div>
+                
+                <div className="flex justify-center bg-white p-4 rounded-xl border-2 border-slate-100">
+                  <img src={qrCodeUrl} alt="QR Code" className="w-48 h-48 sm:w-56 sm:h-56 object-contain" />
+                </div>
+                
+                <p className="text-center text-xs font-bold text-slate-500">
+                  Points to: <span className="text-slate-900">{shortLink ? "Short Link" : "Long URL"}</span>
+                </p>
 
                 <button
                   onClick={downloadQR}
-                  className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-slate-200 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-slate-200 transition-colors active:scale-95"
                 >
                   <Download size={16} />
-                  Download QR Code (PNG)
+                  Download PNG
                 </button>
               </div>
             )}
@@ -357,7 +413,7 @@ export default function MarketingToolsPage() {
         </div>
       )}
 
-            {/* Links List Tab */}
+      {/* Links List Tab */}
       {activeTab === "links" && (
         <div className="space-y-4">
           {/* Desktop Table */}
