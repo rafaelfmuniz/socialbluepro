@@ -727,7 +727,56 @@ gh release list
 
 ---
 
-## 11. Regras Específicas
+## 11. Regras de Segurança e Autonomia dos Agents
+
+### ⚠️ Regras de Acesso GitHub:
+
+1. **Autenticação automática permitida**: Se `gh auth status` mostrar conta autenticada com scope `repo`, o agent NÃO deve perguntar sobre token
+2. **Verificação prévia**: Sempre execute `gh auth status` antes de operações GitHub
+3. **Erro de autenticação**: Se não houver autenticação, instrua o usuário a executar `gh auth login` - NUNCA peça token diretamente
+
+### ⚠️ Ações Que Requerem Confirmação Explícita (Palavra Mágica: CONFIRM-IRREVERSIBLE):
+
+**ANTES de executar qualquer comando abaixo, você DEVE:**
+- Explicar o que vai fazer
+- Listar os riscos
+- Esperar o usuário responder exatamente: `CONFIRM-IRREVERSIBLE`
+
+**Comandos protegidos:**
+- `git push --force` ou `git push -f`
+- `git reset --hard`
+- `git rebase -i` com alterações já publicadas
+- `gh release delete`
+- `npx prisma migrate reset` (apaga dados!)
+- `DROP TABLE`, `DELETE FROM` sem WHERE, ou qualquer SQL destrutivo
+- `rm -rf` em diretórios críticos (database, .git, etc)
+- Alterações em variáveis de ambiente de produção
+
+### ⚠️ Regras de Banco de Dados:
+
+1. **Backup obrigatório antes de migrations em produção**:
+   ```bash
+   # Criar backup antes de qualquer migration
+   pg_dump -h localhost -U sbp_user socialbluepro > backup_$(date +%Y%m%d_%H%M%S).sql
+   ```
+
+2. **Migrations em desenvolvimento**: Pode executar automaticamente se:
+   - For ambiente local (`localhost`)
+   - Migration não for destrutiva (apenas ADD COLUMN)
+   - Teste passar após migration
+
+3. **Migrations em produção**: SEMPRE requer backup + confirmação do usuário
+
+### ⚠️ Regras de Releases:
+
+1. **Criar releases automaticamente**: ✅ Permitido se:
+   - Build passar (`npm run build` sucesso)
+   - Commits seguirem convenção (feat/fix)
+   - GitHub Actions estiver configurado
+
+2. **NUNCA delete releases ou tags** sem confirmação explícita
+
+3. **Backfill de releases**: Só execute se o usuário confirmar explicitamente
 
 ### ⚠️ PROIBIDO:
 

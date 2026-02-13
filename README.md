@@ -163,6 +163,7 @@ socialbluepro/
 │
 ├── 📁 .github/                          # GitHub Actions e workflows
 │   └── 📁 workflows/
+│       ├── 📄 release.yml               # Workflow de releases automáticos
 │       └── 📄 ci-cd.yml                 # Configuração CI/CD
 │
 ├── 📁 prisma/                           # Schema e migrations do Prisma
@@ -173,11 +174,12 @@ socialbluepro/
 │   └── 📁 imgs/                         # Imagens otimizadas
 │       └── 📁 Imgs_WEBP/               # Imagens em formato WebP
 │
-├── 📁 scripts/                          # Scripts de deploy
-│   └── 📁 deploy/
-│       ├── 📄 install.sh               # Instalação automatizada
-│       ├── 📄 update.sh                # Atualização rápida
-│       └── 📄 backup.sh                # Backup manual
+├── 📁 scripts/                          # Scripts de utilidade
+│   ├── 📁 deploy/                       # Scripts de deploy
+│   │   ├── 📄 install.sh               # Instalação automatizada
+│   │   ├── 📄 update.sh                # Atualização rápida
+│   │   └── 📄 backup.sh                # Backup manual
+│   └── 📄 backfill-releases.js         # Script para criar releases históricas
 │
 ├── 📁 src/                              # Código fonte principal
 │   │
@@ -185,33 +187,55 @@ socialbluepro/
 │   │   ├── 📄 page.tsx                  # Homepage (Landing)
 │   │   ├── 📄 layout.tsx                # Root layout
 │   │   ├── 📄 globals.css               # Estilos globais Tailwind
+│   │   ├── 📁 about/                    # Página Sobre nós
+│   │   ├── 📁 contact/                  # Formulário de contato
+│   │   ├── 📁 faq/                      # Perguntas frequentes
 │   │   ├── 📁 login/                    # Página de login
-│   │   ├── 📁 request/          # Formulário de orçamento
-│   │   ├── 📁 terms/                    # Termos de serviço
+│   │   ├── 📁 locations/                # Páginas de cidades (SEO)
+│   │   │   └── 📁 [city]/               # Página dinâmica de cidade
 │   │   ├── 📁 privacy/                  # Política de privacidade
+│   │   ├── 📁 request/                  # Formulário de orçamento
+│   │   ├── 📁 r/                        # URL Shortener redirects
+│   │   │   └── 📁 [slug]/               # Redirect handler
+│   │   ├── 📁 services/                 # Páginas de serviços
+│   │   │   └── 📁 [slug]/               # Página dinâmica de serviço
+│   │   ├── 📁 terms/                    # Termos de serviço
 │   │   ├── 📁 admin/                    # Área administrativa
 │   │   │   ├── 📄 page.tsx              # Dashboard
 │   │   │   ├── 📄 layout.tsx            # Layout protegido
-│   │   │   ├── 📄 AdminNavigation.tsx   # Navegação admin
 │   │   │   ├── 📁 analytics/            # Analytics
 │   │   │   ├── 📁 campaigns/            # Email Marketing
 │   │   │   ├── 📁 dashboard/            # Dashboard page
 │   │   │   ├── 📁 leads/                # CRM Leads
+│   │   │   ├── 📁 messages/             # Mensagens de contato
+│   │   │   │   └── 📁 [id]/             # Detalhe da mensagem
 │   │   │   ├── 📁 remarketing/          # Automação Remarketing
-│   │   │   └── 📁 settings/             # Configurações
+│   │   │   ├── 📁 settings/             # Configurações
+│   │   │   └── 📁 tools/                # Marketing Tools
 │   │   └── 📁 api/                      # API Routes
-│   │       ├── 📁 leads/                # POST /api/leads
 │   │       ├── 📁 auth/                 # NextAuth routes
+│   │       ├── 📁 health/               # Health check
+│   │       ├── 📁 leads/                # POST /api/leads
+│   │       ├── 📁 login/                # Login API
+│   │       ├── 📁 logout/               # Logout API
+│   │       ├── 📁 notifications/        # Notificações API
+│   │       ├── 📁 send-email/           # Envio de email teste
 │   │       ├── 📁 track/                # Tracking pixel/click
-│   │       └── 📁 uploads/              # Upload de arquivos
+│   │       ├── 📁 uploads/              # Upload de arquivos
+│   │       └── 📁 version/              # Verificação de versão
 │   │
 │   ├── 📁 components/                   # Componentes React
 │   │   ├── 📁 admin/                    # Componentes admin
-│   │   │   └── 📄 DefaultPasswordWarning.tsx
+│   │   │   ├── 📄 AdminFooter.tsx       # Footer do painel admin
+│   │   │   ├── 📄 AdminNavigation.tsx   # Navegação do admin
+│   │   │   ├── 📄 DefaultPasswordWarning.tsx # Alerta de senha padrão
+│   │   │   └── 📄 NotificationsBell.tsx # Sino de notificações
 │   │   ├── 📁 providers/                # Providers React
 │   │   │   └── 📄 ToastProvider.tsx
 │   │   ├── 📁 sections/                 # Seções da landing
-│   │   │   └── 📄 AboutSection.tsx
+│   │   │   ├── 📄 AboutSection.tsx
+│   │   │   ├── 📄 ServiceArea.tsx
+│   │   │   └── 📄 Testimonials.tsx
 │   │   ├── 📁 ui/                       # Componentes reutilizáveis (Design System)
 │   │   │   ├── 📄 BackToTop.tsx
 │   │   │   ├── 📄 BackgroundImage.tsx
@@ -221,18 +245,20 @@ socialbluepro/
 │   │   │   ├── 📄 DesktopImage.tsx
 │   │   │   ├── 📄 ErrorBoundary.tsx
 │   │   │   ├── 📄 LeadDetailModal.tsx
-│   │   │   ├── 📄 PageContainer.tsx
+│   │   │   ├── 📄 PageContainer.tsx     # Container padrão de páginas
+│   │   │   ├── 📄 PageHeader.tsx        # Header padrão de páginas
 │   │   │   ├── 📄 ProgressiveImage.tsx
 │   │   │   ├── 📄 QuoteModal.tsx
+│   │   │   ├── 📄 SourceBadge.tsx       # Badge de origem do lead
 │   │   │   ├── 📄 Table.tsx
-│   │   │   └── 📄 Toast.tsx
-│   │   ├── 📄 Footer.tsx                # Rodapé
+│   │   │   ├── 📄 Toast.tsx
+│   │   │   └── 📄 VersionBadge.tsx      # Badge de versão do app
+│   │   ├── 📄 Footer.tsx                # Rodapé principal
 │   │   ├── 📄 Hero.tsx                  # Hero section
 │   │   ├── 📄 LeadMagnet.tsx            # Captura de leads
 │   │   ├── 📄 Navbar.tsx                # Navegação principal
 │   │   ├── 📄 NavbarLayout.tsx          # Layout com navbar
 │   │   ├── 📄 ProjectRecap.tsx          # Recap do projeto
-│   │   ├── 📄 ServiceArea.tsx           # Área de atuação
 │   │   ├── 📄 Services.tsx              # Grid de serviços
 │   │   ├── 📄 SimpleFooter.tsx          # Rodapé simples
 │   │   └── 📄 Testimonials.tsx          # Depoimentos
@@ -241,12 +267,16 @@ socialbluepro/
 │   │   ├── 📄 auth.ts                   # Autenticação
 │   │   ├── 📄 campaign-analytics.ts     # Analytics de campanhas
 │   │   ├── 📄 campaigns.ts              # Campanhas de email
+│   │   ├── 📄 contact.ts                # Mensagens de contato
 │   │   ├── 📄 email-tracking.ts         # Tracking de emails
 │   │   ├── 📄 email.ts                  # Envio de emails
 │   │   ├── 📄 lead-notes.ts             # Notas de leads
 │   │   ├── 📄 leads.ts                  # Gestão de leads
+│   │   ├── 📄 marketing-analytics.ts    # Analytics de marketing
+│   │   ├── 📄 notifications.ts          # Notificações
 │   │   ├── 📄 remarketing.ts            # Remarketing automation
 │   │   ├── 📄 settings.ts               # Configurações
+│   │   ├── 📄 shortlinks.ts             # URL Shortener
 │   │   └── 📄 users.ts                  # Gestão de usuários
 │   │
 │   ├── 📁 lib/                          # Bibliotecas e utilitários
@@ -260,10 +290,11 @@ socialbluepro/
 │   │   ├── 📄 auth-helpers.ts           # Helpers de autenticação
 │   │   ├── 📄 client-validation.ts      # Validações client-side
 │   │   ├── 📄 constants.ts              # Constantes do projeto
+│   │   ├── 📄 locations-data.ts         # Dados das cidades do Colorado
 │   │   ├── 📄 mail.ts                   # Configuração SMTP
 │   │   ├── 📄 prisma-init.ts            # Inicialização Prisma
 │   │   ├── 📄 prisma.ts                 # Cliente Prisma
-│   │   ├── 📄 supabase-ssr.ts           # Supabase SSR (legado)
+│   │   ├── 📄 services-data.ts          # Dados dos serviços
 │   │   ├── 📄 toast.tsx                 # Sistema de toast
 │   │   ├── 📄 utils.ts                  # Utilitários
 │   │   ├── 📄 validators.ts             # Funções de validação
@@ -277,6 +308,7 @@ socialbluepro/
 ├── 📄 .env                              # Variáveis de ambiente (não vai pro GitHub)
 ├── 📄 .env.example                      # Exemplo de variáveis
 ├── 📄 .gitignore                        # Arquivos ignorados pelo Git
+├── 📄 .releaserc.json                   # Configuração semantic-release
 ├── 📄 AGENTS.md                         # Guidelines para AI agents
 ├── 📄 CHANGELOG.md                      # Histórico de mudanças
 ├── 📄 README.md                         # Este arquivo
@@ -313,6 +345,35 @@ Formulário completo com validações:
 - **Validações em tempo real**: Telefone, email (bloqueio de domínios temporários), ZIP Colorado
 - **Upload**: Fotos (até 25MB) e vídeos (até 500MB), total 1GB
 - **Serviços**: Sod, Hardscaping, Weed, Mulch, Spring Clean Up, Snow Removal
+- **UTM Tracking**: Captura automática de parâmetros UTM para marketing
+
+#### Sobre Nós (`/about`)
+- **História da empresa**: Origem e trajetória
+- **Certificações**: Certificações do Colorado
+- **Equipe**: Apresentação da equipe
+- **Valores**: Missão, visão e valores
+
+#### FAQ (`/faq`)
+- **Perguntas frequentes**: Respostas para dúvidas comuns
+- **Categorias**: Organizado por temas
+- **SEO otimizado**: Schema.org markup
+
+#### Contato (`/contact`)
+- **Formulário de contato**: Com validação anti-bot (hCaptcha)
+- **Notificações em tempo real**: Alertas no painel admin
+- **Dashboard de mensagens**: Visualização e gerenciamento em `/admin/messages`
+
+#### Serviços (`/services` e `/services/[slug]`)
+- **Lista de serviços**: Grid com todos os serviços oferecidos
+- **Páginas individuais**: Cada serviço tem página dedicada com SEO
+- **Slugs otimizados**: sod-installation, hardscaping, weed-control, etc.
+- **Schema markup**: JSON-LD para rich snippets
+
+#### Localizações (`/locations/[city]`)
+- **Páginas de cidades**: SEO local para Denver, Aurora, Centennial, etc.
+- **Conteúdo dinâmico**: Informações específicas de cada cidade
+- **Mapa de atuação**: Área de serviço visualizada
+- **18 cidades cobertas**: Todo o metro Denver
 
 ### 🔐 Área Administrativa
 
@@ -349,10 +410,27 @@ Formulário completo com validações:
   - **Sem Conversão**: Status "new" >7 dias
 - Campanhas agendadas por segmento
 
+#### Messages (`/admin/messages`)
+- **Lista de mensagens**: Todas as mensagens de contato recebidas
+- **Detalhes da mensagem**: Visualização completa com dados do remetente
+- **Status**: Novas, lidas, respondidas
+- **Filtros**: Por data, status, origem
+
+#### Marketing Tools (`/admin/tools`)
+- **URL Shortener**: Crie links curtos tipo `/r/promo`
+- **QR Code Generator**: Gere QR codes para materiais de marketing
+- **UTM Builder**: Construtor de URLs com parâmetros UTM
+- **Analytics**: Estatísticas de cliques nos links
+
 #### Settings (`/admin/settings`)
 - **Email Channels**: Múltiplas contas SMTP, teste de conexão
 - **Users**: CRUD, desbloqueio, reset de senha
 - **Integrations**: reCAPTCHA (Google, hCaptcha, Turnstile), Tracking Pixels
+
+#### Versionamento (`/api/version`)
+- **Versão atual**: Exibe versão do app no footer admin
+- **Verificação de atualizações**: Compara com última release no GitHub
+- **Notificação**: Alerta quando há nova versão disponível
 
 ---
 
@@ -390,10 +468,16 @@ Formulário completo com validações:
 | Rota | Método | Descrição |
 |------|--------|-----------|
 | `/api/leads` | POST | Criar lead com upload |
-| `/api/auth/[...nextauth]` | ALL | Autenticação |
-| `/api/track/open/[id]` | GET | Tracking pixel |
-| `/api/track/click/[id]` | GET | Tracking de cliques |
-| `/api/uploads/[...path]` | GET | Servir arquivos |
+| `/api/auth/[...nextauth]` | ALL | Autenticação NextAuth |
+| `/api/login` | POST | Login de usuário |
+| `/api/logout` | POST | Logout de usuário |
+| `/api/notifications` | GET | Listar notificações |
+| `/api/send-email` | POST | Enviar email de teste |
+| `/api/health` | GET | Health check do sistema |
+| `/api/version` | GET | Verificar versão e atualizações |
+| `/api/track/open/[trackingId]` | GET | Tracking pixel de abertura |
+| `/api/track/click/[trackingId]` | GET | Tracking de cliques |
+| `/api/uploads/[...path]` | GET | Servir arquivos de upload |
 | `/r/[slug]` | GET | Redirect de short links |
 
 ---
@@ -446,6 +530,27 @@ model SmtpAccount {
 model RemarketingSegment {
   id, name, description
   criteria (JSON), lead_count
+}
+
+// URL Shortener
+model ShortLink {
+  id, slug (único), url
+  clicks, is_active
+  created_at
+}
+
+// Mensagens de Contato
+model ContactMessage {
+  id, name, email, phone
+  message, status
+  created_at
+}
+
+// Campos UTM no Lead
+model Lead {
+  // ... campos existentes ...
+  utm_source, utm_medium, utm_campaign
+  utm_term, utm_content
 }
 ```
 
