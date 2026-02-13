@@ -14,6 +14,8 @@ import {
 import { AdminFooter } from "@/components/admin/AdminFooter";
 
 const SOURCE_COLORS: Record<string, string> = {
+  direct: "bg-slate-100 text-slate-700",
+  organic: "bg-slate-100 text-slate-700",
   google: "bg-blue-100 text-blue-700",
   google_ads: "bg-blue-100 text-blue-700",
   facebook: "bg-indigo-100 text-indigo-700",
@@ -23,7 +25,6 @@ const SOURCE_COLORS: Record<string, string> = {
   email: "bg-purple-100 text-purple-700",
   panfleto: "bg-orange-100 text-orange-700",
   referral: "bg-green-100 text-green-700",
-  direct: "bg-slate-100 text-slate-700",
 };
 
 export default function AnalyticsDashboard() {

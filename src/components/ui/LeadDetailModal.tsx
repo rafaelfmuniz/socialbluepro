@@ -385,7 +385,6 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                    </section>
 
                   {/* Marketing Data */}
-                  {(lead.utm_source || lead.utm_medium || lead.utm_campaign) && (
                     <section className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                       <h3 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-4 flex items-center gap-2">
                         <Globe size={16} /> Marketing Data
@@ -397,6 +396,7 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                             <SourceBadge source={lead.utm_source} medium={lead.utm_medium} />
                           </div>
                         </div>
+                        {(lead.utm_campaign || lead.utm_term || lead.utm_content) && (
                         <div className="grid grid-cols-2 gap-4">
                           {lead.utm_campaign && (
                             <div>
@@ -417,9 +417,9 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                             </div>
                           )}
                         </div>
+                        )}
                       </div>
                     </section>
-                  )}
 
                   {/* Project Description */}
                   {lead.description && (

@@ -8,10 +8,10 @@ interface SourceBadgeProps {
 }
 
 export function SourceBadge({ source, medium }: SourceBadgeProps) {
-  if (!source) {
+  if (!source || source === 'direct') {
     return (
       <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200">
-        Direct
+        Direct / Organic
       </span>
     );
   }
