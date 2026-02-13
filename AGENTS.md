@@ -58,6 +58,7 @@
 - [x] Validação robusta e Anti-bot no formulário de contato
 - [x] Atualização do Footer (City names only)
 - [x] Migração para workflow autônomo (Vibe-Code) no AGENTS.md
+- [x] Correção de Migration pendente (ContactMessage & ShortLinks)
 - [x] Build verificado e código em produção (Main branch)
 
 ### Último Commit
