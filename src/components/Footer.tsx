@@ -65,30 +65,30 @@ export default function Footer({ onGetQuote }: FooterProps) {
           {/* Navigation */}
           <div className="lg:col-span-2">
             <h4 className="text-xs uppercase tracking-[0.25em] font-black text-accent mb-4 text-center md:text-left">Navigation</h4>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-slate-400 font-semibold uppercase tracking-wider text-center md:text-left">
+            <ul className="flex flex-col gap-1 text-slate-400 font-semibold uppercase tracking-wider text-center md:text-left">
               <li>
-                <Link href="/services" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
-                  <span>Services</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
+                <Link href="/services" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1.5">
+                  <span>Services</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" />
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
-                  <span>About</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
+                <Link href="/about" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1.5">
+                  <span>About</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" />
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
-                  <span>Contact</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
+                <Link href="/contact" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1.5">
+                  <span>Contact</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" />
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
-                  <span>FAQ</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
+                <Link href="/faq" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1.5">
+                  <span>FAQ</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" />
                 </Link>
               </li>
-              <li className="col-span-2 md:col-span-1">
-                <button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group w-full py-1">
-                  <span>Get Quote</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
+              <li>
+                <button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group w-full py-1.5">
+                  <span>Get Quote</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:inline" />
                 </button>
               </li>
             </ul>
@@ -97,24 +97,18 @@ export default function Footer({ onGetQuote }: FooterProps) {
           {/* Contact */}
           <div className="lg:col-span-3 space-y-4">
             <h4 className="text-xs uppercase tracking-[0.25em] font-black text-accent mb-4 text-center md:text-left">Contact</h4>
-            <div className="space-y-3 flex flex-col items-center md:items-start">
-              <a href="tel:7207374607" className="flex items-center justify-center md:justify-start gap-3 group w-full">
-                <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors shrink-0">
+            <div className="flex flex-col gap-1 items-center md:items-start">
+              <a href="tel:7207374607" className="flex items-center justify-center md:justify-start gap-2 group w-full py-1.5">
+                <div className="w-7 h-7 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors shrink-0">
                   <Phone size={14} className="text-accent" />
                 </div>
-                <div className="min-w-0 text-center md:text-left">
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Phone</p>
-                  <span className="text-white font-bold text-sm">(720) 737-4607</span>
-                </div>
+                <span className="text-white font-semibold text-sm">(720) 737-4607</span>
               </a>
-              <a href="mailto:contact@socialbluepro.com" className="flex items-center justify-center md:justify-start gap-3 group w-full">
-                <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors shrink-0">
+              <a href="mailto:contact@socialbluepro.com" className="flex items-center justify-center md:justify-start gap-2 group w-full py-1.5">
+                <div className="w-7 h-7 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors shrink-0">
                   <Mail size={14} className="text-accent" />
                 </div>
-                <div className="min-w-0 text-center md:text-left">
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Email</p>
-                  <span className="text-white font-bold text-sm">contact@socialbluepro.com</span>
-                </div>
+                <span className="text-white font-semibold text-sm">contact@socialbluepro.com</span>
               </a>
             </div>
             
@@ -123,7 +117,7 @@ export default function Footer({ onGetQuote }: FooterProps) {
               <div className="flex gap-0.5 text-accent">
                 {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
               </div>
-              <span className="text-xs font-bold italic text-slate-300">5-Star Google Reviews</span>
+              <span className="text-xs font-semibold italic text-slate-300">5-Star Google Reviews</span>
             </div>
           </div>
         </div>
