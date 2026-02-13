@@ -26,6 +26,14 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # ============================================
+# CONFIGURAÇÕES NPM (Silenciar warnings)
+# ============================================
+export npm_config_audit=false
+export npm_config_fund=false
+export npm_config_update_notifier=false
+export NEXT_TELEMETRY_DISABLED=1
+
+# ============================================
 # FUNÇÕES DE UTILIDADE
 # ============================================
 log() {
@@ -208,7 +216,25 @@ install_new() {
     
     # Build
     log "Compilando aplicação..."
+    
+    # Configurar ambiente para o build
+    export NODE_ENV=production
+    export NEXT_TELEMETRY_DISABLED=1
+    export NEXT_DISABLE_AUTOINSTALL=1
+    
+    # Instalar TypeScript e tipos necessários para build (se houver tsconfig.json)
+    if [[ -f "$INSTALL_DIR/tsconfig.json" ]]; then
+        log "Instalando dependências de build TypeScript..."
+        npm install --no-save --no-audit --no-fund typescript @types/node @types/react @types/react-dom 2>/dev/null || {
+            warning "Falha ao instalar TypeScript, tentando build mesmo assim..."
+        }
+    fi
+    
     npm run build
+    
+    # Limpar dependências de build após compilação
+    log "Limpando dependências de build..."
+    npm prune --omit=dev --no-audit --no-fund 2>/dev/null || true
     
     # Criar diretório de uploads
     mkdir -p public/uploads
@@ -259,7 +285,25 @@ update_existing() {
     
     # Rebuild
     log "Recompilando aplicação..."
+    
+    # Configurar ambiente para o build
+    export NODE_ENV=production
+    export NEXT_TELEMETRY_DISABLED=1
+    export NEXT_DISABLE_AUTOINSTALL=1
+    
+    # Instalar TypeScript e tipos necessários para build (se houver tsconfig.json)
+    if [[ -f "$INSTALL_DIR/tsconfig.json" ]]; then
+        log "Instalando dependências de build TypeScript..."
+        npm install --no-save --no-audit --no-fund typescript @types/node @types/react @types/react-dom 2>/dev/null || {
+            warning "Falha ao instalar TypeScript, tentando build mesmo assim..."
+        }
+    fi
+    
     npm run build
+    
+    # Limpar dependências de build após compilação
+    log "Limpando dependências de build..."
+    npm prune --omit=dev --no-audit --no-fund 2>/dev/null || true
     
     # Reiniciar serviço
     log "Reiniciando serviço..."
