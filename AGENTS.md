@@ -51,16 +51,14 @@
 **SEMPRE que iniciar uma sessão, verifique o que está em andamento:**
 
 ### Tarefa Atual
-- ✅ v2.2.0 SEO Service Pages Implementation - CONCLUÍDO
+- ✅ v2.3.0 Contact Message System & Autonomous Git Workflow - CONCLUÍDO
 
 ### Progresso
-- [x] Arquitetura de rotas dinâmicas `/services/[slug]`
-- [x] Base de dados centralizada `services-data.ts` com 9 serviços
-- [x] SEO On-page: Meta tags dinâmicas e Canonical URLs
-- [x] SEO Técnico: JSON-LD Schema (Service & FAQPage)
-- [x] UI: Template responsivo, mobile-first e de alta performance
-- [x] Integração: Links na Home preservando modal de orçamento
-- [x] Build verificado e performance mantida (Static Generation)
+- [x] Implementação de `ContactMessage` no Prisma e Dashboard
+- [x] Validação robusta e Anti-bot no formulário de contato
+- [x] Atualização do Footer (City names only)
+- [x] Migração para workflow autônomo (Vibe-Code) no AGENTS.md
+- [x] Build verificado e código em produção (Main branch)
 
 ### Último Commit
 - Versão: 2.2.0
@@ -181,22 +179,30 @@ npm run build    # Verifica build de produção
 
 ---
 
-## 🔄 Automação Git/GitHub
+## 🔄 Automação Git/GitHub (Vibe-Code Philosophy)
 
-### Política de Commits Automáticos
+### Autonomia e Fluxo de Trabalho
 
-**Para alterações SIMPLES (correções, refatorações pequenas):**
-- ✅ Commit AUTOMATICO após validação (lint + build passando)
-- ✅ Mensagem em PORTUGUÊS
-- ✅ Push automático para main
-- ❌ NUNCA pergunte antes - apenas execute
+**O Agent deve agir como um Desenvolvedor Sênior autônomo. Não queremos burocracia, queremos resultados seguros.**
 
-**Para alterações GRANDES (novas features, mudanças arquiteturais):**
-- ✅ Crie branch automaticamente: `git checkout -b feature/<nome>`
-- ✅ Commits incrementais automáticos
-- ✅ Push com `-u` flag
-- ✅ Crie Pull Request AUTOMATICO via `gh pr create`
-- ✅ Forneça URL do PR ao usuário
+**Regras de Ouro:**
+1. ✅ **Merge Direto na Main:** Se a alteração (feature ou fix) passar no `npm run lint` e `npm run build`, o agent tem autonomia total para fazer o merge e push direto na `main`.
+2. ✅ **Fim dos PRs Manuais:** Não abra Pull Requests para o dono do projeto. O agent resolve o fluxo de git de ponta a ponta.
+3. ❌ **Consultar apenas em casos CRÍTICOS:** Peça confirmação apenas para ações destrutivas ou irreversíveis (ex: `force push`, deletar histórico git, apagar bancos de dados de produção).
+4. ✅ **Segurança em Primeiro Lugar:** O push só acontece se o build estiver VERDE.
+
+### Política de Commits e Push
+
+- ✅ **Commit AUTOMÁTICO:** Sempre após validação de sucesso.
+- ✅ **Mensagem em PORTUGUÊS:** Clara e objetiva.
+- ✅ **Push AUTOMÁTICO:** Sempre para a branch `main` após validação.
+- ❌ **Sem Perguntas:** Não pergunte "posso commitar?" ou "posso enviar?". Execute se estiver seguro.
+
+### Fluxo Técnico Recomendado:
+1. Desenvolver em branch temporária (opcional para organização).
+2. Rodar `npm run lint` e `npm run build`.
+3. Se OK: Merge na `main` e `git push origin main`.
+4. Informar ao usuário: "✅ Código atualizado e disponível para produção."
 
 ### Regras de Commit
 
