@@ -7,21 +7,22 @@ import { getContactMessageById, markMessageAsRead, deleteContactMessage } from "
 import { useToast } from "@/lib/toast";
 import { ArrowLeft, Check, X, Phone, Mail, Calendar, Trash2 } from "lucide-react";
 
-export default function MessageDetailPage({ params }: { params: { id: string } }) {
+export default async function MessageDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { addToast } = useToast();
   const [message, setMessage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const resolvedParams = use(params);
 
   useEffect(() => {
     const loadMessage = async () => {
       try {
-        const result = await getContactMessageById(params.id);
+        const result = await getContactMessageById(resolvedParams.id);
         if (result.success && result.data) {
           setMessage(result.data);
           // Auto mark as read if unread
           if (result.data.status === "unread") {
-            await markMessageAsRead(params.id, true);
+            await markMessageAsRead(resolvedParams.id, true);
             result.data.status = "read";
             setMessage(result.data);
           }
@@ -38,13 +39,13 @@ export default function MessageDetailPage({ params }: { params: { id: string } }
     };
 
     loadMessage();
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this message?")) return;
 
     try {
-      const result = await deleteContactMessage(params.id);
+      const result = await deleteContactMessage(resolvedParams.id);
       if (result.success) {
         addToast("Message deleted successfully", "success");
         router.push("/admin/messages");

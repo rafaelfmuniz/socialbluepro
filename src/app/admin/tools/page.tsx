@@ -359,91 +359,164 @@ export default function MarketingToolsPage() {
 
       {/* Links List Tab */}
       {activeTab === "links" && (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          {loading ? (
-            <div className="p-12 text-center">
-              <Loader2 className="animate-spin mx-auto text-accent" size={32} />
-            </div>
-          ) : links.length === 0 ? (
-            <div className="p-12 text-center text-slate-500">
-              <Link2 size={48} className="mx-auto mb-4 opacity-50" />
-              <p className="font-bold">Nenhum link criado ainda</p>
-              <p className="text-sm">Use o URL Builder para criar seu primeiro link</p>
-            </div>
-          ) : (
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Link Curto</th>
-                  <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Destino</th>
-                  <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Cliques</th>
-                  <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Status</th>
-                  <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {links.map((link) => (
-                  <tr key={link.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <a 
-                          href={`https://socialbluepro.com/r/${link.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-bold text-accent hover:underline"
-                        >
-                          /r/{link.slug}
-                        </a>
+        <div className="space-y-4">
+          {/* Desktop Table */}
+          <div className="hidden md:block bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            {loading ? (
+              <div className="p-12 text-center">
+                <Loader2 className="animate-spin mx-auto text-accent" size={32} />
+              </div>
+            ) : links.length === 0 ? (
+              <div className="p-12 text-center text-slate-500">
+                <Link2 size={48} className="mx-auto mb-4 opacity-50" />
+                <p className="font-bold">Nenhum link criado ainda</p>
+                <p className="text-sm">Use o URL Builder para criar seu primeiro link</p>
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Link Curto</th>
+                    <th className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest text-slate-500">Destino</th>
+                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Cliques</th>
+                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Status</th>
+                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest text-slate-500">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {links.map((link) => (
+                    <tr key={link.id} className="hover:bg-slate-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <a 
+                            href={`https://socialbluepro.com/r/${link.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-accent hover:underline"
+                          >
+                            /r/{link.slug}
+                          </a>
+                          <ExternalLink size={14} className="text-slate-400" />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-slate-600 truncate max-w-[300px]" title={link.destination}>
+                          {link.destination.replace("https://socialbluepro.com", "")}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="font-bold text-slate-700">{link.clicks}</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                          link.active 
+                            ? "bg-green-50 text-green-700" 
+                            : "bg-slate-100 text-slate-500"
+                        }`}>
+                          {link.active ? "Ativo" : "Inativo"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => handleCopyUrl(`https://socialbluepro.com/r/${link.slug}`)}
+                            className="p-2 text-slate-500 hover:text-accent hover:bg-slate-100 rounded-lg transition-colors"
+                            title="Copiar link"
+                          >
+                            <Copy size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleToggleLink(link.id)}
+                            className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title={link.active ? "Desativar" : "Ativar"}
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteLink(link.id)}
+                            className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Excluir"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {loading ? (
+              <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
+                <Loader2 className="animate-spin mx-auto text-accent" size={32} />
+              </div>
+            ) : links.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
+                <Link2 size={48} className="mx-auto mb-4 opacity-50" />
+                <p className="font-bold">Nenhum link criado ainda</p>
+                <p className="text-sm">Use o URL Builder para criar seu primeiro link</p>
+              </div>
+            ) : (
+              links.map((link) => (
+                <div key={link.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <a 
+                        href={`https://socialbluepro.com/r/${link.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-black text-accent text-lg flex items-center gap-2 hover:underline"
+                      >
+                        /r/{link.slug}
                         <ExternalLink size={14} className="text-slate-400" />
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-slate-600 truncate max-w-[300px]" title={link.destination}>
+                      </a>
+                      <p className="text-xs text-slate-500 truncate max-w-[200px] mt-1">
                         {link.destination.replace("https://socialbluepro.com", "")}
                       </p>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="font-bold text-slate-700">{link.clicks}</span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                        link.active 
-                          ? "bg-green-50 text-green-700" 
-                          : "bg-slate-100 text-slate-500"
-                      }`}>
-                        {link.active ? "Ativo" : "Inativo"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center gap-2">
-                        <button
-                          onClick={() => handleCopyUrl(`https://socialbluepro.com/r/${link.slug}`)}
-                          className="p-2 text-slate-500 hover:text-accent hover:bg-slate-100 rounded-lg transition-colors"
-                          title="Copiar link"
-                        >
-                          <Copy size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleToggleLink(link.id)}
-                          className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title={link.active ? "Desativar" : "Ativar"}
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLink(link.id)}
-                          className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Excluir"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                      link.active 
+                        ? "bg-green-50 text-green-700" 
+                        : "bg-slate-100 text-slate-500"
+                    }`}>
+                      {link.active ? "Ativo" : "Inativo"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 py-2 border-y border-slate-100">
+                    <div className="flex-1 text-center border-r border-slate-100">
+                      <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold">Cliques</span>
+                      <span className="block text-lg font-black text-slate-900">{link.clicks}</span>
+                    </div>
+                    <div className="flex-1 flex justify-around">
+                      <button
+                        onClick={() => handleCopyUrl(`https://socialbluepro.com/r/${link.slug}`)}
+                        className="p-2 text-slate-400 hover:text-accent bg-slate-50 rounded-lg transition-all"
+                      >
+                        <Copy size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleToggleLink(link.id)}
+                        className="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg transition-all"
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLink(link.id)}
+                        className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 rounded-lg transition-all"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
 

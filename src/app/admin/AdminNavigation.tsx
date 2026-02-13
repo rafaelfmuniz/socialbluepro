@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils";
 import { IMAGES } from "@/lib/constants";
 import { useState, useEffect } from "react";
 import { useToast } from "@/lib/toast";
-import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, Bell, BarChart2, Target, ArrowUp, Link2 } from "lucide-react";
+import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, BarChart2, Target, ArrowUp, Link2 } from "lucide-react";
+import { NotificationsBell } from "@/components/admin/NotificationsBell";
+import { AdminFooter } from "@/components/admin/AdminFooter";
 
 const navItems = [
    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -173,18 +175,7 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
                </div>
               
               <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-                 <button 
-                   onClick={() => addToast("No new notifications", "info")}
-                   className="p-3 sm:p-3 bg-slate-50 rounded-xl sm:rounded-2xl text-slate-400 hover:text-accent transition-colors relative min-h-[44px] min-w-[44px] flex items-center justify-center"
-                 >
-                   <div className="sm:hidden">
-                     <Bell size={22} />
-                   </div>
-                   <div className="hidden sm:block">
-                     <Bell size={24} />
-                   </div>
-                   <span className="absolute top-3 right-3 sm:top-3 sm:right-3 w-2 h-2 bg-accent rounded-full border-2 border-white"></span>
-                 </button>
+                 <NotificationsBell />
                 <div className="h-8 sm:h-10 w-px bg-slate-200 mx-1 hidden md:block" />
                  <div className="hidden md:flex flex-col items-end">
                     <span className="text-sm font-black text-slate-900 uppercase tracking-tighter">SocialBluePro</span>
@@ -193,9 +184,12 @@ export default function AdminNavigation({ children, user }: AdminNavigationProps
               </div>
            </header>
  
-             <main className="flex-1 flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
-             {children}
-           </main>
+             <div className="flex-1 flex flex-col overflow-y-auto">
+               <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 animate-fade-up">
+                 {children}
+               </main>
+               <AdminFooter />
+             </div>
 
           {/* Scroll to Top Button */}
           {showScrollTop && (

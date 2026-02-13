@@ -153,108 +153,185 @@ export default function MessagesPage() {
             <p className="text-slate-500 font-bold">No messages found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-100">
-                <tr>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status</span>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Name</span>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Email</span>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Phone</span>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Message Preview</span>
-                  </th>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</span>
-                  </th>
-                  <th className="px-6 py-4 text-right">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {messages.map((message) => (
-                  <tr key={message.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Name</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Email</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Phone</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Message Preview</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</span>
+                    </th>
+                    <th className="px-6 py-4 text-right">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {messages.map((message) => (
+                    <tr key={message.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <span className={getStatusBadge(message.status)}>
+                          {message.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-black text-slate-900 text-sm uppercase tracking-wide">
+                          {message.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-slate-600 font-mono max-w-[200px] truncate">
+                          {message.email}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-slate-600 font-mono">{message.phone}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="max-w-[300px]">
+                          <p className="text-sm text-slate-600 line-clamp-2">
+                            {message.message}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2 text-sm text-slate-500 font-mono">
+                          <Calendar size={12} />
+                          {formatDate(message.created_at)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => router.push(`/admin/messages/${message.id}`)}
+                            className="p-2 text-slate-400 hover:text-accent hover:bg-accent/10 rounded-lg transition-all"
+                            title="View Details"
+                          >
+                            <Eye size={16} />
+                          </button>
+                          {message.status === "unread" && (
+                            <button
+                              onClick={() => handleMarkAsRead(message.id, true)}
+                              className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                              title="Mark as Read"
+                            >
+                              <Check size={16} />
+                            </button>
+                          )}
+                          {message.status === "read" && (
+                            <button
+                              onClick={() => handleMarkAsRead(message.id, false)}
+                              className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                              title="Mark as Unread"
+                            >
+                              <Eye size={16} className="opacity-50" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDelete(message.id)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {messages.map((message) => (
+                <div key={message.id} className="p-4 space-y-4 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
                       <span className={getStatusBadge(message.status)}>
                         {message.status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-black text-slate-900 text-sm uppercase tracking-wide">
+                      <h3 className="font-black text-slate-900 text-sm uppercase tracking-wide pt-2">
                         {message.name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-slate-600 font-mono max-w-[200px] truncate">
-                        {message.email}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-slate-600 font-mono">{message.phone}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="max-w-[300px]">
-                        <p className="text-sm text-slate-600 line-clamp-2">
-                          {message.message}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-sm text-slate-500 font-mono">
+                      </h3>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
                         <Calendar size={12} />
                         {formatDate(message.created_at)}
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => router.push(`/admin/messages/${message.id}`)}
-                          className="p-2 text-slate-400 hover:text-accent hover:bg-accent/10 rounded-lg transition-all"
-                          title="View Details"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        {message.status === "unread" && (
-                          <button
-                            onClick={() => handleMarkAsRead(message.id, true)}
-                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
-                            title="Mark as Read"
-                          >
-                            <Check size={16} />
-                          </button>
-                        )}
-                        {message.status === "read" && (
-                          <button
-                            onClick={() => handleMarkAsRead(message.id, false)}
-                            className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                            title="Mark as Unread"
-                          >
-                            <Eye size={16} className="opacity-50" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(message.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => router.push(`/admin/messages/${message.id}`)}
+                        className="p-2 text-slate-400 hover:text-accent hover:bg-accent/10 rounded-lg transition-all"
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(message.id)}
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm text-slate-600">
+                    <div className="flex items-center gap-2 font-mono text-xs">
+                      <Mail size={12} className="text-slate-400" />
+                      {message.email}
+                    </div>
+                    <div className="flex items-center gap-2 font-mono text-xs">
+                      <Phone size={12} className="text-slate-400" />
+                      {message.phone}
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <p className="text-sm text-slate-600 line-clamp-3 italic">
+                      "{message.message}"
+                    </p>
+                  </div>
+
+                  <div className="pt-2 flex justify-end">
+                    {message.status === "unread" ? (
+                      <button
+                        onClick={() => handleMarkAsRead(message.id, true)}
+                        className="flex items-center gap-2 text-xs font-bold text-green-600 uppercase tracking-wider px-3 py-2 bg-green-50 rounded-lg w-full justify-center"
+                      >
+                        <Check size={14} />
+                        Mark as Read
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleMarkAsRead(message.id, false)}
+                        className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider px-3 py-2 bg-slate-100 rounded-lg w-full justify-center"
+                      >
+                        <Eye size={14} className="opacity-50" />
+                        Mark as Unread
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
