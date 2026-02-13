@@ -71,16 +71,20 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-6">
             <div className="flex items-center space-x-5">
-               {["Services", "Service Area", "Testimonials", "About"].map((item) => (
+               {[
+                 { label: "Services", href: "/services" },
+                 { label: "About", href: "/about" },
+                 { label: "Contact", href: "/contact" }
+               ].map((item) => (
                  <Link
-                   key={item}
-                   href={`/#${item.toLowerCase().replace(' ', '-')}`}
+                   key={item.label}
+                   href={item.href}
                    className={cn(
                      "text-[10px] uppercase tracking-[0.2em] font-bold transition-all hover:text-accent relative group",
                      "text-white/90"
                    )}
                  >
-                   {item}
+                   {item.label}
                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
                  </Link>
                ))}
@@ -146,19 +150,23 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
                <span className="text-xs uppercase tracking-[0.4em] font-black text-accent-accessible mt-1 block">Landscaping</span>
            </div>
 
-             <div className="space-y-1 flex-1">
-                {["Services", "Service Area", "Testimonials", "About"].map((item) => (
-                 <Link
-                   key={item}
-                   href={`/#${item.toLowerCase().replace(' ', '-')}`}
-                   className="flex justify-between items-center text-xl font-bold text-slate-800 hover:text-accent transition-colors py-4 border-b border-slate-50 group"
-                   onClick={() => setIsMobileMenuOpen(false)}
-                 >
-                   {item}
-                   <ChevronRight size={18} className="text-slate-300 group-hover:text-accent transition-colors" />
-                 </Link>
-               ))}
-             </div>
+              <div className="space-y-1 flex-1">
+                 {[
+                   { label: "Services", href: "/services" },
+                   { label: "About", href: "/about" },
+                   { label: "Contact", href: "/contact" }
+                 ].map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="flex justify-between items-center text-xl font-bold text-slate-800 hover:text-accent transition-colors py-4 border-b border-slate-50 group"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                    <ChevronRight size={18} className="text-slate-300 group-hover:text-accent transition-colors" />
+                  </Link>
+                ))}
+              </div>
 
            <div className="space-y-6">
              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">

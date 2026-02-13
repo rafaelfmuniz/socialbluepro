@@ -42,10 +42,10 @@ export default function Footer({ onGetQuote }: FooterProps) {
           <div>
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-accent mb-6">Navigation</h4>
             <ul className="space-y-4 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
-               <li><Link href="#services" className="hover:text-white transition-colors flex items-center gap-2 group">Our Expertise <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li> 
-
+               <li><Link href="/services" className="hover:text-white transition-colors flex items-center gap-2 group">Our Expertise <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li> 
+               <li><Link href="/about" className="hover:text-white transition-colors flex items-center gap-2 group">About Us <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li>
+               <li><Link href="/contact" className="hover:text-white transition-colors flex items-center gap-2 group">Contact Us <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li>
                <li><button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center gap-2 group w-full text-left uppercase">Get Quote <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></button></li>
-               <li><button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center gap-2 group w-full text-left uppercase">Contact Us <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></button></li>
              </ul>
           </div> 
 
