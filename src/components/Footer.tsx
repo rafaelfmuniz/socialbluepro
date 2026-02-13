@@ -17,10 +17,10 @@ export default function Footer({ onGetQuote }: FooterProps) {
     <footer className="bg-slate-900 text-white pt-10 md:pt-12 pb-6 relative overflow-hidden border-t border-white/5">
       <div className="container mx-auto px-4 md:px-8 relative z-10 max-w-7xl">
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 mb-8 text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 mb-8">
           
-          {/* Brand Column */}
-          <div className="lg:col-span-3 space-y-4 flex flex-col items-center md:items-start">
+          {/* Brand Column - Centralizado em todos os breakpoints */}
+          <div className="lg:col-span-3 space-y-4 flex flex-col items-center text-center md:items-start md:text-left">
             <Link href="/" className="flex items-center gap-2.5">
               <img
                 src="/imgs/Imgs_WEBP/logo.webp"
@@ -34,7 +34,7 @@ export default function Footer({ onGetQuote }: FooterProps) {
             <p className="text-slate-400 leading-relaxed text-xs max-w-xs">
               Expert one-time landscaping, sod installation, decorative rock, mulch, hardscaping, and snow removal services since 2020.
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center md:justify-start">
               <Link href="https://www.instagram.com/socialbluepro/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:border-accent transition-all duration-300 group">
                 <Instagram size={16} className="group-hover:scale-110 transition-transform" />
               </Link>
@@ -45,16 +45,16 @@ export default function Footer({ onGetQuote }: FooterProps) {
           </div>
 
           {/* Service Areas */}
-          <div className="lg:col-span-4 flex flex-col items-center md:items-start">
-            <h4 className="text-[10px] uppercase tracking-[0.25em] font-black text-accent mb-4">Service Areas</h4>
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-left">
+          <div className="lg:col-span-4">
+            <h4 className="text-xs uppercase tracking-[0.25em] font-black text-accent mb-4 text-center md:text-left">Service Areas</h4>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 justify-items-center md:justify-items-start">
               {allLocations.map((loc) => (
-                <li key={loc.slug}>
+                <li key={loc.slug} className="w-full">
                   <Link 
                     href={`/locations/${loc.slug}`} 
-                    className="text-slate-400 hover:text-white transition-colors text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1.5 group"
+                    className="text-slate-400 hover:text-white transition-colors text-xs uppercase tracking-wider font-semibold flex items-center justify-center md:justify-start gap-1.5 group"
                   >
-                    <MapPin size={9} className="text-accent/60 group-hover:text-accent shrink-0" />
+                    <MapPin size={12} className="text-accent/60 group-hover:text-accent shrink-0 hidden md:block" />
                     <span className="truncate">{loc.name}</span>
                   </Link>
                 </li>
@@ -63,62 +63,62 @@ export default function Footer({ onGetQuote }: FooterProps) {
           </div>
 
           {/* Navigation */}
-          <div className="lg:col-span-2 flex flex-col items-center md:items-start">
-            <h4 className="text-[10px] uppercase tracking-[0.25em] font-black text-accent mb-4">Navigation</h4>
-            <ul className="space-y-2 text-slate-400 font-semibold uppercase text-[10px] tracking-wider flex flex-col items-center md:items-start">
+          <div className="lg:col-span-2">
+            <h4 className="text-xs uppercase tracking-[0.25em] font-black text-accent mb-4 text-center md:text-left">Navigation</h4>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-slate-400 font-semibold uppercase tracking-wider text-center md:text-left">
               <li>
-                <Link href="/services" className="hover:text-white transition-colors flex items-center gap-1.5 group">
-                  Services <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Link href="/services" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
+                  <span>Services</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-white transition-colors flex items-center gap-1.5 group">
-                  About <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Link href="/about" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
+                  <span>About</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors flex items-center gap-1.5 group">
-                  Contact <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Link href="/contact" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
+                  <span>Contact</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-white transition-colors flex items-center gap-1.5 group">
-                  FAQ <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Link href="/faq" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group py-1">
+                  <span>FAQ</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
                 </Link>
               </li>
-              <li>
-                <button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center gap-1.5 group text-left">
-                  Get Quote <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              <li className="col-span-2 md:col-span-1">
+                <button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1.5 group w-full py-1">
+                  <span>Get Quote</span> <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity hidden md:block" />
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Contact + Trust Badge Combined */}
-          <div className="lg:col-span-3 space-y-4 flex flex-col items-center md:items-start">
-            <h4 className="text-[10px] uppercase tracking-[0.25em] font-black text-accent mb-4">Contact</h4>
+          {/* Contact */}
+          <div className="lg:col-span-3 space-y-4">
+            <h4 className="text-xs uppercase tracking-[0.25em] font-black text-accent mb-4 text-center md:text-left">Contact</h4>
             <div className="space-y-3 flex flex-col items-center md:items-start">
-              <a href="tel:7207374607" className="flex items-center gap-3 group">
-                <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+              <a href="tel:7207374607" className="flex items-center justify-center md:justify-start gap-3 group w-full">
+                <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors shrink-0">
                   <Phone size={14} className="text-accent" />
                 </div>
-                <div>
+                <div className="min-w-0 text-center md:text-left">
                   <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Phone</p>
                   <span className="text-white font-bold text-sm">(720) 737-4607</span>
                 </div>
               </a>
-              <a href="mailto:contact@socialbluepro.com" className="flex items-center gap-3 group">
-                <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+              <a href="mailto:contact@socialbluepro.com" className="flex items-center justify-center md:justify-start gap-3 group w-full">
+                <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors shrink-0">
                   <Mail size={14} className="text-accent" />
                 </div>
-                <div>
+                <div className="min-w-0 text-center md:text-left">
                   <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Email</p>
                   <span className="text-white font-bold text-sm">contact@socialbluepro.com</span>
                 </div>
               </a>
             </div>
             
-            {/* Trust Badge - Compact */}
+            {/* Trust Badge */}
             <div className="flex items-center justify-center md:justify-start gap-2 mt-4 pt-4 border-t border-white/5 w-full">
               <div className="flex gap-0.5 text-accent">
                 {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
@@ -129,9 +129,9 @@ export default function Footer({ onGetQuote }: FooterProps) {
         </div>
 
         {/* Copyright Bar */}
-        <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-          <p className="text-center md:text-left">© {new Date().getFullYear()} SocialBluePro. All Rights Reserved.</p>
-          <div className="flex gap-6">
+        <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+          <p className="text-center md:text-left leading-relaxed">© {new Date().getFullYear()} SocialBluePro. All Rights Reserved.</p>
+          <div className="flex gap-6 flex-wrap justify-center">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
           </div>
