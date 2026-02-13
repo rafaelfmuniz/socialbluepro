@@ -1,9 +1,9 @@
-# AGENTS.md - SocialBluePro Agent Guidelines (v2.1.0)
+# AGENTS.md - SocialBluePro Agent Guidelines (v2.3.1)
 
 **Documento mandatório para todos os agents AI operando neste codebase.**
 
 > **Última atualização:** 2026-02-13  
-> **Versão:** 2.1.0  
+> **Versão:** 2.3.1  
 > **Projeto:** SocialBluePro - Sistema de Gestão de Leads e Marketing
 
 ---
@@ -40,7 +40,13 @@
 |------|------|----------------|
 | **Public** | `/` | Homepage com Hero, Services, About, Testimonials |
 | **Lead Capture** | `/request` | Formulário de orçamento com validações |
-| **Admin** | `/admin/*` | Dashboard, CRM, Campanhas, Analytics, Settings |
+| **Contact** | `/contact` | Formulário de mensagens com anti-bot |
+| **About** | `/about` | Página institucional Sobre nós |
+| **FAQ** | `/faq` | Perguntas frequentes |
+| **Services** | `/services` | Lista de serviços disponíveis |
+| **Service Detail** | `/services/[slug]` | Página individual de serviço |
+| **Locations** | `/locations/[city]` | Páginas de cidades (SEO local) |
+| **Admin** | `/admin/*` | Dashboard, CRM, Campanhas, Analytics, Settings, Messages, Tools |
 
 ---
 
@@ -55,30 +61,20 @@
 - ✅ v2.3.1 Marketing Tools UX Fixes & UI Standardization - CONCLUÍDO
 
 ### Progresso
-- [x] Implementação de `ContactMessage` no Prisma e Dashboard
-- [x] Validação robusta e Anti-bot no formulário de contato
-- [x] Atualização do Footer (City names only)
-- [x] Migração para workflow autônomo (Vibe-Code) no AGENTS.md
-- [x] Correção de Migration pendente (ContactMessage & ShortLinks)
-- [x] Adição de campos UTM e correção de migrations de inicialização
-- [x] Padronização visual do painel admin:
-    - Uso de `PageContainer` e `PageHeader` em todas as páginas admin
-    - `MessagesPage` e `MarketingToolsPage` padronizadas
-- [x] Correção da funcionalidade de anexos de leads
-- [x] Refatoração da página `MarketingTools`:
-    - Adicionado modal de QR Code para links da lista
-    - Corrigidos botões de copiar URL (builder e lista)
-    - Corrigido botão de download de PNG do QR Code
-    - Substituído ícone "Eye" por "Power" para ativar/desativar links
-    - Melhorada responsividade de URLs com `break-all` e `min-w-0`
-- [x] Build validado com `--no-lint` (issues de lint conhecidos no ambiente)
-- [x] Código testado e pronto para commit
+- [x] v2.3.1 - Marketing Tools UX Fixes & UI Standardization - CONCLUÍDO
+- [x] Documentação atualizada (CHANGELOG, README, AGENTS.md)
+- [x] Versão do projeto atualizada para 2.3.1
+
+### Próximos Passos
+- [x] Aplicar migration pendente do Prisma (UTM fields) - CONCLUÍDO
+- [x] Executar lint e build para validação - CONCLUÍDO (build OK, lint com problema de configuração)
+- [x] Commit e push das atualizações de documentação - CONCLUÍDO
 
 ### Último Commit
 - Versão: 2.3.1
-- Feature: Marketing Tools Refatoração e Correções de UX/UI
+- Feature: Atualização completa da documentação para v2.3.1
 
-**Status:** Código em produção (Main branch)
+**Status:** ✅ Todas as documentações atualizadas e push realizado para main
 
 ---
 

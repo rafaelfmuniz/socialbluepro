@@ -2,6 +2,95 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.3.1] - 2026-02-13
+
+### Marketing Tools UX Fixes & UI Standardization
+- **Correções de UX/UI no Marketing Tools:**
+  - Modal de QR Code para links da lista
+  - Botões de copiar URL corrigidos (builder e lista)
+  - Botão de download de PNG do QR Code funcional
+  - Ícone "Eye" substituído por "Power" para ativar/desativar links
+  - Responsividade de URLs melhorada com `break-all` e `min-w-0`
+- **Padronização visual do painel admin:**
+  - Uso de `PageContainer` e `PageHeader` em todas as páginas admin
+  - Páginas `MessagesPage` e `MarketingToolsPage` padronizadas
+- **Correções de UI mobile:**
+  - Footer harmonizado no mobile (alinhamento de Navigation e Contact)
+  - Dropdown de Service Areas corrigido
+  - Layout mobile do footer modernizado
+
+### Modified Files
+- `src/app/admin/tools/page.tsx` - Refatoração completa da UX
+- `src/components/admin/AdminFooter.tsx` - Melhorias visuais
+- `src/components/Footer.tsx` - Harmonização mobile
+- `src/components/Navbar.tsx` - Correção do dropdown
+
+---
+
+## [2.3.0] - 2026-02-13
+
+### Contact Message System & Local SEO v2.3.0
+- **Sistema de Mensagens de Contato:**
+  - Modelo `ContactMessage` no Prisma
+  - Dashboard de mensagens em `/admin/messages`
+  - Validação robusta e anti-bot no formulário de contato
+  - Página de contato dedicada em `/contact`
+- **Expansão de SEO Local:**
+  - Páginas institucionais: `/about`, `/faq`
+  - Páginas de serviço detalhadas: `/services/[slug]`
+  - Páginas de localização: `/locations/[city]`
+  - Dados de localidades do Colorado em `src/lib/locations-data.ts`
+  - Dados de serviços em `src/lib/services-data.ts`
+- **Footer atualizado:**
+  - Versão com nomes de cidades (SEO local)
+  - Links para páginas institucionais
+  - Design modernizado
+
+### New Files
+- `src/actions/contact.ts` - Server actions para mensagens de contato
+- `src/app/admin/messages/page.tsx` - Dashboard de mensagens
+- `src/app/admin/messages/[id]/page.tsx` - Detalhe da mensagem
+- `src/app/contact/page.tsx` - Página de contato pública
+- `src/app/about/page.tsx` - Página Sobre nós
+- `src/app/faq/page.tsx` - Página de FAQ
+- `src/app/services/page.tsx` - Página de serviços
+- `src/app/services/[slug]/page.tsx` - Página de serviço individual
+- `src/app/locations/[city]/page.tsx` - Página de cidade
+- `src/lib/locations-data.ts` - Dados das cidades do Colorado
+- `src/lib/services-data.ts` - Dados dos serviços
+
+### Database Changes
+- Adicionado modelo `ContactMessage` ao Prisma schema
+- Migration criada para tabela `contact_messages`
+
+---
+
+## [2.2.0] - 2026-02-12
+
+### Local SEO Architecture v2.2.0
+- **Arquitetura de Páginas de Serviço:**
+  - Estrutura dinâmica para páginas de serviço individuais
+  - Client components otimizados para SEO: `ServicePageClient.tsx`
+  - Slugs otimizados: sod-installation, hardscaping, weed-control, etc.
+- **Página de Solicitação de Orçamento Reformulada:**
+  - Estilo `QuoteModal` aplicado à página `/request`
+  - Design consistente com o modal do Hero
+  - Validações em tempo real mantidas
+- **Rastreamento de Leads Aprimorado:**
+  - Leads orgânicos/diretos rastreados com `source=direct`
+  - Integração de marketing analytics ao dashboard
+
+### New Files
+- `src/app/services/[slug]/ServicePageClient.tsx` - Client component para páginas de serviço
+- `src/app/request/page.tsx` - Reformulada com estilo QuoteModal
+
+### Modified Files
+- `src/app/admin/page.tsx` - Adicionado Marketing Analytics ao dashboard
+- `src/actions/leads.ts` - Rastreamento de source=direct
+- `src/components/ui/QuoteModal.tsx` - Estilos reutilizáveis extraídos
+
+---
+
 ## [2.1.0] - 2026-02-12
 
 ### Marketing Intelligence & Tools
@@ -305,7 +394,7 @@ A opção 4 (Desinstalar) agora:
 
 ## Versão
 
-Versão atual: **2.1.0**
+Versão atual: **2.3.1**
 
 ## Próximas Lançamentos
 

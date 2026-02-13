@@ -366,16 +366,25 @@ Formulário completo com validações:
 | `/login` | Login admin | LoginPage |
 | `/terms` | Termos de serviço | TermsPage |
 | `/privacy` | Política de privacidade | PrivacyPage |
+| `/about` | Sobre nós | AboutPage |
+| `/faq` | Perguntas frequentes | FAQPage |
+| `/contact` | Formulário de contato | ContactPage |
+| `/services` | Lista de serviços | ServicesPage |
+| `/services/[slug]` | Página de serviço individual | ServicePageClient |
+| `/locations/[city]` | Página de cidade (SEO local) | LocationPageClient |
 
 ### Admin (Protegidas)
 | Rota | Descrição | Funcionalidades |
 |------|-----------|----------------|
-| `/admin` | Dashboard | Métricas, leads recentes |
-| `/admin/leads` | CRM | Lista, filtros, export |
+| `/admin` | Dashboard | Métricas, leads recentes, analytics de marketing |
+| `/admin/leads` | CRM | Lista, filtros, export, UTM tracking |
 | `/admin/campaigns` | Email Marketing | Templates, editor, envio |
 | `/admin/analytics` | Analytics | Métricas, tabela detalhada |
 | `/admin/remarketing` | Automação | Segmentos, campanhas agendadas |
 | `/admin/settings` | Configurações | SMTP, users, integrações |
+| `/admin/messages` | Mensagens de Contato | Lista de mensagens, detalhes |
+| `/admin/messages/[id]` | Detalhe da Mensagem | Visualização completa |
+| `/admin/tools` | Marketing Tools | URL Shortener, QR Code Generator |
 
 ### API Routes
 | Rota | Método | Descrição |
@@ -385,6 +394,7 @@ Formulário completo com validações:
 | `/api/track/open/[id]` | GET | Tracking pixel |
 | `/api/track/click/[id]` | GET | Tracking de cliques |
 | `/api/uploads/[...path]` | GET | Servir arquivos |
+| `/r/[slug]` | GET | Redirect de short links |
 
 ---
 
@@ -636,5 +646,5 @@ Para dúvidas ou suporte:
 
 ---
 
-**Last Update:** 2026-01-30  
-**Version:** 2.0.0
+**Last Update:** 2026-02-13  
+**Version:** 2.3.1
