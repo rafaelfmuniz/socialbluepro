@@ -11,7 +11,7 @@ set -euo pipefail
 # ============================================
 # CONFIGURAÇÕES
 # ============================================
-readonly SCRIPT_VERSION="2.0.1"
+readonly SCRIPT_VERSION="2.1.0"
 readonly INSTALL_DIR="/opt/socialbluepro"
 readonly SERVICE_NAME="socialbluepro"
 readonly REPO_URL="https://github.com/rafaelfmuniz/socialbluepro.git"

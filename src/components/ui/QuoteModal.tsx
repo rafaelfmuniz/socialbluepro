@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, CheckCircle, Shield, ChevronRight, AlertCircle, UploadCloud } from "lucide-react";
 import { captureLeadWithAttachments } from "@/actions/leads";
@@ -39,6 +40,7 @@ const TIMEFRAME_OPTIONS = ["As soon as possible", "Within 2 weeks", "Within a mo
 
 export default function QuoteModal({ isOpen, onClose, initialService }: QuoteModalProps) {
   const { addToast } = useToast();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -392,6 +394,19 @@ export default function QuoteModal({ isOpen, onClose, initialService }: QuoteMod
     }
     // Append validated files from state (already filtered by size/type)
     files.forEach(file => newFormData.append('photos', file));
+
+    // Capture UTM parameters from URL
+    const utm_source = searchParams.get('utm_source');
+    const utm_medium = searchParams.get('utm_medium');
+    const utm_campaign = searchParams.get('utm_campaign');
+    const utm_term = searchParams.get('utm_term');
+    const utm_content = searchParams.get('utm_content');
+
+    if (utm_source) newFormData.append('utm_source', utm_source);
+    if (utm_medium) newFormData.append('utm_medium', utm_medium);
+    if (utm_campaign) newFormData.append('utm_campaign', utm_campaign);
+    if (utm_term) newFormData.append('utm_term', utm_term);
+    if (utm_content) newFormData.append('utm_content', utm_content);
 
     const result = await captureLeadWithAttachments(newFormData);
     console.log("Capture lead result:", result);

@@ -186,7 +186,7 @@ socialbluepro/
 │   │   ├── 📄 layout.tsx                # Root layout
 │   │   ├── 📄 globals.css               # Estilos globais Tailwind
 │   │   ├── 📁 login/                    # Página de login
-│   │   ├── 📁 request-service/          # Formulário de orçamento
+│   │   ├── 📁 request/          # Formulário de orçamento
 │   │   ├── 📁 terms/                    # Termos de serviço
 │   │   ├── 📁 privacy/                  # Política de privacidade
 │   │   ├── 📁 admin/                    # Área administrativa
@@ -307,7 +307,7 @@ socialbluepro/
 - **Lead Magnet**: Captura de leads final
 - **Quote Modal**: Abre via CTA, trigger inteligente (mouseleave ou 45s)
 
-#### Request Service (`/request-service`)
+#### Request Service (`/request`)
 Formulário completo com validações:
 - **Campos**: Nome, telefone (validação US), email, endereço, cidade, ZIP
 - **Validações em tempo real**: Telefone, email (bloqueio de domínios temporários), ZIP Colorado
@@ -362,7 +362,7 @@ Formulário completo com validações:
 | Rota | Descrição | Componentes Principais |
 |------|-----------|----------------------|
 | `/` | Homepage | Hero, Services, About, Testimonials |
-| `/request-service` | Formulário de orçamento | RequestFormContent |
+| `/request` | Formulário de orçamento | RequestFormContent |
 | `/login` | Login admin | LoginPage |
 | `/terms` | Termos de serviço | TermsPage |
 | `/privacy` | Política de privacidade | PrivacyPage |

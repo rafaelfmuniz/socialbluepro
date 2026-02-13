@@ -39,7 +39,7 @@
 | Área | Rota | Funcionalidade |
 |------|------|----------------|
 | **Public** | `/` | Homepage com Hero, Services, About, Testimonials |
-| **Lead Capture** | `/request-service` | Formulário de orçamento com validações |
+| **Lead Capture** | `/request` | Formulário de orçamento com validações |
 | **Admin** | `/admin/*` | Dashboard, CRM, Campanhas, Analytics, Settings |
 
 ---
@@ -51,28 +51,22 @@
 **SEMPRE que iniciar uma sessão, verifique o que está em andamento:**
 
 ### Tarefa Atual
-- Atualizando AGENTS.md para melhorar continuidade entre modelos e workflow vibe-coding
+- ✅ v2.1.0 Marketing Intelligence & Tools - CONCLUÍDO
 
 ### Progresso
-- [x] Análise da documentação OpenCode
-- [x] Planejamento das novas seções
-- [x] Implementação das seções no AGENTS.md
-- [ ] Teste e validação
-
-### Arquivos em Modificação
-- `AGENTS.md` - Documento principal de guidelines
-
-### Contexto Importante
-- Novas seções focam em: continuidade entre modelos, controle de esquentamento (Google models), automação Git
-- Manter versão 2.0.0 (não alterar até autorização)
-- Commits automáticos em português
-- Checkpoints a cada 3-5 ações
+- [x] Fase 1: Prisma schema com UTM fields + ShortLink model
+- [x] Fase 2: Renomeado `/request-service` → `/request`
+- [x] Fase 3: Backend captura UTMs (leads.ts)
+- [x] Fase 3: Frontend captura UTMs (QuoteModal, request/page.tsx)
+- [x] Fase 4: SourceBadge + coluna Source + Marketing Data section
+- [x] Fase 5: URL Shortener com `/r/[slug]` + QR Codes
+- [x] Fase 6: Version bump 2.1.0 + CHANGELOG
 
 ### Último Commit
-- Hash: `97f0de9`
-- Mensagem: "Fix mobile header spacing - use h2 element like desktop"
+- Versão: 2.1.0
+- Feature: Marketing Intelligence & Tools
 
-**Para próximo modelo:** Leia esta seção primeiro, verifique `git log --oneline -3`, e confirme: "Continuando atualização do AGENTS.md. Correto?"
+**Para próximo modelo:** v2.1.0 concluído. Sistema pronto para produção.
 
 ---
 
@@ -338,7 +332,7 @@ src/
 │   ├── page.tsx           # Homepage
 │   ├── layout.tsx         # Root layout
 │   ├── login/page.tsx     # Login
-│   ├── request-service/   # Formulário
+│   ├── request/   # Formulário
 │   └── admin/             # Área admin
 │       ├── page.tsx       # Dashboard
 │       ├── layout.tsx     # Layout protegido

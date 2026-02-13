@@ -121,6 +121,14 @@ model Lead {
   assigned_to      String?
   assigned_at      DateTime?
   attachments      Json            @default("[]")
+
+  // UTM Tracking
+  utm_source       String?
+  utm_medium       String?
+  utm_campaign     String?
+  utm_term         String?
+  utm_content      String?
+
   created_at       DateTime        @default(now())
   updated_at       DateTime        @updatedAt
   emailTrackings   EmailTracking[]
@@ -294,4 +302,16 @@ model ScheduledCampaign {
   updated_at       DateTime @updatedAt
 
   @@map("scheduled_campaign")
+}
+
+model ShortLink {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  destination String
+  created_at  DateTime @default(now())
+  clicks      Int      @default(0)
+  active      Boolean  @default(true)
+
+  @@index([slug])
+  @@map("short_links")
 }

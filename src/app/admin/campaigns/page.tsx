@@ -223,7 +223,7 @@ const MARKETING_TEMPLATES = [
         <p>Our Colorado-certified team will transform your yard in just 1-2 days, leaving you with a pristine landscape ready for spring entertaining.</p>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="https://socialbluepro.com/request-service?utm_source=email_marketing&utm_campaign=spring_cleanup" class="cta-button">📅 Book Your Spring Clean Up</a>
+            <a href="https://socialbluepro.com/request?utm_source=email_marketing&utm_campaign=spring_cleanup" class="cta-button">📅 Book Your Spring Clean Up</a>
         </p>
         
         <p><strong>Limited spots available</strong> - Schedule before March 31st to secure your 20% discount!</p>
@@ -280,7 +280,7 @@ const MARKETING_TEMPLATES = [
         <p>Don&apos;t risk slips, falls, or being snowed in. Our professional team handles everything from light dustings to major snowstorms.</p>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="https://socialbluepro.com/request-service?utm_source=email_marketing&utm_campaign=snow_removal" class="cta-button">❄️ Get Your Winter Quote</a>
+            <a href="https://socialbluepro.com/request?utm_source=email_marketing&utm_campaign=snow_removal" class="cta-button">❄️ Get Your Winter Quote</a>
         </p>
         
         <p><strong>Early Bird Special:</strong> Sign a seasonal contract before November 15th and receive 15% off!</p>
@@ -339,7 +339,7 @@ const MARKETING_TEMPLATES = [
         <p><strong>Special Offer:</strong> First-time customers in {city} receive a <strong>FREE weed assessment</strong> and 25% off initial treatment!</p>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="https://socialbluepro.com/request-service?utm_source=email_marketing&utm_campaign=weed_cleanup" class="cta-button">🚫 Schedule Free Assessment</a>
+            <a href="https://socialbluepro.com/request?utm_source=email_marketing&utm_campaign=weed_cleanup" class="cta-button">🚫 Schedule Free Assessment</a>
         </p>
         
         <p>Take back your yard today!<br>
@@ -396,7 +396,7 @@ const MARKETING_TEMPLATES = [
         <p><strong>Limited Time Offer:</strong> Schedule your sod installation this month and receive <strong>FREE soil amendment and fertilization</strong> ($500 value)!</p>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="https://socialbluepro.com/request-service?utm_source=email_marketing&utm_campaign=sod_installation" class="cta-button">🏡 Get Instant Quote</a>
+            <a href="https://socialbluepro.com/request?utm_source=email_marketing&utm_campaign=sod_installation" class="cta-button">🏡 Get Instant Quote</a>
         </p>
         
         <p>Transform your outdoor space,<br>
@@ -453,7 +453,7 @@ const MARKETING_TEMPLATES = [
         <p><strong>Exclusive Offer:</strong> Book a design consultation and receive a <strong>3D rendering of your project</strong> ($750 value) absolutely free!</p>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="https://socialbluepro.com/request-service?utm_source=email_marketing&utm_campaign=hardscaping" class="cta-button">✨ Schedule Design Consultation</a>
+            <a href="https://socialbluepro.com/request?utm_source=email_marketing&utm_campaign=hardscaping" class="cta-button">✨ Schedule Design Consultation</a>
         </p>
         
         <p>Elevate your outdoor living,<br>
@@ -510,7 +510,7 @@ const MARKETING_TEMPLATES = [
         <p><strong>Spring Special:</strong> Book your mulch refresh and receive <strong>FREE bed edging and weeding</strong> ($300 value)!</p>
         
         <p style="text-align: center; margin: 30px 0;">
-            <a href="https://socialbluepro.com/request-service?utm_source=email_marketing&utm_campaign=mulch_seasonal" class="cta-button">🎨 Get Your Quote Now</a>
+            <a href="https://socialbluepro.com/request?utm_source=email_marketing&utm_campaign=mulch_seasonal" class="cta-button">🎨 Get Your Quote Now</a>
         </p>
         
         <p>Boost your home&apos;s value instantly!<br>

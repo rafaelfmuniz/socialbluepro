@@ -2,6 +2,36 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.1.0] - 2026-02-12
+
+### Marketing Intelligence & Tools
+- **UTM Tracking:** Full UTM parameter capture (source, medium, campaign, term, content) for all leads
+- **URL Simplification:** Renamed `/request-service` to `/request` for cleaner marketing URLs
+- **Internal URL Shortener:** Create short links like `/r/verao` → `https://example.com/request?utm_source=instagram`
+- **QR Code Generator:** Generate QR codes for marketing materials (flyers, business cards)
+- **Source Badges:** Color-coded badges for lead sources (Google, Instagram, Facebook, etc.)
+- **Marketing Data Section:** New section in Lead Detail Modal showing UTM parameters and first touchpoint
+
+### New Files
+- `src/components/ui/SourceBadge.tsx` - Badge component for lead sources
+- `src/actions/shortlinks.ts` - Server actions for URL shortener CRUD
+- `src/app/r/[slug]/route.ts` - Redirect handler for short links
+- `src/app/admin/tools/page.tsx` - Marketing Tools admin page
+
+### Modified Files
+- `prisma/schema.prisma` - Added UTM fields to Lead model, added ShortLink model
+- `src/actions/leads.ts` - Updated to capture UTM parameters
+- `src/components/ui/QuoteModal.tsx` - Added useSearchParams, captures UTMs
+- `src/app/request/page.tsx` - Renamed from request-service, updated UTM capture
+- `src/app/admin/leads/page.tsx` - Added Source column
+- `src/components/ui/LeadDetailModal.tsx` - Added Marketing Data section
+
+### Database Changes
+- Added `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` fields to `Lead` model
+- Added `ShortLink` model for URL shortener
+
+---
+
 ## [2.0.1] - 2026-01-31
 
 ### Admin Panel UI Improvements
@@ -275,7 +305,7 @@ A opção 4 (Desinstalar) agora:
 
 ## Versão
 
-Versão atual: **2.0.1**
+Versão atual: **2.1.0**
 
 ## Próximas Lançamentos
 

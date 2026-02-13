@@ -31,6 +31,7 @@ import {
   validateColoradoZipClient,
   validateEmailClient 
 } from "@/lib/client-validation";
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 const SERVICES_OPTIONS = [
   "Sod Installation",
@@ -353,14 +354,18 @@ function RequestFormContent() {
     }
     files.forEach(file => newFormData.append('photos', file));
 
-    // Capture Campaign Data from URL
-    const source = searchParams.get('utm_source');
-    const medium = searchParams.get('utm_medium');
-    const campaign = searchParams.get('utm_campaign');
+    // Capture UTM parameters from URL
+    const utm_source = searchParams.get('utm_source');
+    const utm_medium = searchParams.get('utm_medium');
+    const utm_campaign = searchParams.get('utm_campaign');
+    const utm_term = searchParams.get('utm_term');
+    const utm_content = searchParams.get('utm_content');
 
-    if (source) newFormData.append('lead_source', source);
-    if (medium) newFormData.append('marketing_medium', medium);
-    if (campaign) newFormData.append('campaign_id', campaign);
+    if (utm_source) newFormData.append('utm_source', utm_source);
+    if (utm_medium) newFormData.append('utm_medium', utm_medium);
+    if (utm_campaign) newFormData.append('utm_campaign', utm_campaign);
+    if (utm_term) newFormData.append('utm_term', utm_term);
+    if (utm_content) newFormData.append('utm_content', utm_content);
 
     const formElement = e.currentTarget;
 

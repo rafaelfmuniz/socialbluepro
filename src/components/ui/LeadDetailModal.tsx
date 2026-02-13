@@ -1,13 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Phone, MapPin, Clock, FileText, Tag, MessageSquare, User, CheckCircle, Download, Trash2, Edit } from "lucide-react";
+import { X, Mail, Phone, MapPin, Clock, FileText, Tag, MessageSquare, User, CheckCircle, Download, Trash2, Edit, Globe } from "lucide-react";
 import { Attachment } from "@/actions/leads";
 import { getLeadNotes, addLeadNote, deleteLeadNote, LeadNote } from "@/actions/lead-notes";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/lib/toast";
 import { useState, useEffect, useCallback } from "react";
 import { resolveAttachmentUrl } from "@/lib/attachments";
+import { SourceBadge } from "./SourceBadge";
 
 interface Lead {
   id: string;
@@ -27,6 +28,12 @@ interface Lead {
   assigned_at?: string | null;
   assigned_user_name?: string | null;
   created_at: string;
+  // UTM Tracking
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
 }
 
 interface LeadDetailModalProps {
@@ -371,11 +378,48 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                     </h3>
                     <div className="space-y-4">
                       <div>
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Service Required</p>
-                        <p className="text-slate-700 font-bold text-lg">{lead.service_interest}</p>
+                         <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Service Required</p>
+                         <p className="text-slate-700 font-bold text-lg">{lead.service_interest}</p>
+                       </div>
+                     </div>
+                   </section>
+
+                  {/* Marketing Data */}
+                  {(lead.utm_source || lead.utm_medium || lead.utm_campaign) && (
+                    <section className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                      <h3 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-4 flex items-center gap-2">
+                        <Globe size={16} /> Marketing Data
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-1">
+                            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Source</p>
+                            <SourceBadge source={lead.utm_source} medium={lead.utm_medium} />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          {lead.utm_campaign && (
+                            <div>
+                              <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Campaign</p>
+                              <p className="text-slate-700 font-bold text-sm">{lead.utm_campaign}</p>
+                            </div>
+                          )}
+                          {lead.utm_term && (
+                            <div>
+                              <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Term</p>
+                              <p className="text-slate-700 font-bold text-sm">{lead.utm_term}</p>
+                            </div>
+                          )}
+                          {lead.utm_content && (
+                            <div>
+                              <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Content</p>
+                              <p className="text-slate-700 font-bold text-sm">{lead.utm_content}</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </section>
+                    </section>
+                  )}
 
                   {/* Project Description */}
                   {lead.description && (

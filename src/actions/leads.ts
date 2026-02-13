@@ -107,6 +107,12 @@ export async function captureLead(formData: {
   description?: string;
   notes?: string;
   attachments?: Attachment[];
+  // UTM Tracking
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
 }) {
   try {
     const lead = await prisma.lead.create({
@@ -338,6 +344,14 @@ export async function captureLeadWithAttachments(formData: FormData) {
     const budget = formData.get("budget") as string;
     const timeframe = formData.get("timeframe") as string;
     const files = formData.getAll("photos") as File[];
+
+    // Extract UTM parameters
+    const utm_source = formData.get("utm_source") as string || undefined;
+    const utm_medium = formData.get("utm_medium") as string || undefined;
+    const utm_campaign = formData.get("utm_campaign") as string || undefined;
+    const utm_term = formData.get("utm_term") as string || undefined;
+    const utm_content = formData.get("utm_content") as string || undefined;
+
     if (!name || !email || !phone || !zip || !service) {
       return { success: false, error: "Missing required fields" };
     }
@@ -385,7 +399,9 @@ export async function captureLeadWithAttachments(formData: FormData) {
       address_line1, city, state, zip_code: zip,
       service_interest: service, description,
       notes: `Budget: ${budget}, Timeframe: ${timeframe}`,
-      attachments: []
+      attachments: [],
+      // UTM Tracking
+      utm_source, utm_medium, utm_campaign, utm_term, utm_content
     });
 
     if (!leadCreationResult.success) {

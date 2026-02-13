@@ -4,11 +4,12 @@ import { deleteLead, updateLeadStatus, exportLeads, assignLead, getLeads, Attach
 import { getUsers } from "@/actions/users";
 import LeadDetailModal from "@/components/ui/LeadDetailModal";
 import { logLeadActivity } from "@/actions/lead-notes";
-import { Search, Download, Filter, MapPin, MessageSquare, Phone, Mail, Trash2, Eye, Loader2, User } from "lucide-react";
+import { Search, Download, Filter, MapPin, MessageSquare, Phone, Mail, Trash2, Eye, Loader2, User, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/lib/toast";
 import { resolveAttachmentUrl } from "@/lib/attachments";
 import { AdminFooter } from "@/components/admin/AdminFooter";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 
 interface Lead {
   id: string;
@@ -28,6 +29,10 @@ interface Lead {
   assigned_at?: string | null;
   assigned_user_name?: string | null;
   created_at: string;
+  // UTM Tracking
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
 }
 
 export default function LeadsManagement() {
@@ -499,16 +504,17 @@ export default function LeadsManagement() {
         <div className="hidden lg:block overflow-x-auto">
            <table className="w-full text-left">
               <thead className="bg-slate-50/50 text-slate-400 text-xs uppercase tracking-[0.2em] border-b border-slate-100">
-                <tr>
-                  <th className="px-6 py-5 font-black min-w-[180px] max-w-[220px]">Contact</th>
-                  <th className="px-4 py-5 font-black min-w-[120px]">Service</th>
-                  <th className="px-4 py-5 font-black min-w-[100px]">Status</th>
-                  <th className="px-4 py-5 font-black min-w-[140px]">Assigned To</th>
-                  <th className="px-4 py-5 font-black min-w-[150px] max-w-[200px]">Details</th>
-                  <th className="px-4 py-5 font-black min-w-[100px] text-right">Date</th>
-                  <th className="px-6 py-5 font-black min-w-[80px]">Actions</th>
-                </tr>
-             </thead>
+                 <tr>
+                   <th className="px-6 py-5 font-black min-w-[180px] max-w-[220px]">Contact</th>
+                   <th className="px-4 py-5 font-black min-w-[120px]">Service</th>
+                   <th className="px-4 py-5 font-black min-w-[100px]">Source</th>
+                   <th className="px-4 py-5 font-black min-w-[100px]">Status</th>
+                   <th className="px-4 py-5 font-black min-w-[140px]">Assigned To</th>
+                   <th className="px-4 py-5 font-black min-w-[150px] max-w-[200px]">Details</th>
+                   <th className="px-4 py-5 font-black min-w-[100px] text-right">Date</th>
+                   <th className="px-6 py-5 font-black min-w-[80px]">Actions</th>
+                 </tr>
+              </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredLeads.map((lead: Lead) => (
                  <tr 
@@ -546,13 +552,16 @@ export default function LeadsManagement() {
                        <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded-lg text-xs font-black uppercase tracking-widest border border-slate-200 truncate" title={lead.service_interest}>
                          {lead.service_interest || "General"}
                        </span>
-                       <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 truncate" title={`${lead.city || ''} ${lead.state || ''} ${lead.zip_code}`}>
-                         <MapPin size={12} className="text-slate-400 shrink-0" />
-                         <span className="truncate">{lead.city && `${lead.city}, `}{lead.state} {lead.zip_code}</span>
-                       </div>
-                     </div>
-                   </td>
-                   <td className="px-4 py-6">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 truncate" title={`${lead.city || ''} ${lead.state || ''} ${lead.zip_code}`}>
+                          <MapPin size={12} className="text-slate-400 shrink-0" />
+                          <span className="truncate">{lead.city && `${lead.city}, `}{lead.state} {lead.zip_code}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-6">
+                      <SourceBadge source={lead.utm_source} medium={lead.utm_medium} />
+                    </td>
+                    <td className="px-4 py-6">
                      <div className="flex flex-col gap-2">
                         <select
                           value={lead.status}
