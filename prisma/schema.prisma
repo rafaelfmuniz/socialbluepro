@@ -305,12 +305,17 @@ model ScheduledCampaign {
 }
 
 model ShortLink {
-  id          String   @id @default(uuid())
-  slug        String   @unique
-  destination String
-  created_at  DateTime @default(now())
-  clicks      Int      @default(0)
-  active      Boolean  @default(true)
+  id           String   @id @default(uuid())
+  slug         String   @unique
+  destination  String
+  utm_source   String?
+  utm_medium   String?
+  utm_campaign String?
+  utm_term     String?
+  utm_content  String?
+  created_at   DateTime @default(now())
+  clicks       Int      @default(0)
+  active       Boolean  @default(true)
 
   @@index([slug])
   @@map("short_links")

@@ -2,20 +2,35 @@
 
 import { getAllAnalytics, CampaignAnalytics } from "@/actions/campaign-analytics";
 import { getCampaigns, Campaign } from "@/actions/campaigns";
+import { getMarketingAnalytics, MarketingAnalytics } from "@/actions/marketing-analytics";
 import { useToast } from "@/lib/toast";
 import { useState, useEffect } from "react";
 import { useRealTimePoll } from "@/lib/hooks/useRealTimePoll";
 import { PageContainer, PageHeader } from "@/components/ui/PageContainer";
 import {
   Mail, Eye, MousePointer, AlertCircle, CheckCircle,
-  Filter, Download, TrendingUp, Smartphone, X
+  Filter, Download, TrendingUp, Smartphone, X, Link2, Users, Target, Globe
 } from "lucide-react";
 import { AdminFooter } from "@/components/admin/AdminFooter";
+
+const SOURCE_COLORS: Record<string, string> = {
+  google: "bg-blue-100 text-blue-700",
+  google_ads: "bg-blue-100 text-blue-700",
+  facebook: "bg-indigo-100 text-indigo-700",
+  facebook_ads: "bg-indigo-100 text-indigo-700",
+  instagram: "bg-pink-100 text-pink-700",
+  instagram_ads: "bg-pink-100 text-pink-700",
+  email: "bg-purple-100 text-purple-700",
+  panfleto: "bg-orange-100 text-orange-700",
+  referral: "bg-green-100 text-green-700",
+  direct: "bg-slate-100 text-slate-700",
+};
 
 export default function AnalyticsDashboard() {
   const { addToast } = useToast();
   const [analytics, setAnalytics] = useState<CampaignAnalytics[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [marketingAnalytics, setMarketingAnalytics] = useState<MarketingAnalytics | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -37,6 +52,7 @@ export default function AnalyticsDashboard() {
   const { loading, refetch } = useRealTimePoll<{
     analytics: CampaignAnalytics[];
     campaigns: Campaign[];
+    marketing: MarketingAnalytics;
   }>({
     fetchFunction: async () => {
       const data = await getAllAnalytics(500);
@@ -46,13 +62,17 @@ export default function AnalyticsDashboard() {
       setCampaigns(campaignData);
       setCampaignError(null);
 
-      return { analytics: data, campaigns: campaignData };
+      const marketingData = await getMarketingAnalytics();
+      setMarketingAnalytics(marketingData);
+
+      return { analytics: data, campaigns: campaignData, marketing: marketingData };
     },
     interval: 30000,
     enabled: true,
     onSuccess: (data) => {
       setAnalytics(data.analytics);
       setCampaigns(data.campaigns);
+      setMarketingAnalytics(data.marketing);
     },
     onError: (err) => {
       console.error("[ANALYTICS] Error fetching:", err);
@@ -335,6 +355,119 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Marketing Sources Section */}
+        {marketingAnalytics && (
+          <div className="space-y-4">
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-tighter flex items-center gap-2">
+              <Globe size={20} className="text-accent" />
+              Marketing Sources
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* Leads by Source */}
+              <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Users size={16} />
+                  Leads by Source
+                </h3>
+                {marketingAnalytics.sourceStats.length === 0 ? (
+                  <p className="text-sm text-slate-400">No UTM data yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {marketingAnalytics.sourceStats.slice(0, 6).map((stat) => (
+                      <div key={stat.source} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded text-xs font-bold ${SOURCE_COLORS[stat.source] || 'bg-slate-100 text-slate-700'}`}>
+                            {stat.source}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900">{stat.count}</span>
+                          <span className="text-xs text-slate-400">{stat.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Leads by Medium */}
+              <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Target size={16} />
+                  Leads by Medium
+                </h3>
+                {marketingAnalytics.mediumStats.length === 0 ? (
+                  <p className="text-sm text-slate-400">No UTM data yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {marketingAnalytics.mediumStats.slice(0, 6).map((stat) => (
+                      <div key={stat.medium} className="flex items-center justify-between">
+                        <span className="text-sm text-slate-700">{stat.medium}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900">{stat.count}</span>
+                          <span className="text-xs text-slate-400">{stat.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Short Links Performance */}
+              <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Link2 size={16} />
+                  Short Links
+                </h3>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="bg-slate-50 p-3 rounded-lg text-center">
+                    <p className="text-2xl font-black text-slate-900">{marketingAnalytics.shortLinkStats.totalLinks}</p>
+                    <p className="text-xs text-slate-500">Total Links</p>
+                  </div>
+                  <div className="bg-accent/10 p-3 rounded-lg text-center">
+                    <p className="text-2xl font-black text-accent">{marketingAnalytics.shortLinkStats.totalClicks}</p>
+                    <p className="text-xs text-slate-500">Total Clicks</p>
+                  </div>
+                </div>
+                {marketingAnalytics.shortLinkStats.topLinks.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-bold text-slate-400 uppercase">Top Links</p>
+                    {marketingAnalytics.shortLinkStats.topLinks.slice(0, 3).map((link) => (
+                      <div key={link.slug} className="flex items-center justify-between text-sm">
+                        <span className="text-accent font-medium">/r/{link.slug}</span>
+                        <span className="font-bold text-slate-700">{link.clicks} clicks</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Summary Stats */}
+            <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-4 sm:p-5 text-white">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                  <p className="text-2xl sm:text-3xl font-black">{marketingAnalytics.totalLeads}</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider">Total Leads</p>
+                </div>
+                <div>
+                  <p className="text-2xl sm:text-3xl font-black text-accent">{marketingAnalytics.leadsWithSource}</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider">With UTM Data</p>
+                </div>
+                <div>
+                  <p className="text-2xl sm:text-3xl font-black">{marketingAnalytics.shortLinkStats.activeLinks}</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider">Active Links</p>
+                </div>
+                <div>
+                  <p className="text-2xl sm:text-3xl font-black text-purple-400">{stats.sent}</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider">Emails Sent</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* Desktop Table - Hidden on mobile */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden lg:block">

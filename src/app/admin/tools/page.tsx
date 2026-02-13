@@ -85,7 +85,12 @@ export default function MarketingToolsPage() {
     
     const result = await createShortLink({
       slug: slug.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-      destination: fullDestination
+      destination: fullDestination,
+      utm_source: utmSource || undefined,
+      utm_medium: utmMedium || undefined,
+      utm_campaign: utmCampaign || undefined,
+      utm_term: utmTerm || undefined,
+      utm_content: utmContent || undefined,
     });
 
     if (result.success) {

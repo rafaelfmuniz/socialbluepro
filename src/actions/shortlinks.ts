@@ -6,6 +6,11 @@ export interface ShortLink {
   id: string;
   slug: string;
   destination: string;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
   created_at: Date;
   clicks: number;
   active: boolean;
@@ -20,9 +25,13 @@ interface ActionResult<T> {
 export async function createShortLink(data: {
   slug: string;
   destination: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
 }): Promise<ActionResult<ShortLink>> {
   try {
-    // Validate slug
     const slug = data.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
     
     if (!slug || slug.length < 2) {
@@ -33,7 +42,6 @@ export async function createShortLink(data: {
       return { success: false, error: "Destination URL is required" };
     }
 
-    // Check if slug already exists
     const existing = await prisma.shortLink.findUnique({
       where: { slug }
     });
@@ -46,6 +54,11 @@ export async function createShortLink(data: {
       data: {
         slug,
         destination: data.destination,
+        utm_source: data.utm_source || null,
+        utm_medium: data.utm_medium || null,
+        utm_campaign: data.utm_campaign || null,
+        utm_term: data.utm_term || null,
+        utm_content: data.utm_content || null,
         active: true
       }
     });
