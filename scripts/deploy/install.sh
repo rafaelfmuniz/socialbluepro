@@ -220,21 +220,8 @@ install_new() {
     # Configurar ambiente para o build
     export NODE_ENV=production
     export NEXT_TELEMETRY_DISABLED=1
-    export NEXT_DISABLE_AUTOINSTALL=1
-    
-    # Instalar TypeScript e tipos necessários para build (se houver tsconfig.json)
-    if [[ -f "$INSTALL_DIR/tsconfig.json" ]]; then
-        log "Instalando dependências de build TypeScript..."
-        npm install --no-save --no-audit --no-fund typescript @types/node @types/react @types/react-dom 2>/dev/null || {
-            warning "Falha ao instalar TypeScript, tentando build mesmo assim..."
-        }
-    fi
     
     npm run build
-    
-    # Limpar dependências de build após compilação
-    log "Limpando dependências de build..."
-    npm prune --omit=dev --no-audit --no-fund 2>/dev/null || true
     
     # Criar diretório de uploads
     mkdir -p public/uploads
@@ -291,19 +278,7 @@ update_existing() {
     export NEXT_TELEMETRY_DISABLED=1
     export NEXT_DISABLE_AUTOINSTALL=1
     
-    # Instalar TypeScript e tipos necessários para build (se houver tsconfig.json)
-    if [[ -f "$INSTALL_DIR/tsconfig.json" ]]; then
-        log "Instalando dependências de build TypeScript..."
-        npm install --no-save --no-audit --no-fund typescript @types/node @types/react @types/react-dom 2>/dev/null || {
-            warning "Falha ao instalar TypeScript, tentando build mesmo assim..."
-        }
-    fi
-    
     npm run build
-    
-    # Limpar dependências de build após compilação
-    log "Limpando dependências de build..."
-    npm prune --omit=dev --no-audit --no-fund 2>/dev/null || true
     
     # Reiniciar serviço
     log "Reiniciando serviço..."
