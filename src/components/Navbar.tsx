@@ -132,23 +132,23 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
                  </button>
                  
-                 {isServiceAreaOpen && (
-                   <div className="absolute top-full left-0 mt-2 w-64 bg-slate-900 rounded-xl shadow-2xl border border-slate-700/50 py-2 z-50">
-                     <div className="max-h-80 overflow-y-auto">
-                       {locations.map((location) => (
-                         <Link
-                           key={location.slug}
-                           href={`/locations/${location.slug}`}
-                           className="flex items-center gap-2 px-4 py-2.5 text-[10px] uppercase tracking-widest font-bold text-white/80 hover:text-white hover:bg-white/5 transition-colors"
-                           onClick={() => setIsServiceAreaOpen(false)}
-                         >
-                           <MapPin size={10} className="text-accent" />
-                           {location.name}
-                         </Link>
-                       ))}
-                     </div>
-                   </div>
-                 )}
+                  {isServiceAreaOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-[420px] bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 p-4 z-50">
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        {locations.map((location) => (
+                          <Link
+                            key={location.slug}
+                            href={`/locations/${location.slug}`}
+                            className="flex items-center gap-2 px-3 py-2 text-[10px] uppercase tracking-widest font-bold text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                            onClick={() => setIsServiceAreaOpen(false)}
+                          >
+                            <MapPin size={10} className="text-accent shrink-0" />
+                            <span className="truncate">{location.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                </div>
              </div>
              
