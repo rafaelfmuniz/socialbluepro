@@ -27,11 +27,19 @@ export function resolveAttachmentUrl(rawUrl: string) {
 
   // If URL starts with /uploads/, convert to /api/uploads/
   const withoutLeadingSlash = rawUrl.replace(/^\/+/, "");
+  
   if (withoutLeadingSlash.toLowerCase().startsWith(STATIC_UPLOAD_PREFIX)) {
     const pathAfterUploads = withoutLeadingSlash.replace(new RegExp(`^${STATIC_UPLOAD_PREFIX}`, "i"), "");
     const apiPath = ensureLeadingSlash(`${API_ATTACHMENT_PREFIX}${pathAfterUploads}`);
     const origin = getBrowserOrigin();
     return origin ? `${origin}${apiPath}` : apiPath;
+  }
+
+  // Fallback: If it looks like a relative path (e.g. "leads/file.jpg"), assume it's in uploads
+  if (!withoutLeadingSlash.startsWith("api/") && !withoutLeadingSlash.startsWith("http")) {
+     const apiPath = ensureLeadingSlash(`${API_ATTACHMENT_PREFIX}${withoutLeadingSlash}`);
+     const origin = getBrowserOrigin();
+     return origin ? `${origin}${apiPath}` : apiPath;
   }
 
   return rawUrl;

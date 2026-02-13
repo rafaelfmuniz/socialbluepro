@@ -561,8 +561,16 @@ export default function MarketingToolsPage() {
                       <button
                         onClick={() => handleCopyUrl(`https://socialbluepro.com/r/${link.slug}`)}
                         className="p-2 text-slate-400 hover:text-accent bg-slate-50 rounded-lg transition-all"
+                        title="Copy Link"
                       >
                         <Copy size={18} />
+                      </button>
+                      <button
+                        onClick={() => setQrModalLink(link)}
+                        className="p-2 text-slate-400 hover:text-slate-900 bg-slate-50 rounded-lg transition-all"
+                        title="View QR Code"
+                      >
+                        <QrCode size={18} />
                       </button>
                       <button
                         onClick={() => handleToggleLink(link.id)}
