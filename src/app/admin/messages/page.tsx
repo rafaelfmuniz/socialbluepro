@@ -1,0 +1,262 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { getContactMessages, markMessageAsRead, deleteContactMessage, getContactMessagesCount } from "@/actions/contact";
+import { useToast } from "@/lib/toast";
+import { Check, Trash2, Eye, Mail, Phone, Calendar, ArrowUpDown } from "lucide-react";
+
+export default function MessagesPage() {
+  const router = useRouter();
+  const { addToast } = useToast();
+
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
+  const [counts, setCounts] = useState({ total: 0, unread: 0 });
+
+  const loadMessages = async () => {
+    setLoading(true);
+    try {
+      const result = await getContactMessages({
+        status: filter === "all" ? undefined : filter,
+        limit: 100,
+        offset: 0
+      });
+
+      if (result.success && result.data) {
+        setMessages(result.data);
+      } else {
+        addToast(result.error || "Failed to load messages", "error");
+      }
+
+      const countResult = await getContactMessagesCount();
+      if (countResult.success && countResult.data) {
+        setCounts(countResult.data);
+      }
+    } catch (error) {
+      addToast("An unexpected error occurred", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMessages();
+  }, [filter]);
+
+  const handleMarkAsRead = async (messageId: string, isRead: boolean) => {
+    try {
+      const result = await markMessageAsRead(messageId, isRead);
+      if (result.success) {
+        addToast(`Message marked as ${isRead ? "read" : "unread"}`, "success");
+        loadMessages();
+      } else {
+        addToast(result.error || "Failed to update status", "error");
+      }
+    } catch (error) {
+      addToast("An unexpected error occurred", "error");
+    }
+  };
+
+  const handleDelete = async (messageId: string) => {
+    if (!confirm("Are you sure you want to delete this message?")) return;
+
+    try {
+      const result = await deleteContactMessage(messageId);
+      if (result.success) {
+        addToast("Message deleted successfully", "success");
+        loadMessages();
+      } else {
+        addToast(result.error || "Failed to delete message", "error");
+      }
+    } catch (error) {
+      addToast("An unexpected error occurred", "error");
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusBadge = (status: string) => {
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-black uppercase tracking-wider";
+    if (status === "unread") {
+      return `${baseClasses} bg-accent/20 text-accent border border-accent/30`;
+    }
+    return `${baseClasses} bg-slate-100 text-slate-600 border border-slate-200`;
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Contact Messages</h1>
+          <p className="text-slate-500 text-sm font-bold mt-1">
+            {counts.unread} unread / {counts.total} total
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={cn(
+              "px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all",
+              filter === "all"
+                ? "bg-slate-900 text-white"
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+            )}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter("unread")}
+            className={cn(
+              "px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all",
+              filter === "unread"
+                ? "bg-accent text-white"
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-accent/10"
+            )}
+          >
+            Unread
+          </button>
+          <button
+            onClick={() => setFilter("read")}
+            className={cn(
+              "px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all",
+              filter === "read"
+                ? "bg-slate-700 text-white"
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+            )}
+          >
+            Read
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center">
+            <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-slate-500 font-bold">Loading messages...</p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="p-12 text-center">
+            <Mail className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500 font-bold">No messages found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-50 border-b border-slate-100">
+                <tr>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status</span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Name</span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Email</span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Phone</span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Message Preview</span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</span>
+                  </th>
+                  <th className="px-6 py-4 text-right">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {messages.map((message) => (
+                  <tr key={message.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <span className={getStatusBadge(message.status)}>
+                        {message.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-black text-slate-900 text-sm uppercase tracking-wide">
+                        {message.name}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-slate-600 font-mono max-w-[200px] truncate">
+                        {message.email}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-slate-600 font-mono">{message.phone}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="max-w-[300px]">
+                        <p className="text-sm text-slate-600 line-clamp-2">
+                          {message.message}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-sm text-slate-500 font-mono">
+                        <Calendar size={12} />
+                        {formatDate(message.created_at)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => router.push(`/admin/messages/${message.id}`)}
+                          className="p-2 text-slate-400 hover:text-accent hover:bg-accent/10 rounded-lg transition-all"
+                          title="View Details"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        {message.status === "unread" && (
+                          <button
+                            onClick={() => handleMarkAsRead(message.id, true)}
+                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+                            title="Mark as Read"
+                          >
+                            <Check size={16} />
+                          </button>
+                        )}
+                        {message.status === "read" && (
+                          <button
+                            onClick={() => handleMarkAsRead(message.id, false)}
+                            className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                            title="Mark as Unread"
+                          >
+                            <Eye size={16} className="opacity-50" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(message.id)}
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

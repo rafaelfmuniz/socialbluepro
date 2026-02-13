@@ -237,6 +237,21 @@ model LeadNote {
   @@map("lead_notes")
 }
 
+model ContactMessage {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  phone      String
+  message    String
+  status     String   @default("unread")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([status])
+  @@index([created_at(sort: Desc)])
+  @@map("contact_messages")
+}
+
 model EmailLog {
   id           String   @id @default(uuid())
   recipient    String

@@ -11,12 +11,13 @@ import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, 
 const navItems = [
    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
    { name: "Leads", href: "/admin/leads", icon: Users },
+   { name: "Messages", href: "/admin/messages", icon: Mail },
    { name: "Campaigns", href: "/admin/campaigns", icon: Mail },
    { name: "Remarketing", href: "/admin/remarketing", icon: Target },
    { name: "Analytics", href: "/admin/analytics", icon: BarChart2 },
    { name: "Marketing Tools", href: "/admin/tools", icon: Link2 },
    { name: "Settings", href: "/admin/settings", icon: Settings },
- ]; 
+  ];
 
 interface AdminNavigationProps {
   children: React.ReactNode;

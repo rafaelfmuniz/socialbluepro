@@ -51,8 +51,8 @@ export default function Footer({ onGetQuote }: FooterProps) {
                     href={`/locations/${loc.slug}`} 
                     className="text-slate-400 hover:text-white transition-colors text-[10px] uppercase tracking-widest font-bold flex items-center gap-2 group"
                   >
-                    <MapPin size={10} className="text-accent/50 group-hover:text-accent" />
-                    Landscaping {loc.name}
+                     <MapPin size={10} className="text-accent/50 group-hover:text-accent" />
+                     {loc.name}
                   </Link>
                 </li>
               ))}
