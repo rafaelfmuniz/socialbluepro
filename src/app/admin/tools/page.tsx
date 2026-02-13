@@ -61,6 +61,11 @@ export default function MarketingToolsPage() {
   };
 
   const generateUrl = () => {
+    if (!utmSource || !utmMedium || !utmCampaign) {
+      addToast("Please fill in Source, Medium and Campaign", "error");
+      return;
+    }
+
     const params = new URLSearchParams();
     if (utmSource) params.append("utm_source", utmSource);
     if (utmMedium) params.append("utm_medium", utmMedium);
