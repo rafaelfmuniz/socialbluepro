@@ -17,10 +17,10 @@ export default function Footer({ onGetQuote }: FooterProps) {
     <footer className="bg-slate-900 text-white pt-10 md:pt-12 pb-6 relative overflow-hidden border-t border-white/5">
       <div className="container mx-auto px-4 md:px-8 relative z-10 max-w-7xl">
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 mb-8 text-center md:text-left">
           
           {/* Brand Column */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-4 flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-2.5">
               <img
                 src="/imgs/Imgs_WEBP/logo.webp"
@@ -45,9 +45,9 @@ export default function Footer({ onGetQuote }: FooterProps) {
           </div>
 
           {/* Service Areas */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-4 flex flex-col items-center md:items-start">
             <h4 className="text-[10px] uppercase tracking-[0.25em] font-black text-accent mb-4">Service Areas</h4>
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-2">
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-left">
               {allLocations.map((loc) => (
                 <li key={loc.slug}>
                   <Link 
@@ -63,9 +63,9 @@ export default function Footer({ onGetQuote }: FooterProps) {
           </div>
 
           {/* Navigation */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 flex flex-col items-center md:items-start">
             <h4 className="text-[10px] uppercase tracking-[0.25em] font-black text-accent mb-4">Navigation</h4>
-            <ul className="space-y-2 text-slate-400 font-semibold uppercase text-[10px] tracking-wider">
+            <ul className="space-y-2 text-slate-400 font-semibold uppercase text-[10px] tracking-wider flex flex-col items-center md:items-start">
               <li>
                 <Link href="/services" className="hover:text-white transition-colors flex items-center gap-1.5 group">
                   Services <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -95,9 +95,9 @@ export default function Footer({ onGetQuote }: FooterProps) {
           </div>
 
           {/* Contact + Trust Badge Combined */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-4 flex flex-col items-center md:items-start">
             <h4 className="text-[10px] uppercase tracking-[0.25em] font-black text-accent mb-4">Contact</h4>
-            <div className="space-y-3">
+            <div className="space-y-3 flex flex-col items-center md:items-start">
               <a href="tel:7207374607" className="flex items-center gap-3 group">
                 <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
                   <Phone size={14} className="text-accent" />
@@ -119,7 +119,7 @@ export default function Footer({ onGetQuote }: FooterProps) {
             </div>
             
             {/* Trust Badge - Compact */}
-            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+            <div className="flex items-center justify-center md:justify-start gap-2 mt-4 pt-4 border-t border-white/5 w-full">
               <div className="flex gap-0.5 text-accent">
                 {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
               </div>
