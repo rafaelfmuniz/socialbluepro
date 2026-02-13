@@ -18,13 +18,9 @@ import {
   Loader2, 
   ChevronRight,
   Clock,
-  DollarSign,
-  Home,
-  Mail,
-  Phone,
-  MapPin,
-  FileText
+  DollarSign
 } from "lucide-react";
+import { captureLeadWithAttachments } from "@/actions/leads";
 import { 
   validateAddressFormatClient, 
   validateColoradoCityClient, 
@@ -369,12 +365,8 @@ function RequestFormContent() {
 
     const formElement = e.currentTarget;
 
-    // Send via API endpoint instead of server action
-    const response = await fetch('/api/leads', {
-      method: 'POST',
-      body: newFormData,
-    });
-    const result = await response.json();
+    // Send via Server Action for consistency
+    const result = await captureLeadWithAttachments(newFormData);
     console.log("Capture lead result:", result);
     setIsSubmitting(false);
 
@@ -414,9 +406,8 @@ function RequestFormContent() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter">Service Request Form</h2>
+              <h2 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter">Get a Project Quote</h2>
               <p className="text-slate-400 text-xs font-bold mt-1 uppercase tracking-widest italic">Complete this form for a free estimate</p>
-              <p className="text-[10px] text-slate-300 mt-2 font-mono">v2.3 Placeholder Update</p>
             </div>
 
             {error && (
@@ -432,26 +423,20 @@ function RequestFormContent() {
             <input type="hidden" name="utm_campaign" value={searchParams.get('utm_campaign') || ''} />
 
             {/* Contact Information */}
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm uppercase font-bold text-slate-700 flex items-center gap-2">
-                    <Home size={14} />
-                    Full Name
-                  </label>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1 md:col-span-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Full Name</label>
                   <input 
                     name="name" 
                     required 
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900" 
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm" 
                     placeholder="Your Name" 
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <label className="text-sm uppercase font-bold text-slate-700 flex items-center gap-2">
-                    <Phone size={14} />
-                    Phone Number
-                  </label>
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Phone</label>
                   <div className="relative">
                     <input 
                       name="phone" 
@@ -459,7 +444,7 @@ function RequestFormContent() {
                       type="tel" 
                       value={phoneValue}
                       onChange={handlePhoneChange}
-                      className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${phoneValid === true ? 'border-green-500' : phoneValid === false ? 'border-red-500' : 'border-slate-200'} focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900`} 
+                      className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${phoneValid === true ? 'border-green-500' : phoneValid === false ? 'border-red-500' : 'border-slate-100'} focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm`} 
                       placeholder="(000) 000-0000" 
                     />
                     {phoneValid === true && (
@@ -473,15 +458,12 @@ function RequestFormContent() {
                       </div>
                     )}
                   </div>
-                  {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
+                  {phoneError && <p className="text-[10px] font-bold text-red-500 ml-1 mt-1">{phoneError}</p>}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm uppercase font-bold text-slate-700 flex items-center gap-2">
-                  <Mail size={14} />
-                  Email Address
-                </label>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Email</label>
                 <div className="relative">
                   <input 
                     name="email" 
@@ -489,7 +471,7 @@ function RequestFormContent() {
                     type="email" 
                     value={emailValue}
                     onChange={handleEmailChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${emailValid === true ? 'border-green-500' : emailValid === false ? 'border-red-500' : 'border-slate-200'} focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900`} 
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${emailValid === true ? 'border-green-500' : emailValid === false ? 'border-red-500' : 'border-slate-100'} focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm`} 
                     placeholder="email@domain.com" 
                   />
                   {emailValid === true && (
@@ -503,66 +485,63 @@ function RequestFormContent() {
                     </div>
                   )}
                 </div>
-                {emailError && <p className="text-xs text-red-500 mt-1">{emailError}</p>}
+                {emailError && <p className="text-[10px] font-bold text-red-500 ml-1 mt-1">{emailError}</p>}
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm uppercase font-bold text-slate-700 flex items-center gap-2">
-                  <MapPin size={14} />
-                  Street Address
-                </label>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Street Address</label>
                   <input 
                     name="address_line1" 
                     required 
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900" 
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm" 
                     placeholder="Your Address" 
                   />
               </div>
 
-              <div className="grid grid-cols-12 gap-2 md:gap-6">
-                <div className="space-y-2 col-span-7 md:col-span-5">
-                  <label className="text-sm uppercase font-bold text-slate-700">City</label>
+              <div className="grid grid-cols-12 md:grid-cols-6 gap-2 md:gap-4">
+                <div className="space-y-1 col-span-7 md:col-span-3">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">City</label>
                   <input 
                     name="city" 
                     required 
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900" 
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm" 
                     placeholder="Denver" 
                   />
                 </div>
                 
-                <div className="space-y-2 col-span-3 md:col-span-5">
-                  <label className="text-sm uppercase font-bold text-slate-700">ZIP Code</label>
+                <div className="space-y-1 col-span-3 md:col-span-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">ZIP</label>
                   <div className="relative">
                     <input 
                       name="zip" 
                       required 
                       value={zipValue}
                       onChange={handleZipChange}
-                      className={`w-full px-2 md:px-4 py-3 rounded-xl bg-slate-50 border ${zipValid === true ? 'border-green-500' : zipValid === false ? 'border-red-500' : 'border-slate-200'} focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900 text-center md:text-left`} 
+                      className={`w-full px-2 md:px-3 py-3 rounded-xl bg-slate-50 border ${zipValid === true ? 'border-green-500' : zipValid === false ? 'border-red-500' : 'border-slate-100'} focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm text-center md:text-left`} 
                       placeholder="00000" 
                     />
                     {zipLoading && (
-                      <div className="absolute right-1 md:right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2">
                         <Loader2 className="animate-spin text-slate-400" size={14} />
                       </div>
                     )}
                     {zipValid === true && !zipLoading && (
-                      <div className="absolute right-1 md:right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2">
                          <CheckCircle className="text-accent-accessible" size={14} />
                       </div>
                     )}
                     {zipValid === false && !zipLoading && (
-                      <div className="absolute right-1 md:right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2">
                         <X className="text-red-500" size={14} />
                       </div>
                     )}
                   </div>
-                  {zipError && <p className="text-xs text-red-500 mt-1">{zipError}</p>}
+                  {zipError && <p className="text-[10px] font-bold text-red-500 ml-1 mt-1">{zipError}</p>}
                 </div>
                 
-                <div className="space-y-2 col-span-2 md:col-span-2">
-                  <label className="text-sm uppercase font-bold text-slate-700">State</label>
-                  <div className="w-full px-1 py-3 rounded-xl bg-slate-100 border border-slate-300 font-bold text-slate-700 flex items-center justify-center text-sm">
+                <div className="space-y-1 col-span-2 md:col-span-1">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">State</label>
+                  <div className="w-full px-1 py-3 rounded-xl bg-slate-100 border border-slate-200 font-bold text-slate-700 text-sm flex items-center justify-center">
                     CO
                   </div>
                   <input type="hidden" name="state" value="CO" />
@@ -571,52 +550,49 @@ function RequestFormContent() {
             </div>
 
             {/* Project Details */}
-            <div className="space-y-6 pt-6 border-t border-slate-200">
+            <div className="space-y-4 pt-6 border-t border-slate-200">
               <h3 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Project Details</h3>
               
-              <div className="space-y-2">
-                <label className="text-sm uppercase font-bold text-slate-700 flex items-center gap-2">
-                  <FileText size={14} />
-                  Service Required
-                </label>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Service Required</label>
                 <select 
                   name="service" 
                   required 
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900 appearance-none cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
                 >
                   <option value="" disabled>Select a service</option>
                   {SERVICES_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm uppercase font-bold text-slate-700">Project Description (Optional)</label>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Project Description (Optional)</label>
                 <textarea 
                   name="description" 
-                  rows={4} 
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900 resize-none" 
+                  rows={3} 
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm resize-none" 
                   placeholder="Please describe your project in detail..." 
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm uppercase font-bold text-slate-700">Timeframe</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Timeframe</label>
                   <select 
                     name="timeframe" 
                     required 
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900 appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
                   >
                     {TIMEFRAME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 </div>
                 
-                <div className="space-y-2">
-                  <label className="text-sm uppercase font-bold text-slate-700">Budget Range</label>
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Budget</label>
                   <select 
                     name="budget" 
                     required 
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium text-slate-900 appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
                   >
                     {BUDGET_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
@@ -624,9 +600,9 @@ function RequestFormContent() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm uppercase font-bold text-slate-700">Project Photos (Optional)</label>
+                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Project Photos (Optional)</label>
                 
-                <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center hover:border-accent transition-colors bg-slate-50 group cursor-pointer">
+                <div className="relative border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center hover:border-accent transition-colors bg-slate-50 group cursor-pointer">
                   <input 
                     type="file" 
                     name="photos" 
@@ -635,30 +611,30 @@ function RequestFormContent() {
                     accept="image/*,video/*"
                     onChange={handleFileChange}
                   />
-                  <div className="flex flex-col items-center gap-3 group-hover:scale-105 transition-transform">
-                    <div className="p-4 bg-white rounded-full shadow-sm">
-                      <UploadCloud className="text-accent" size={28} />
+                  <div className="flex flex-col items-center gap-2 group-hover:scale-105 transition-transform">
+                    <div className="p-3 bg-white rounded-full shadow-sm">
+                      <UploadCloud className="text-accent" size={24} />
                     </div>
-                    <div className="text-center">
-                      <span className="text-sm font-bold text-slate-700 block">Click to upload photos/video</span>
-                      <span className="text-xs text-slate-400 mt-1">Max 25MB (Images) / 500MB (Videos) • Max 1GB Total</span>
-                    </div>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                      Click to upload photos/video<br/>
+                      <span className="text-[8px] font-bold text-slate-300 normal-case">Max 25MB (Images) / 500MB (Videos) • Max 1GB Total</span>
+                    </span>
                   </div>
                 </div>
 
-                {fileError && <p className="text-xs text-red-500">{fileError}</p>}
+                {fileError && <p className="text-[10px] font-bold text-red-500 ml-1">{fileError}</p>}
 
                 {files.length > 0 && (
-                  <div className="grid grid-cols-4 gap-3 mt-4">
+                  <div className="grid grid-cols-4 gap-2 mt-2">
                     {files.map((file, idx) => (
-                      <div key={idx} className="relative bg-slate-100 rounded-lg p-3 flex items-center justify-center aspect-square border border-slate-300">
-                        <span className="text-xs font-medium text-slate-600 break-all text-center line-clamp-2">{file.name}</span>
+                      <div key={idx} className="relative bg-slate-100 rounded-lg p-2 flex items-center justify-center aspect-square border border-slate-200">
+                        <span className="text-[8px] font-bold text-slate-500 break-all text-center line-clamp-2">{file.name}</span>
                         <button 
                           type="button"
                           onClick={() => removeFile(idx)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-sm hover:bg-red-600 transition-colors"
+                          className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600 transition-colors"
                         >
-                          <X size={12} />
+                          <X size={10} />
                         </button>
                       </div>
                     ))}
@@ -670,15 +646,14 @@ function RequestFormContent() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-accent text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-green-600 transition-all text-sm uppercase tracking-wider shadow-lg shadow-accent/20 disabled:opacity-50 mt-8 mb-8 active:scale-[0.98]"
+              className="w-full bg-accent text-white font-black py-4 md:py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-green-600 transition-all text-xs uppercase tracking-[0.2em] shadow-xl shadow-accent/20 disabled:opacity-50 mt-4 active:scale-[0.98]"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <>Submit Request <ChevronRight size={18} /></>}
+              {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <>Get Free Estimate <ChevronRight size={18} /></>}
             </button>
 
-             <div className="flex items-center justify-center gap-4 pt-6 pb-8 opacity-50 text-xs text-slate-500">
-              <Shield size={14} />
-              <span>Your information is secure and will not be shared.</span>
-              <AlertCircle size={14} />
+            <div className="flex items-center justify-center gap-4 pt-4 opacity-30 grayscale">
+              <Shield size={16} />
+              <AlertCircle size={16} />
             </div>
           </form>
         )}
@@ -746,7 +721,7 @@ export default function RequestServicePage() {
           
           {/* Additional Info */}
           <div className="mt-12 text-center text-slate-500 text-sm">
-            <p>Questions? Call us at <strong>(720) 555-0123</strong> or email <strong>support@socialbluepro.com</strong></p>
+            <p>Questions? Call us at <strong>(720) 737-4607</strong> or email <strong>contact@socialbluepro.com</strong></p>
             <p className="mt-2">Our office hours are Monday-Friday, 8am-5pm MST.</p>
           </div>
         </div>
