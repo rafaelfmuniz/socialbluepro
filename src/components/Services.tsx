@@ -16,58 +16,68 @@ import {
 } from "lucide-react";
 import { IMAGES } from "@/lib/constants";
 import Image from "next/image";
+import Link from "next/link";
 
 const services = [
   {
     title: "Sod Installation",
+    slug: "sod-installation",
     description: "Premium, fresh-cut Colorado sod for an instant, lush green lawn that thrives in Denver's climate.",
     icon: Sprout,
     image: IMAGES.sod
   },
   {
     title: "Hardscaping",
+    slug: "hardscaping",
     description: "Structural beauty through stone patios, retaining walls, and custom outdoor living spaces.",
     icon: Hammer,
     image: IMAGES.hardscaping
   },
   {
     title: "Snow Removal",
+    slug: "snow-removal",
     description: "Reliable residential snow clearing and professional de-icing to keep your Denver property safe.",
     icon: Snowflake,
     image: IMAGES.snow
   },
   {
     title: "Decorative Rock",
+    slug: "decorative-rock",
     description: "Low-maintenance landscape elegance using premium river rocks and decorative stones.",
     icon: Mountain,
     image: IMAGES.rock
   },
   {
     title: "Mulch Installation",
+    slug: "mulch-installation",
     description: "Professional soil protection and aesthetic enhancement with high-quality organic mulch.",
     icon: Leaf,
     image: IMAGES.mulch
   },
   {
     title: "Spring/Fall Clean Up",
+    slug: "spring-fall-clean-up",
     description: "Seasonal restoration, leaf removal, and property preparation for the Colorado elements.",
     icon: Trees,
     image: IMAGES.cleanup
   },
   {
     title: "One-Time Weed Pulling",
+    slug: "one-time-weed-pulling",
     description: "Deep, manual removal of invasive growth to restore your garden beds to their original state.",
     icon: Scissors,
     image: IMAGES.weed
   },
   {
     title: "Custom Landscaping",
+    slug: "custom-landscaping",
     description: "Full-scale property transformation from ground prep to final planting for your dream yard.",
     icon: Wrench,
     image: IMAGES.custom
   },
   {
     title: "Commercial Landscaping",
+    slug: "commercial-landscaping",
     description: "One reliable team for commercial property care routine landscaping, snow/ice management, weed control, parking lot maintenance, and add-on services as needed.",
     icon: Building,
     image: IMAGES.commercial
@@ -115,7 +125,7 @@ export default function Services({ onSelectService }: ServicesProps) {
                key={service.title}
                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col"
             >
-                <div className="relative h-48 overflow-hidden">
+                <Link href={`/services/${service.slug}`} className="relative h-48 overflow-hidden block">
                      <Image 
                        src={service.image}
                        alt={service.title}
@@ -134,12 +144,14 @@ export default function Services({ onSelectService }: ServicesProps) {
                       <service.icon size={20} />
                    </div>
                 </div>
-              </div>
+              </Link>
               
               <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-lg font-black text-slate-900 mb-2 tracking-tight uppercase group-hover:text-accent transition-colors">
-                  {service.title}
-                </h3>
+                <Link href={`/services/${service.slug}`}>
+                  <h3 className="text-lg font-black text-slate-900 mb-2 tracking-tight uppercase group-hover:text-accent transition-colors">
+                    {service.title}
+                  </h3>
+                </Link>
                 <p className="text-slate-500 text-xs md:text-sm leading-relaxed mb-6 flex-1 font-medium">
                   {service.description}
                 </p>

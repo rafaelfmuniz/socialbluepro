@@ -51,20 +51,20 @@
 **SEMPRE que iniciar uma sessão, verifique o que está em andamento:**
 
 ### Tarefa Atual
-- ✅ v2.1.0 Marketing Intelligence & Tools - CONCLUÍDO
+- ✅ v2.2.0 SEO Service Pages Implementation - CONCLUÍDO
 
 ### Progresso
-- [x] Fase 1: Prisma schema com UTM fields + ShortLink model
-- [x] Fase 2: Renomeado `/request-service` → `/request`
-- [x] Fase 3: Backend captura UTMs (leads.ts)
-- [x] Fase 3: Frontend captura UTMs (QuoteModal, request/page.tsx)
-- [x] Fase 4: SourceBadge + coluna Source + Marketing Data section
-- [x] Fase 5: URL Shortener com `/r/[slug]` + QR Codes
-- [x] Fase 6: Version bump 2.1.0 + CHANGELOG
+- [x] Arquitetura de rotas dinâmicas `/services/[slug]`
+- [x] Base de dados centralizada `services-data.ts` com 9 serviços
+- [x] SEO On-page: Meta tags dinâmicas e Canonical URLs
+- [x] SEO Técnico: JSON-LD Schema (Service & FAQPage)
+- [x] UI: Template responsivo, mobile-first e de alta performance
+- [x] Integração: Links na Home preservando modal de orçamento
+- [x] Build verificado e performance mantida (Static Generation)
 
 ### Último Commit
-- Versão: 2.1.0
-- Feature: Marketing Intelligence & Tools
+- Versão: 2.2.0
+- Feature: SEO Multi-page Service Architecture
 
 **Para próximo modelo:** v2.1.0 concluído. Sistema pronto para produção.
 
