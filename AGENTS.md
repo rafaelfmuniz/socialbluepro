@@ -19,9 +19,10 @@
 7. [Server Actions](#7-server-actions)
 8. [UI e Estilização](#8-ui-e-estilização)
 9. [Banco de Dados](#9-banco-de-dados)
-10. [Regras Específicas](#10-regras-específicas)
-11. [Checklist Pré-commit](#11-checklist-pré-commit)
-12. [Troubleshooting](#12-troubleshooting)
+10. [Versionamento e Releases](#10-versionamento-e-releases)
+11. [Regras Específicas](#11-regras-específicas)
+12. [Checklist Pré-commit](#12-checklist-pré-commit)
+13. [Troubleshooting](#13-troubleshooting)
 
 ---
 
@@ -640,7 +641,93 @@ npx prisma generate
 
 ---
 
-## 10. Regras Específicas
+## 10. Versionamento e Releases
+
+### Política de Versionamento (Semantic Versioning)
+
+O projeto segue **Semantic Versioning 2.0.0**:
+
+```
+MAJOR.MINOR.PATCH
+```
+
+| Tipo | Quando usar | Exemplo |
+|------|-------------|---------|
+| **MAJOR** | Mudanças incompatíveis (breaking changes) | `2.0.0` → `3.0.0` |
+| **MINOR** | Novas funcionalidades (backwards compatible) | `2.1.0` → `2.2.0` |
+| **PATCH** | Correções de bugs (backwards compatible) | `2.1.0` → `2.1.1` |
+
+### Automação com semantic-release
+
+O versionamento é **automático** via GitHub Actions:
+
+1. **Commits** seguindo [Conventional Commits](https://www.conventionalcommits.org/):
+   - `feat:` → bump MINOR
+   - `fix:` → bump PATCH
+   - `BREAKING CHANGE:` → bump MAJOR
+
+2. **GitHub Actions** (`.github/workflows/release.yml`):
+   - Roda em todo push para `main`
+   - Executa build e validação
+   - Cria tag e release automaticamente
+   - Atualiza `CHANGELOG.md` e `package.json`
+
+3. **Componente VersionBadge** (`src/components/ui/VersionBadge.tsx`):
+   - Mostra versão atual no footer admin
+   - Verifica atualizações via `/api/version`
+   - Notifica quando há nova versão disponível
+
+### API de Versão
+
+Endpoint: `GET /api/version`
+
+```json
+{
+  "current": "2.3.1",
+  "latest": "2.3.1",
+  "upToDate": true,
+  "releaseUrl": "https://github.com/...",
+  "publishedAt": "2026-02-13T..."
+}
+```
+
+### Backfill de Releases
+
+Script para criar releases históricas:
+
+```bash
+# Definir token
+export GH_TOKEN=seu_token_github
+
+# Executar
+node scripts/backfill-releases.js
+```
+
+### Comandos Úteis
+
+```bash
+# Ver versão atual
+node -p "require('./package.json').version"
+
+# Criar release manual (não recomendado)
+npx semantic-release --dry-run
+
+# Verificar status das releases
+gh release list
+```
+
+### Checklist de Nova Versão
+
+- [ ] Commits seguem convenção (feat/fix/BREAKING CHANGE)
+- [ ] `CHANGELOG.md` atualizado manualmente (opcional)
+- [ ] Build passa (`npm run build`)
+- [ ] GitHub Actions cria release automaticamente
+- [ ] Tag criada no formato `vX.Y.Z`
+- [ ] Release notes publicadas no GitHub
+
+---
+
+## 11. Regras Específicas
 
 ### ⚠️ PROIBIDO:
 
@@ -666,13 +753,15 @@ npx prisma generate
 7. **SEMPRE** execute `npm run lint` e `npm run build` antes de commit
 8. **SEMPRE** commite automaticamente alterações simples (lint/build OK)
 9. **SEMPRE** use mensagens de commit em PORTUGUÊS
+10. **SEMPRE** pause após 5 ações e confirme com usuário
+11. **SEMPRE** seja ultra-conciso nas respostas (máx 3-4 linhas)
 10. **SEMPRE** atualize "Estado Atual do Trabalho" a cada milestone
 11. **SEMPRE** pause após 5 ações e confirme com usuário
 12. **SEMPRE** seja ultra-conciso nas respostas (máx 3-4 linhas)
 
 ---
 
-## 11. Checklist Pré-commit
+## 12. Checklist Pré-commit
 
 Antes de finalizar qualquer alteração:
 
@@ -691,7 +780,7 @@ Antes de finalizar qualquer alteração:
 
 ---
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 ### Erros Comuns
 
