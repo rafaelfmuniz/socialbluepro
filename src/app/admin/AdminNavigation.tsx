@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { IMAGES } from "@/lib/constants";
 import { useState, useEffect } from "react";
 import { useToast } from "@/lib/toast";
-import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, Bell, BarChart2, Target, ArrowUp } from "lucide-react";
+import { Menu, X, LayoutDashboard, Users, Mail, Settings, LogOut, ChevronRight, Bell, BarChart2, Target, ArrowUp, Link2 } from "lucide-react";
 
 const navItems = [
    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -14,6 +14,7 @@ const navItems = [
    { name: "Campaigns", href: "/admin/campaigns", icon: Mail },
    { name: "Remarketing", href: "/admin/remarketing", icon: Target },
    { name: "Analytics", href: "/admin/analytics", icon: BarChart2 },
+   { name: "Marketing Tools", href: "/admin/tools", icon: Link2 },
    { name: "Settings", href: "/admin/settings", icon: Settings },
  ]; 
 
