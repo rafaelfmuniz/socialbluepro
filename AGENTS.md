@@ -59,6 +59,7 @@
 - [x] Atualização do Footer (City names only)
 - [x] Migração para workflow autônomo (Vibe-Code) no AGENTS.md
 - [x] Correção de Migration pendente (ContactMessage & ShortLinks)
+- [x] Adição de campos UTM e correção de migrations de inicialização
 - [x] Build verificado e código em produção (Main branch)
 
 ### Último Commit
