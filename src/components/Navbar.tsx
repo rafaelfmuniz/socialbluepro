@@ -154,7 +154,8 @@ export default function Navbar({ onGetQuote }: NavbarProps) {
                  {[
                    { label: "Services", href: "/services" },
                    { label: "About", href: "/about" },
-                   { label: "Contact", href: "/contact" }
+                   { label: "Contact", href: "/contact" },
+                   { label: "FAQ", href: "/faq" }
                  ].map((item) => (
                   <Link
                     key={item.label}

@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Mail, Instagram, Facebook, Star, ArrowUpRight } from "lucide-react";
+import { Phone, Mail, Instagram, Facebook, Star, ArrowUpRight, MapPin } from "lucide-react";
+import { locationsData } from "@/lib/locations-data";
 
 interface FooterProps {
   onGetQuote: () => void;
 }
 
 export default function Footer({ onGetQuote }: FooterProps) {
+  const topLocations = Object.values(locationsData).slice(0, 6);
+
   return (
     <footer className="bg-slate-900 text-white pt-12 md:pt-16 pb-8 relative overflow-hidden border-t border-white/5">
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-7xl">
@@ -38,6 +41,24 @@ export default function Footer({ onGetQuote }: FooterProps) {
              </div>
           </div> 
 
+          {/* Service Areas */}
+          <div>
+            <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-accent mb-6">Service Areas</h4>
+            <ul className="space-y-3">
+              {topLocations.map((loc) => (
+                <li key={loc.slug}>
+                  <Link 
+                    href={`/locations/${loc.slug}`} 
+                    className="text-slate-400 hover:text-white transition-colors text-[10px] uppercase tracking-widest font-bold flex items-center gap-2 group"
+                  >
+                    <MapPin size={10} className="text-accent/50 group-hover:text-accent" />
+                    Landscaping {loc.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Quick Links */}
           <div>
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-accent mb-6">Navigation</h4>
@@ -45,6 +66,7 @@ export default function Footer({ onGetQuote }: FooterProps) {
                <li><Link href="/services" className="hover:text-white transition-colors flex items-center gap-2 group">Our Expertise <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li> 
                <li><Link href="/about" className="hover:text-white transition-colors flex items-center gap-2 group">About Us <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li>
                <li><Link href="/contact" className="hover:text-white transition-colors flex items-center gap-2 group">Contact Us <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li>
+               <li><Link href="/faq" className="hover:text-white transition-colors flex items-center gap-2 group">Common FAQ <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></Link></li>
                <li><button onClick={onGetQuote} className="hover:text-white transition-colors flex items-center gap-2 group w-full text-left uppercase">Get Quote <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" /></button></li>
              </ul>
           </div> 
