@@ -1082,6 +1082,13 @@ EOF
         perform_rollback "$ROLLBACK_POINT"
         exit 1
     }
+
+    log_info "Gerando Prisma Client..."
+    npx prisma generate || {
+        log_error "Falha ao gerar Prisma Client"
+        perform_rollback "$ROLLBACK_POINT"
+        exit 1
+    }
     
     # Remover .npmrc após instalação
     rm -f "$INSTALL_DIR/.npmrc"
