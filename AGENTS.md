@@ -1,9 +1,9 @@
-# AGENTS.md - SocialBluePro Agent Guidelines (v2.3.1)
+# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.0)
 
 **Documento mandatório para todos os agents AI operando neste codebase.**
 
-> **Última atualização:** 2026-02-13  
-> **Versão:** 2.3.1  
+> **Última atualização:** 2026-02-14  
+> **Versão:** 2.4.0  
 > **Projeto:** SocialBluePro - Sistema de Gestão de Leads e Marketing
 
 ---
@@ -60,22 +60,31 @@
 ### Tarefa Atual
 - ✅ v2.3.0 Contact Message System & Autonomous Git Workflow - CONCLUÍDO
 - ✅ v2.3.1 Marketing Tools UX Fixes & UI Standardization - CONCLUÍDO
+- ✅ v2.4.0 Automatic Media Conversion - CONCLUÍDO
 
-### Progresso
-- [x] v2.3.1 - Marketing Tools UX Fixes & UI Standardization - CONCLUÍDO
-- [x] Documentação atualizada (CHANGELOG, README, AGENTS.md)
-- [x] Versão do projeto atualizada para 2.3.1
+### Progresso v2.4.0
+- [x] Criar worker de processamento de mídia (scripts/media-worker.mjs)
+- [x] Implementar fila em disco (pending/processing/done/failed)
+- [x] Upload streaming com busboy (suporte a 1GB)
+- [x] Conversão HEIC/HEIF → JPEG
+- [x] Conversão vídeos → MP4 (720p, 30fps, H.264)
+- [x] Fast-path remux para vídeos compatíveis
+- [x] UI com status de processamento (processing/ready/failed)
+- [x] Atualizar install.sh com FFmpeg e env defaults
+- [x] Serviço systemd do worker (CPUQuota=40%, Nice=10)
+- [x] Atualizar scripts/deploy/
+- [x] Bump versão 2.4.0 e documentação
 
 ### Próximos Passos
-- [x] Aplicar migration pendente do Prisma (UTM fields) - CONCLUÍDO
-- [x] Executar lint e build para validação - CONCLUÍDO (build OK, lint com problema de configuração)
-- [x] Commit e push das atualizações de documentação - CONCLUÍDO
+- [x] Executar lint e build para validação - CONCLUÍDO (build OK)
+- [x] Commit e push da versão 2.4.0
 
 ### Último Commit
-- Versão: 2.3.1
-- Feature: Atualização completa da documentação para v2.3.1
+- Versão: 2.4.0
+- Feature: Conversão automática de mídia (HEIC→JPEG, vídeos→MP4 720p)
+- Breaking: Nova arquitetura de upload streaming, FFmpeg necessário
 
-**Status:** ✅ Todas as documentações atualizadas e push realizado para main
+**Status:** ✅ Implementação completa, validada e pronta para deploy
 
 ---
 

@@ -2,6 +2,49 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.0] - 2026-02-14
+
+### Automatic Media Conversion (v2.4.0)
+- **Conversão automática de mídia**: HEIC/HEIF → JPEG e vídeos → MP4 (720p, 30fps)
+- **Worker de processamento separado**: Processa conversões em background com controle de CPU
+- **Upload streaming via busboy**: Suporta arquivos até 1GB sem estourar memória
+- **Fila em disco**: Sistema de jobs persistente (pending/processing/done/failed)
+- **Status de processamento**: UI mostra "Processando..." ou "Falha" durante conversão
+- **Fast-path para vídeos compatíveis**: Remux sem re-encode quando possível (H.264/AAC ≤720p)
+- **FFmpeg integrado**: Instalação e configuração automática via installer
+- **Variáveis de ambiente**: Configurações flexíveis para limites e qualidade de conversão
+- **Serviço systemd do worker**: CPUQuota=40%, Nice=10, FFMPEG_THREADS=2 (padrão seguro)
+
+### Technical Changes
+- Upload de leads reescrito com parser multipart streaming (busboy)
+- API de uploads otimizada para streaming de arquivos grandes
+- Sistema de attachments expandido com campos: id, status, kind, meta, error
+- Compatibilidade retroativa: attachments antigos tratados como "ready"
+- Instalador atualizado: injeta automaticamente novas variáveis de ambiente
+- Scripts de deploy atualizados: install.sh e update.sh com suporte ao worker
+
+### Security & Limits
+- Restrição de path em /api/uploads: apenas diretório leads/ é servido
+- Validação de duração máxima de vídeo (6 minutos = 360s)
+- Hard cap de upload: 1GB por arquivo
+- Cleanup automático de arquivos temporários
+- Timeout de jobs: 20 minutos
+
+### New Files
+- `scripts/media-worker.mjs` - Worker de processamento de mídia com FFmpeg
+- `src/lib/media-queue.ts` - Utilitários da fila de processamento
+- `@types/busboy` e `busboy` - Parser multipart streaming
+
+### Modified Files
+- `src/app/api/leads/route.ts` - Upload streaming com busboy
+- `src/app/api/uploads/[...path]/route.ts` - Streaming otimizado para arquivos grandes
+- `src/actions/leads.ts` - Integração com novo sistema de attachments
+- `src/components/ui/LeadDetailModal.tsx` - Status de processamento na UI
+- `install.sh` - Instalação automática do FFmpeg e variáveis de ambiente
+- `scripts/deploy/install.sh` e `update.sh` - Suporte ao worker de mídia
+
+---
+
 ## [2.3.1] - 2026-02-13
 
 ### Marketing Tools UX Fixes & UI Standardization

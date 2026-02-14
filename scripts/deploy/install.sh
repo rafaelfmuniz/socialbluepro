@@ -107,6 +107,7 @@ install_dependencies() {
         "ufw"
         "certbot"
         "python3-certbot-nginx"
+        "ffmpeg"
     )
     
     for dep in "${deps[@]}"; do
@@ -311,8 +312,22 @@ NODE_ENV=production
 PORT=3000
 
 # Uploads
-UPLOAD_DIR="./public/uploads"
+UPLOAD_DIR="/opt/socialbluepro/public/uploads"
+UPLOAD_TMP_DIR="/opt/socialbluepro/var/uploads-tmp"
+MEDIA_QUEUE_DIR="/opt/socialbluepro/var/media-queue"
 MAX_FILE_SIZE=1073741824
+MAX_VIDEO_UPLOAD_BYTES=1073741824
+MAX_VIDEO_DURATION_SECONDS=360
+VIDEO_OUTPUT_MAX_HEIGHT=720
+VIDEO_OUTPUT_FPS=30
+FFMPEG_THREADS=2
+FFMPEG_PRESET=veryfast
+FFMPEG_CRF=23
+FFMPEG_MAXRATE=3.5M
+FFMPEG_BUFSIZE=7M
+JOB_TIMEOUT_MS=1200000
+MAX_RETRIES=1
+LOOP_INTERVAL_MS=2000
 
 # Email (configurar depois via interface admin)
 # SMTP_HOST=
@@ -362,7 +377,35 @@ EOF
     systemctl daemon-reload
     systemctl enable "$SERVICE_NAME"
     
-    success "Serviço systemd configurado"
+    # Configurar serviço do worker de mídia (v2.4.0+)
+    cat > "/etc/systemd/system/${SERVICE_NAME}-media-worker.service" << 'EOF'
+[Unit]
+Description=SocialBluePro - Media Processing Worker
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/socialbluepro
+EnvironmentFile=-/opt/socialbluepro/.env
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/node /opt/socialbluepro/scripts/media-worker.mjs
+Restart=always
+RestartSec=5
+Nice=10
+CPUQuota=40%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl enable "${SERVICE_NAME}-media-worker"
+    
+    success "Serviços systemd configurados"
 }
 
 # ============================================

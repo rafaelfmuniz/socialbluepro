@@ -153,7 +153,7 @@ export default function MarketingToolsPage() {
     }
   };
 
-   const downloadQR = () => {
+   const downloadQR = async () => {
      const urlToUse = qrModalOpen && qrModalLink
        ? qrModalUrl
        : qrCodeUrl;
@@ -163,15 +163,35 @@ export default function MarketingToolsPage() {
        return;
      }
 
-     const link = document.createElement("a");
-     link.href = urlToUse;
-     const filename = qrModalOpen && qrModalLink
-       ? `qr-${qrModalLink.slug}.png`
-       : `qr-${shortLink ? shortLink.slug : "tracking"}.png`;
-     link.download = filename;
-     document.body.appendChild(link);
-     link.click();
-     document.body.removeChild(link);
+     try {
+       // Fetch the image and create a blob for reliable download
+       const response = await fetch(urlToUse);
+       if (!response.ok) {
+         throw new Error("Failed to fetch QR code");
+       }
+       
+       const blob = await response.blob();
+       const blobUrl = URL.createObjectURL(blob);
+       
+       const filename = qrModalOpen && qrModalLink
+         ? `qr-${qrModalLink.slug}.png`
+         : `qr-${shortLink ? shortLink.slug : "tracking"}.png`;
+       
+       const link = document.createElement("a");
+       link.href = blobUrl;
+       link.download = filename;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+       
+       // Clean up the blob URL
+       URL.revokeObjectURL(blobUrl);
+       
+       addToast("✅ QR code downloaded!", "success");
+     } catch (error) {
+       console.error("Download QR error:", error);
+       addToast("❌ Failed to download QR code", "error");
+     }
    };
 
    const openQrModal = (link: ShortLink) => {
@@ -513,6 +533,13 @@ export default function MarketingToolsPage() {
                             title="Copy link"
                           >
                             <Copy size={16} />
+                          </button>
+                          <button
+                            onClick={() => openQrModal(link)}
+                            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            title="View QR Code"
+                          >
+                            <QrCode size={16} />
                           </button>
                           <button
                             onClick={() => handleToggleLink(link.id)}

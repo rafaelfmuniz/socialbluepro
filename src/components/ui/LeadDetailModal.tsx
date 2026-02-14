@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Phone, MapPin, Clock, FileText, Tag, MessageSquare, User, CheckCircle, Download, Trash2, Edit, Globe } from "lucide-react";
+import { X, Mail, Phone, MapPin, Clock, FileText, Tag, MessageSquare, User, CheckCircle, Download, Trash2, Edit, Globe, Loader2 } from "lucide-react";
 import { Attachment } from "@/actions/leads";
 import { getLeadNotes, addLeadNote, deleteLeadNote, LeadNote } from "@/actions/lead-notes";
 import { cn } from "@/lib/utils";
@@ -248,6 +248,19 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
     return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
   };
 
+  const getAttachmentStatus = (att: Attachment) => {
+    // Handle legacy attachments (backward compatibility)
+    if (!('status' in att)) {
+      return 'ready';
+    }
+    return att.status;
+  };
+
+  const isVideoFile = (fileName: string) => {
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
+    return videoExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -465,40 +478,90 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                            )}
                          </div>
                        </div>
-                        <div className="grid grid-cols-4 gap-3">
-                          {lead.attachments.map((att, idx) => {
-                            const attachmentUrl = resolveAttachmentUrl(att.url);
-                            const isImage = isImageFile(att.name);
-                            return (
-                              <a
-                                key={idx}
-                                href={attachmentUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-white p-3 rounded-xl border border-slate-200 hover:border-accent transition-colors group"
-                              >
-                                {isImage ? (
-                                  <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
-                                    <img
-                                      src={attachmentUrl}
-                                      alt={att.name}
-                                      className="max-w-full max-h-full object-contain"
-                                      loading="lazy"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center">
-                                    <FileText className="text-slate-400 group-hover:text-accent" size={20} />
-                                  </div>
-                                )}
-                                <p className="text-[10px] font-bold text-slate-600 truncate" title={att.name}>
-                                  {att.name}
-                                </p>
-                                <p className="text-[8px] text-slate-400 font-bold">{Math.round(att.size / 1024)} KB</p>
-                              </a>
-                            );
-                          })}
-                        </div>
+                         <div className="grid grid-cols-4 gap-3">
+                           {lead.attachments.map((att, idx) => {
+                             const attachmentUrl = resolveAttachmentUrl(att.url);
+                             const isImage = isImageFile(att.name);
+                             const isVideo = isVideoFile(att.name);
+                             const status = getAttachmentStatus(att);
+                             
+                             // Processing state
+                             if (status === 'processing') {
+                               return (
+                                 <div
+                                   key={idx}
+                                   className="bg-white p-3 rounded-xl border border-slate-200 cursor-not-allowed"
+                                 >
+                                   <div className="aspect-square bg-slate-50 rounded-lg mb-2 flex items-center justify-center">
+                                     <Loader2 className="text-accent animate-spin" size={20} />
+                                   </div>
+                                   <p className="text-[10px] font-bold text-slate-600 truncate" title={att.name}>
+                                     {att.name}
+                                   </p>
+                                   <p className="text-[8px] text-amber-500 font-bold">Processando...</p>
+                                 </div>
+                               );
+                             }
+                             
+                             // Failed state
+                             if (status === 'failed') {
+                               return (
+                                 <div
+                                   key={idx}
+                                   className="bg-white p-3 rounded-xl border border-red-200"
+                                   title={att.error || 'Falha no processamento'}
+                                 >
+                                   <div className="aspect-square bg-red-50 rounded-lg mb-2 flex items-center justify-center">
+                                     <FileText className="text-red-400" size={20} />
+                                   </div>
+                                   <p className="text-[10px] font-bold text-slate-600 truncate" title={att.name}>
+                                     {att.name}
+                                   </p>
+                                   <p className="text-[8px] text-red-500 font-bold">Falha</p>
+                                 </div>
+                               );
+                             }
+                             
+                             // Ready state (normal rendering)
+                             return (
+                               <a
+                                 key={idx}
+                                 href={attachmentUrl}
+                                 target="_blank"
+                                 rel="noopener noreferrer"
+                                 className="bg-white p-3 rounded-xl border border-slate-200 hover:border-accent transition-colors group"
+                               >
+                                 {isImage ? (
+                                   <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+                                     <img
+                                       src={attachmentUrl}
+                                       alt={att.name}
+                                       className="max-w-full max-h-full object-contain"
+                                       loading="lazy"
+                                     />
+                                   </div>
+                                 ) : isVideo ? (
+                                   <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center relative">
+                                     <FileText className="text-slate-400 group-hover:text-accent" size={20} />
+                                     <div className="absolute inset-0 flex items-center justify-center">
+                                       <div className="w-8 h-8 bg-black/50 rounded-full flex items-center justify-center">
+                                         <div className="w-0 h-0 border-t-4 border-t-transparent border-l-6 border-l-white border-b-4 border-b-transparent ml-0.5" />
+                                       </div>
+                                     </div>
+                                   </div>
+                                 ) : (
+                                   <div className="aspect-square bg-slate-100 rounded-lg mb-2 flex items-center justify-center">
+                                     <FileText className="text-slate-400 group-hover:text-accent" size={20} />
+                                   </div>
+                                 )}
+                                 <p className="text-[10px] font-bold text-slate-600 truncate" title={att.name}>
+                                   {att.name}
+                                 </p>
+                                 <p className="text-[8px] text-slate-400 font-bold">{Math.round(att.size / 1024)} KB</p>
+                               </a>
+                             );
+                           })}
+                         </div>
                     </section>
                   )}
                 </div>

@@ -419,6 +419,121 @@ perform_rollback() {
 }
 
 # ============================================
+# FFMPEG E PROCESSAMENTO DE MÍDIA
+# ============================================
+ensure_ffmpeg() {
+    log_info "Verificando instalação do FFmpeg..."
+    
+    if command -v ffmpeg &> /dev/null && command -v ffprobe &> /dev/null; then
+        log_success "FFmpeg já instalado: $(ffmpeg -version | head -1)"
+        return 0
+    fi
+    
+    log_info "Instalando FFmpeg..."
+    apt-get update -qq
+    apt-get install -y ffmpeg -qq || {
+        log_error "Falha ao instalar FFmpeg"
+        exit 1
+    }
+    
+    log_success "FFmpeg instalado: $(ffmpeg -version | head -1)"
+}
+
+# ============================================
+# CONFIGURAÇÃO AUTOMÁTICA DO .ENV
+# ============================================
+ensure_env_defaults() {
+    log_info "Verificando variáveis de ambiente..."
+    
+    local env_file="$INSTALL_DIR/.env"
+    
+    if [[ ! -f "$env_file" ]]; then
+        log_error "Arquivo .env não encontrado em $env_file"
+        return 1
+    fi
+    
+    # Array de variáveis com seus valores padrão
+    declare -a env_vars=(
+        "UPLOAD_TMP_DIR=/opt/socialbluepro/var/uploads-tmp"
+        "MEDIA_QUEUE_DIR=/opt/socialbluepro/var/media-queue"
+        "MAX_VIDEO_UPLOAD_BYTES=1073741824"
+        "MAX_VIDEO_DURATION_SECONDS=360"
+        "VIDEO_OUTPUT_MAX_HEIGHT=720"
+        "VIDEO_OUTPUT_FPS=30"
+        "FFMPEG_THREADS=2"
+        "FFMPEG_PRESET=veryfast"
+        "FFMPEG_CRF=23"
+        "FFMPEG_MAXRATE=3.5M"
+        "FFMPEG_BUFSIZE=7M"
+        "JOB_TIMEOUT_MS=1200000"
+        "MAX_RETRIES=1"
+        "LOOP_INTERVAL_MS=2000"
+    )
+    
+    # Para cada variável, verificar se existe e adicionar se necessário
+    for var_def in "${env_vars[@]}"; do
+        local var_name="${var_def%%=*}"
+        local var_value="${var_def#*=}"
+        
+        if ! grep -q "^${var_name}=" "$env_file" 2>/dev/null; then
+            log_info "Adicionando variável ausente: $var_name"
+            echo "${var_name}=\"${var_value}\"" >> "$env_file"
+        fi
+    done
+    
+    # Criar diretórios necessários
+    local upload_tmp_dir=$(grep "^UPLOAD_TMP_DIR=" "$env_file" | cut -d'"' -f2)
+    local media_queue_dir=$(grep "^MEDIA_QUEUE_DIR=" "$env_file" | cut -d'"' -f2)
+    
+    mkdir -p "$upload_tmp_dir" || log_warning "Não foi possível criar $upload_tmp_dir"
+    mkdir -p "$media_queue_dir"/{pending,processing,done,failed} || log_warning "Não foi possível criar diretórios da fila"
+    
+    # Ajustar permissões
+    chown -R root:root "$upload_tmp_dir" 2>/dev/null || true
+    chown -R root:root "$media_queue_dir" 2>/dev/null || true
+    
+    log_success "Variáveis de ambiente verificadas"
+}
+
+# ============================================
+# SERVIÇO SYSTEMD DO WORKER DE MÍDIA
+# ============================================
+ensure_systemd_worker() {
+    log_info "Configurando serviço do worker de mídia..."
+    
+    local service_file="/etc/systemd/system/${SERVICE_NAME}-media-worker.service"
+    
+    cat > "$service_file" <<'EOF'
+[Unit]
+Description=SocialBluePro - Media Processing Worker
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/socialbluepro
+EnvironmentFile=-/opt/socialbluepro/.env
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/node /opt/socialbluepro/scripts/media-worker.mjs
+Restart=always
+RestartSec=5
+Nice=10
+CPUQuota=40%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl daemon-reload
+    systemctl enable "${SERVICE_NAME}-media-worker"
+    
+    log_success "Serviço do worker configurado"
+}
+
+# ============================================
 # INSTALAÇÃO DE DEPENDÊNCIAS
 # ============================================
 install_dependencies() {
@@ -515,8 +630,22 @@ NEXTAUTH_URL="http://localhost:3000"
 NODE_ENV="production"
 PORT=3000
 ENCRYPTION_KEY="$(openssl rand -hex 32)"
-UPLOAD_DIR="./public/uploads"
+UPLOAD_DIR="/opt/socialbluepro/public/uploads"
+UPLOAD_TMP_DIR="/opt/socialbluepro/var/uploads-tmp"
+MEDIA_QUEUE_DIR="/opt/socialbluepro/var/media-queue"
 MAX_FILE_SIZE=1073741824
+MAX_VIDEO_UPLOAD_BYTES=1073741824
+MAX_VIDEO_DURATION_SECONDS=360
+VIDEO_OUTPUT_MAX_HEIGHT=720
+VIDEO_OUTPUT_FPS=30
+FFMPEG_THREADS=2
+FFMPEG_PRESET=veryfast
+FFMPEG_CRF=23
+FFMPEG_MAXRATE=3.5M
+FFMPEG_BUFSIZE=7M
+JOB_TIMEOUT_MS=1200000
+MAX_RETRIES=1
+LOOP_INTERVAL_MS=2000
 EOF
     
     chmod 600 "$INSTALL_DIR/.env"
@@ -646,6 +775,9 @@ build_and_start_service() {
     
     cd "$INSTALL_DIR" || exit 1
     
+    # Instalar FFmpeg (necessário para processamento de mídia v2.4.0+)
+    ensure_ffmpeg
+    
     # Configurar ambiente para o build
     export NODE_ENV=production
     export NEXT_TELEMETRY_DISABLED=1
@@ -669,6 +801,9 @@ build_and_start_service() {
     mkdir -p "$INSTALL_DIR/public/uploads"
     chown -R root:root "$INSTALL_DIR/public/uploads"
     
+    # Garantir variáveis de ambiente e diretórios (v2.4.0+)
+    ensure_env_defaults
+    
     cat > "/etc/systemd/system/${SERVICE_NAME}.service" <<'EOF'
 [Unit]
 Description=SocialBluePro - Sistema de Gestão de Leads
@@ -691,14 +826,24 @@ StandardError=journal
 WantedBy=multi-user.target
 EOF
     
+    # Configurar serviço do worker de mídia (v2.4.0+)
+    ensure_systemd_worker
+    
     systemctl daemon-reload
+    
+    # Iniciar serviço principal
     systemctl enable "$SERVICE_NAME"
     systemctl start "$SERVICE_NAME" || {
-        log_error "Falha ao iniciar serviço"
+        log_error "Falha ao iniciar serviço principal"
         exit 1
     }
     
-    log_success "Serviço iniciado"
+    # Iniciar worker de mídia
+    systemctl start "${SERVICE_NAME}-media-worker" || {
+        log_warning "Falha ao iniciar worker de mídia (não crítico)"
+    }
+    
+    log_success "Serviços iniciados"
 }
 
 # ============================================
@@ -1069,6 +1214,10 @@ update() {
     log_info "Restaurando configurações..."
     cp /tmp/sbp-env-backup .env 2>/dev/null || true
     
+    # Atualizar para v2.4.0+: garantir FFmpeg e variáveis de ambiente
+    ensure_ffmpeg
+    ensure_env_defaults
+    
     log_info "Atualizando dependências..."
     
     # Criar .npmrc para configurações seguras
@@ -1139,12 +1288,21 @@ EOF
         log_success "Arquivos estáticos copiados"
     fi
     
-    # Reiniciar serviço para garantir que usa os novos arquivos
-    log_info "Reiniciando serviço..."
+    # Configurar/atualizar serviço do worker (v2.4.0+)
+    ensure_systemd_worker
+    
+    # Reiniciar serviço principal
+    log_info "Reiniciando serviço principal..."
     systemctl restart "$SERVICE_NAME" || {
         log_error "Falha ao reiniciar serviço"
         perform_rollback "$ROLLBACK_POINT"
         exit 1
+    }
+    
+    # Reiniciar worker de mídia
+    log_info "Reiniciando worker de mídia..."
+    systemctl restart "${SERVICE_NAME}-media-worker" || {
+        log_warning "Falha ao reiniciar worker de mídia"
     }
     
     health_check

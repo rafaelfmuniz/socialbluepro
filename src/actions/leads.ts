@@ -14,8 +14,17 @@ import {
   validateColoradoCity, 
   validateColoradoZipStatic 
 } from "@/lib/validators";
+import { 
+  ProcessingAttachment, 
+  cleanupLeadTempFiles, 
+  cleanupLeadJobs 
+} from "@/lib/media-queue";
 
-export interface Attachment {
+// Re-export for backward compatibility
+export type Attachment = ProcessingAttachment;
+
+// Legacy Attachment interface (for backward compatibility with old data)
+interface LegacyAttachment {
   name: string;
   url: string;
   path: string;
@@ -23,8 +32,9 @@ export interface Attachment {
   type: string;
 }
 
-// Local upload directory
-const UPLOAD_DIR = join(process.cwd(), 'public', 'uploads', 'leads');
+// Local upload directory - use absolute path via env to avoid cwd issues with standalone output
+const UPLOAD_BASE = process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads';
+const UPLOAD_DIR = join(UPLOAD_BASE, 'leads');
 
 // Ensure upload directory exists
 if (!existsSync(UPLOAD_DIR)) {
@@ -44,6 +54,10 @@ async function deleteLeadFiles(leadId: string): Promise<void> {
       await fs.rm(leadDir, { recursive: true, force: true });
       console.log("Deleted lead attachment directory:", leadDir);
     }
+    
+    // Also cleanup temp files and queue jobs for this lead
+    await cleanupLeadTempFiles(leadId);
+    await cleanupLeadJobs(leadId);
   } catch (error) {
     console.error("Error deleting lead files:", error);
     // Don't throw - continue with lead deletion from database
@@ -54,7 +68,12 @@ async function deleteLeadFiles(leadId: string): Promise<void> {
 // have been moved to src/lib/validators.ts for centralization and better maintainability.
 // We are now importing them from there.
 
-export async function uploadLeadAttachments(files: File[], leadId?: string): Promise<{ success: boolean; files?: Attachment[]; error?: string }> {
+/**
+ * @deprecated Use streaming upload via /api/leads route instead.
+ * This function is kept for backward compatibility but loads files into memory.
+ * For large files (up to 1GB), use the streaming endpoint.
+ */
+export async function uploadLeadAttachments(files: File[], leadId?: string): Promise<{ success: boolean; files?: LegacyAttachment[]; error?: string }> {
   try {
     // Determine target directory
     const targetDir = leadId ? join(UPLOAD_DIR, leadId) : UPLOAD_DIR;
@@ -431,7 +450,14 @@ export async function captureLeadWithAttachments(formData: FormData) {
     if (validFiles.length > 0) {
       const uploadResult = await uploadLeadAttachments(validFiles, leadId);
       if (!uploadResult.success) return { success: false, error: uploadResult.error };
-      attachments = uploadResult.files || [];
+      // Convert legacy attachments to new format with minimal required fields
+      attachments = (uploadResult.files || []).map(file => ({
+        ...file,
+        id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+        status: 'ready' as const,
+        kind: file.type.startsWith('image/') ? ('image' as const) : ('video' as const),
+        createdAt: new Date().toISOString(),
+      }));
       
       // Update lead with actual attachments
       try {
