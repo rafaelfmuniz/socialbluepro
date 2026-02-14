@@ -17,6 +17,7 @@ import {
   X, 
   Loader2, 
   ChevronRight,
+  ChevronDown,
   Clock,
   DollarSign
 } from "lucide-react";
@@ -554,13 +555,14 @@ function RequestFormContent() {
               <h3 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Project Details</h3>
               
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Service Required</label>
+                <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Service Required *</label>
                 <select 
                   name="service" 
                   required 
+                  defaultValue=""
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
                 >
-                  <option value="" disabled>Select a service</option>
+                  <option value="" disabled>-- Select a service --</option>
                   {SERVICES_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
@@ -577,23 +579,27 @@ function RequestFormContent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Timeframe</label>
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Timeframe *</label>
                   <select 
                     name="timeframe" 
                     required 
+                    defaultValue=""
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
                   >
+                    <option value="" disabled>-- Select timeframe --</option>
                     {TIMEFRAME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 </div>
                 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Budget</label>
+                  <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Budget *</label>
                   <select 
                     name="budget" 
                     required 
+                    defaultValue=""
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
                   >
+                    <option value="" disabled>-- Select budget --</option>
                     {BUDGET_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 </div>
@@ -708,6 +714,18 @@ export default function RequestServicePage() {
                 <p className="text-slate-500 text-sm">Fully insured and certified for Colorado projects.</p>
               </div>
             </div>
+
+            {/* Mobile Scroll Indicator */}
+            <motion.button
+              onClick={() => document.getElementById('request-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="md:hidden inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wider shadow-lg hover:bg-green-600 transition-all"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              Get Your Free Estimate
+              <ChevronDown size={20} className="animate-bounce" />
+            </motion.button>
           </motion.div>
         </div>
       </section>

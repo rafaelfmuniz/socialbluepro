@@ -356,6 +356,18 @@ export async function captureLeadWithAttachments(formData: FormData) {
       return { success: false, error: "Missing required fields" };
     }
 
+    // Validate budget and timeframe are provided and valid
+    const VALID_BUDGETS = ["Under $1,000", "$1,000 - $5,000", "$5,000 - $10,000", "$10,000 - $20,000", "$20,000+"];
+    const VALID_TIMEFRAMES = ["As soon as possible", "Within 2 weeks", "Within a month", "Just planning"];
+    
+    if (!budget || !VALID_BUDGETS.includes(budget)) {
+      return { success: false, error: "Please select a valid budget option" };
+    }
+    
+    if (!timeframe || !VALID_TIMEFRAMES.includes(timeframe)) {
+      return { success: false, error: "Please select a valid timeframe option" };
+    }
+
     if (!validator.isEmail(email)) {
       return { success: false, error: "Valid email address required." };
     }

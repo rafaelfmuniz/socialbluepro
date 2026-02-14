@@ -595,14 +595,16 @@ export default function QuoteModal({ isOpen, onClose, initialService }: QuoteMod
                     {/* Row 7: Timeframe ------ Budget */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Timeframe</label>
-                        <select name="timeframe" required className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer">
+                        <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Timeframe *</label>
+                        <select name="timeframe" required defaultValue="" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer">
+                          <option value="" disabled>-- Select timeframe --</option>
                           {TIMEFRAME_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Budget</label>
-                        <select name="budget" required className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer">
+                        <label className="text-[10px] uppercase font-black text-slate-400 ml-1">Budget *</label>
+                        <select name="budget" required defaultValue="" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer">
+                          <option value="" disabled>-- Select budget --</option>
                           {BUDGET_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
                       </div>

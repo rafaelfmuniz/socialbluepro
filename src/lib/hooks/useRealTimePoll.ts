@@ -35,6 +35,18 @@ export function useRealTimePoll<T>(options: UseRealTimePollOptions<T>): UseRealT
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef<boolean>(true);
   const lastFetchTimeRef = useRef<number>(0);
+  
+  // Use refs to store callbacks to avoid dependency changes on every render
+  const fetchFunctionRef = useRef(fetchFunction);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  
+  // Update refs when callbacks change
+  useEffect(() => {
+    fetchFunctionRef.current = fetchFunction;
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  });
 
   const fetchData = useCallback(async (showLoading: boolean = true) => {
     if (!isMountedRef.current) return;
@@ -52,36 +64,40 @@ export function useRealTimePoll<T>(options: UseRealTimePollOptions<T>): UseRealT
       if (showLoading) setLoading(true);
       setError(null);
 
-      const result = await fetchFunction();
+      const result = await fetchFunctionRef.current();
 
       if (isMountedRef.current) {
         setData(result);
         setLastUpdate(new Date());
-        onSuccess?.(result);
+        onSuccessRef.current?.(result);
       }
     } catch (err) {
       if (isMountedRef.current) {
         const errorObj = err instanceof Error ? err : new Error(String(err));
         setError(errorObj);
-        onError?.(errorObj);
+        onErrorRef.current?.(errorObj);
       }
     } finally {
       if (isMountedRef.current && showLoading) {
         setLoading(false);
       }
     }
-  }, [fetchFunction, onSuccess, onError]);
+  }, []); // No dependencies - uses refs for callbacks
+
+  // Stable fetchData ref to avoid dependency changes
+  const fetchDataRef = useRef(fetchData);
+  fetchDataRef.current = fetchData;
 
   useEffect(() => {
     isMountedRef.current = true;
 
     if (enabled) {
-      fetchData(true);
+      fetchDataRef.current(true);
 
       pollingIntervalRef.current = setInterval(() => {
         if (enabled) {
           setIsPolling(true);
-          fetchData(false).finally(() => {
+          fetchDataRef.current(false).finally(() => {
             if (isMountedRef.current) {
               setIsPolling(false);
             }
@@ -96,7 +112,7 @@ export function useRealTimePoll<T>(options: UseRealTimePollOptions<T>): UseRealT
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [enabled, interval, fetchData]);
+  }, [enabled, interval]); // fetchData removed - uses ref
 
   const refetch = useCallback(async () => {
     await fetchData(true);
