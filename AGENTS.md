@@ -1,9 +1,9 @@
-# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.1)
+# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.2)
 
 **Documento mandatório para todos os agents AI operando neste codebase.**
 
 > **Última atualização:** 2026-02-14  
-> **Versão:** 2.4.1  
+> **Versão:** 2.4.2  
 > **Projeto:** SocialBluePro - Sistema de Gestão de Leads e Marketing
 
 ---
@@ -61,6 +61,8 @@
 - ✅ v2.3.0 Contact Message System & Autonomous Git Workflow - CONCLUÍDO
 - ✅ v2.3.1 Marketing Tools UX Fixes & UI Standardization - CONCLUÍDO
 - ✅ v2.4.0 Automatic Media Conversion - CONCLUÍDO
+- ✅ v2.4.1 HEIC/HEIF Fix e Fluxo de Upload - CONCLUÍDO
+- ✅ v2.4.2 Fix Crítico do Worker Prisma - CONCLUÍDO
 
 ### Progresso v2.4.0
 - [x] Criar worker de processamento de mídia (scripts/media-worker.mjs)
@@ -75,16 +77,19 @@
 - [x] Atualizar scripts/deploy/
 - [x] Bump versão 2.4.0 e documentação
 
-### Próximos Passos
-- [x] Executar lint e build para validação - CONCLUÍDO (build OK)
-- [x] Commit e push da versão 2.4.0
+### Progresso v2.4.2
+- [x] Corrigir inicialização do Prisma no worker (adicionar driver adapter)
+- [x] Adicionar validação de DATABASE_URL no worker
+- [x] Melhorar graceful shutdown (disconnect Prisma e pool)
+- [x] Executar lint e build para validação
+- [x] Commit e push da versão 2.4.2
 
 ### Último Commit
-- Versão: 2.4.0
-- Feature: Conversão automática de mídia (HEIC→JPEG, vídeos→MP4 720p)
-- Breaking: Nova arquitetura de upload streaming, FFmpeg necessário
+- Versão: 2.4.2
+- Fix: Worker de mídia inicializa Prisma corretamente com @prisma/adapter-pg
+- Impacto: Resolve crash-loop do worker e processamento de fila
 
-**Status:** ✅ Implementação completa, validada e pronta para deploy
+**Status:** ✅ v2.4.2 implementada e pronta para deploy
 
 ---
 

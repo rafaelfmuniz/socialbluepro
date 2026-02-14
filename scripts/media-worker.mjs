@@ -7,12 +7,23 @@ import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Initialize Prisma Client
-const prisma = new PrismaClient();
+// Validate DATABASE_URL
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  console.error('[ERROR] DATABASE_URL environment variable is required');
+  process.exit(1);
+}
+
+// Initialize Prisma Client with driver adapter (required for Prisma v7.2+ with @prisma/adapter-pg)
+const pool = new Pool({ connectionString: databaseUrl });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 // Environment configuration
 const CONFIG = {
@@ -528,13 +539,17 @@ async function main() {
 }
 
 // Handle graceful shutdown
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   log('info', 'SIGTERM received, shutting down');
+  await prisma.$disconnect().catch(() => {});
+  await pool.end().catch(() => {});
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   log('info', 'SIGINT received, shutting down');
+  await prisma.$disconnect().catch(() => {});
+  await pool.end().catch(() => {});
   process.exit(0);
 });
 

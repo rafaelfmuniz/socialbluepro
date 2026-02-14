@@ -2,6 +2,24 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.2] - 2026-02-14
+
+### Correção Crítica: Worker de Mídia (v2.4.2)
+- **Fix do Prisma Client no Worker**: Worker agora inicializa Prisma corretamente com driver adapter (`pg` + `@prisma/adapter-pg`)
+- **Validação de DATABASE_URL**: Worker falha explicitamente com mensagem clara se `DATABASE_URL` estiver ausente
+- **Graceful shutdown melhorado**: Worker desconecta do Prisma e fecha pool de conexões no SIGTERM/SIGINT
+- **Worker sobe e processa fila**: Correção resolve crash-loop do worker (Status: activating → active)
+
+### Fixed Issues
+- Worker entrava em crash-loop com `PrismaClientInitializationError` por falta de adapter
+- Anexos ficavam eternamente em "Processando..." porque worker nunca processava a fila
+- `/api/uploads/` retornava 404 porque arquivos convertidos nunca eram gerados
+
+### Modified Files
+- `scripts/media-worker.mjs` - Inicialização correta do Prisma com adapter
+
+---
+
 ## [2.4.1] - 2026-02-14
 
 ### Correções de HEIC/HEIF e Fluxo de Upload (v2.4.1)
