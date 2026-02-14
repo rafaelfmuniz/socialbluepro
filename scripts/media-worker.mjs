@@ -4,7 +4,7 @@
 
 import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
@@ -25,11 +25,11 @@ const pool = new Pool({ connectionString: databaseUrl });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-// Environment configuration
+// Environment configuration - ensure all paths are absolute
 const CONFIG = {
-  UPLOAD_TMP_DIR: process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp',
-  MEDIA_QUEUE_DIR: process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue',
-  UPLOAD_DIR: process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads',
+  UPLOAD_TMP_DIR: resolve(process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp'),
+  MEDIA_QUEUE_DIR: resolve(process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue'),
+  UPLOAD_DIR: resolve(process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads'),
   MAX_VIDEO_DURATION_SECONDS: parseInt(process.env.MAX_VIDEO_DURATION_SECONDS || '360', 10),
   VIDEO_OUTPUT_MAX_HEIGHT: parseInt(process.env.VIDEO_OUTPUT_MAX_HEIGHT || '720', 10),
   VIDEO_OUTPUT_FPS: parseInt(process.env.VIDEO_OUTPUT_FPS || '30', 10),

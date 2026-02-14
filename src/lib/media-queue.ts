@@ -2,12 +2,12 @@
 // Handles job creation and management for the media processing worker
 
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { randomUUID } from 'crypto';
 
-const MEDIA_QUEUE_DIR = process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue';
-const UPLOAD_TMP_DIR = process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp';
-const UPLOAD_DIR = process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads';
+const MEDIA_QUEUE_DIR = resolve(process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue');
+const UPLOAD_TMP_DIR = resolve(process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp');
+const UPLOAD_DIR = resolve(process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads');
 
 export interface MediaJob {
   jobId: string;

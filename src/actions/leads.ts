@@ -7,7 +7,7 @@ import validator from "validator";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { mkdirSync, existsSync } from 'fs';
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { 
   validateEmailDomain, 
   validateAddressFormat, 
@@ -33,7 +33,7 @@ interface LegacyAttachment {
 }
 
 // Local upload directory - use absolute path via env to avoid cwd issues with standalone output
-const UPLOAD_BASE = process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads';
+const UPLOAD_BASE = resolve(process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads');
 const UPLOAD_DIR = join(UPLOAD_BASE, 'leads');
 
 // Ensure upload directory exists

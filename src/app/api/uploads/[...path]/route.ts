@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createReadStream, statSync } from "fs";
 import { open } from "fs/promises";
-import { join, normalize, extname } from "path";
+import { join, normalize, extname, resolve } from "path";
 import { Readable } from "stream";
 
 // Use absolute path via env to avoid cwd issues with standalone output
-const UPLOAD_BASE = process.env.UPLOAD_DIR || "/opt/socialbluepro/public/uploads";
+const UPLOAD_BASE = resolve(process.env.UPLOAD_DIR || "/opt/socialbluepro/public/uploads");
 
 // Allowed paths (security: only serve from leads directory)
 const ALLOWED_PATH_PREFIX = join(UPLOAD_BASE, "leads");

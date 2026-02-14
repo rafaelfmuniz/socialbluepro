@@ -530,8 +530,6 @@ Environment="NODE_ENV=production"
 ExecStart=/usr/bin/node /opt/socialbluepro/scripts/media-worker.mjs
 Restart=always
 RestartSec=5
-Nice=10
-CPUQuota=40%
 StandardOutput=journal
 StandardError=journal
 
