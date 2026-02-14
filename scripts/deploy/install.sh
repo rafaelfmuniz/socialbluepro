@@ -108,6 +108,7 @@ install_dependencies() {
         "certbot"
         "python3-certbot-nginx"
         "ffmpeg"
+        "libheif-examples"
     )
     
     for dep in "${deps[@]}"; do

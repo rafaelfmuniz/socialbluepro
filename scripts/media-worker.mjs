@@ -6,9 +6,13 @@ import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { PrismaClient } from '@prisma/client';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Initialize Prisma Client
+const prisma = new PrismaClient();
 
 // Environment configuration
 const CONFIG = {
@@ -131,12 +135,88 @@ async function ffmpeg(args, timeoutMs = CONFIG.JOB_TIMEOUT_MS) {
   });
 }
 
+// Execute heif-convert
+async function heifConvert(inputPath, outputPath) {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+    const proc = spawn('heif-convert', [inputPath, outputPath], { stdio: ['ignore', 'pipe', 'pipe'] });
+    
+    let stdout = '';
+    let stderr = '';
+    let timeoutId;
+    
+    proc.stdout.on('data', (data) => { stdout += data; });
+    proc.stderr.on('data', (data) => { stderr += data; });
+    
+    const cleanup = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      try {
+        proc.kill('SIGTERM');
+      } catch {}
+    };
+    
+    // heif-convert é rápido, timeout menor (5 min)
+    timeoutId = setTimeout(() => {
+      cleanup();
+      reject(new Error('heif-convert timeout after 5min'));
+    }, 300000);
+    
+    proc.on('close', (code) => {
+      cleanup();
+      const duration = Date.now() - startTime;
+      
+      if (code !== 0) {
+        reject(new Error(`heif-convert failed (code ${code}): ${stderr || 'unknown error'}`));
+      } else {
+        resolve({ duration, stderr });
+      }
+    });
+    
+    proc.on('error', (err) => {
+      cleanup();
+      if (err.code === 'ENOENT') {
+        reject(new Error('heif-convert not found'));
+      } else {
+        reject(new Error(`heif-convert spawn error: ${err.message}`));
+      }
+    });
+  });
+}
+
+// Check if file is HEIC/HEIF
+function isHeicHeif(filename) {
+  const ext = filename.toLowerCase().split('.').pop();
+  return ext === 'heic' || ext === 'heif';
+}
+
 // Convert HEIC/HEIF to JPEG
 async function convertImage(job) {
-  const { inputPath, outputPath } = job;
+  const { inputPath, outputPath, originalName } = job;
   
-  log('info', 'Converting image', { jobId: job.jobId, input: inputPath });
+  log('info', 'Converting image', { jobId: job.jobId, input: inputPath, originalName });
   
+  const isHeic = isHeicHeif(originalName || inputPath);
+  
+  if (isHeic) {
+    // Tentar heif-convert primeiro (melhor suporte para HEIC no Ubuntu)
+    try {
+      log('info', 'Using heif-convert for HEIC/HEIF', { jobId: job.jobId });
+      await heifConvert(inputPath, outputPath);
+      
+      const stats = await fs.stat(outputPath);
+      return {
+        success: true,
+        size: stats.size,
+        mime: 'image/jpeg',
+        ext: '.jpg',
+      };
+    } catch (heifError) {
+      log('warn', 'heif-convert failed, trying ffmpeg fallback', { jobId: job.jobId, error: heifError.message });
+      // Fallback para ffmpeg
+    }
+  }
+  
+  // Usar ffmpeg para outros formatos ou como fallback
   const args = [
     '-y',
     '-threads', String(CONFIG.FFMPEG_THREADS),
@@ -252,6 +332,59 @@ async function convertVideo(job) {
   };
 }
 
+// Update lead attachment in database
+async function updateLeadAttachment(job, result, isFailed = false) {
+  try {
+    const lead = await prisma.lead.findUnique({
+      where: { id: job.leadId },
+      select: { attachments: true }
+    });
+    
+    if (!lead || !lead.attachments) {
+      log('warn', 'Lead not found or no attachments', { leadId: job.leadId });
+      return;
+    }
+    
+    const attachments = Array.isArray(lead.attachments) ? lead.attachments : [];
+    const attachmentIndex = attachments.findIndex(att => att.id === job.attachmentId);
+    
+    if (attachmentIndex === -1) {
+      log('warn', 'Attachment not found in lead', { leadId: job.leadId, attachmentId: job.attachmentId });
+      return;
+    }
+    
+    // Update attachment
+    const updatedAttachment = {
+      ...attachments[attachmentIndex],
+      status: isFailed ? 'failed' : 'ready',
+      type: isFailed ? attachments[attachmentIndex].type : result.mime,
+      size: isFailed ? attachments[attachmentIndex].size : result.size,
+      meta: isFailed ? undefined : result.meta,
+      error: isFailed ? (result.error || 'Conversion failed') : undefined,
+      processedAt: new Date().toISOString(),
+    };
+    
+    attachments[attachmentIndex] = updatedAttachment;
+    
+    await prisma.lead.update({
+      where: { id: job.leadId },
+      data: { attachments: attachments }
+    });
+    
+    log('info', 'Updated lead attachment in database', { 
+      leadId: job.leadId, 
+      attachmentId: job.attachmentId,
+      status: updatedAttachment.status 
+    });
+  } catch (dbError) {
+    log('error', 'Failed to update lead attachment', { 
+      leadId: job.leadId, 
+      attachmentId: job.attachmentId,
+      error: dbError.message 
+    });
+  }
+}
+
 // Process a single job
 async function processJob(jobPath) {
   const jobFile = jobPath.split('/').pop();
@@ -283,6 +416,9 @@ async function processJob(jobPath) {
     job.completedAt = new Date().toISOString();
     job.status = 'completed';
     
+    // Update database
+    await updateLeadAttachment(job, result, false);
+    
     // Move to done
     await fs.writeFile(join(QUEUE_DIRS.done, jobFile), JSON.stringify(job, null, 2));
     await fs.unlink(processingPath);
@@ -306,6 +442,9 @@ async function processJob(jobPath) {
       job.error = error.message;
       job.failedAt = new Date().toISOString();
       job.attempt = (job.attempt || 0) + 1;
+      
+      // Update database with failure
+      await updateLeadAttachment(job, { error: error.message }, true);
       
       if (job.attempt >= CONFIG.MAX_RETRIES) {
         job.status = 'failed';

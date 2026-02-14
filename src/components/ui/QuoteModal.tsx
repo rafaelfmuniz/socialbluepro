@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, CheckCircle, Shield, ChevronRight, AlertCircle, UploadCloud } from "lucide-react";
-import { captureLeadWithAttachments } from "@/actions/leads";
 import { getRecaptchaConfig, RecaptchaConfig } from "@/actions/settings";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import ReCAPTCHA from "react-google-recaptcha";
@@ -408,20 +407,33 @@ export default function QuoteModal({ isOpen, onClose, initialService }: QuoteMod
     if (utm_term) newFormData.append('utm_term', utm_term);
     if (utm_content) newFormData.append('utm_content', utm_content);
 
-    const result = await captureLeadWithAttachments(newFormData);
-    console.log("Capture lead result:", result);
-    setIsSubmitting(false);
+    // Send via API endpoint for media processing (streaming upload)
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        body: newFormData,
+        // Não setar Content-Type - o browser define automaticamente com boundary
+      });
 
-    if (result.success) {
-      addToast("Quote request submitted successfully! We'll contact you within 24 hours.", "success");
-      setIsSuccess(true);
-      setTimeout(() => {
-        onClose();
-        setIsSuccess(false);
-        setFiles([]);
-      }, 2000);
-    } else {
-      addToast(result.error || "Error sending. Try again.", "error");
+      const result = await response.json();
+      console.log("Capture lead result:", result);
+      setIsSubmitting(false);
+
+      if (result.success) {
+        addToast("Quote request submitted successfully! We'll contact you within 24 hours.", "success");
+        setIsSuccess(true);
+        setTimeout(() => {
+          onClose();
+          setIsSuccess(false);
+          setFiles([]);
+        }, 2000);
+      } else {
+        addToast(result.error || "Error sending. Try again.", "error");
+      }
+    } catch (fetchError) {
+      console.error("Fetch error:", fetchError);
+      setIsSubmitting(false);
+      addToast("Network error. Please check your connection and try again.", "error");
     }
   }
 

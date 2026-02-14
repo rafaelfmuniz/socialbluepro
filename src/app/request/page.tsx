@@ -21,7 +21,6 @@ import {
   Clock,
   DollarSign
 } from "lucide-react";
-import { captureLeadWithAttachments } from "@/actions/leads";
 import { 
   validateAddressFormatClient, 
   validateColoradoCityClient, 
@@ -366,29 +365,41 @@ function RequestFormContent() {
 
     const formElement = e.currentTarget;
 
-    // Send via Server Action for consistency
-    const result = await captureLeadWithAttachments(newFormData);
-    console.log("Capture lead result:", result);
-    setIsSubmitting(false);
+    // Send via API endpoint for media processing (streaming upload)
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        body: newFormData,
+        // Não setar Content-Type - o browser define automaticamente com boundary
+      });
 
-    if (result.success) {
-      setIsSuccess(true);
-      // Reset TOTAL do formulário
-      setFiles([]);
-      setPhoneValue("");
-      setEmailValue("");
-      setZipValue("");
-      setPhoneValid(null);
-      setEmailValid(null);
-      setZipValid(null);
-      formElement.reset(); // Limpa inputs não controlados
+      const result = await response.json();
+      console.log("Capture lead result:", result);
+      setIsSubmitting(false);
 
-      setTimeout(() => {
-        setIsSuccess(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 5000);
-    } else {
-      setError(result.error || "Error sending. Try again.");
+      if (result.success) {
+        setIsSuccess(true);
+        // Reset TOTAL do formulário
+        setFiles([]);
+        setPhoneValue("");
+        setEmailValue("");
+        setZipValue("");
+        setPhoneValid(null);
+        setEmailValid(null);
+        setZipValid(null);
+        formElement.reset(); // Limpa inputs não controlados
+
+        setTimeout(() => {
+          setIsSuccess(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 5000);
+      } else {
+        setError(result.error || "Error sending. Try again.");
+      }
+    } catch (fetchError) {
+      console.error("Fetch error:", fetchError);
+      setIsSubmitting(false);
+      setError("Network error. Please check your connection and try again.");
     }
   }
 

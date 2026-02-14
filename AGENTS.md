@@ -1,9 +1,9 @@
-# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.0)
+# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.1)
 
 **Documento mandatório para todos os agents AI operando neste codebase.**
 
 > **Última atualização:** 2026-02-14  
-> **Versão:** 2.4.0  
+> **Versão:** 2.4.1  
 > **Projeto:** SocialBluePro - Sistema de Gestão de Leads e Marketing
 
 ---

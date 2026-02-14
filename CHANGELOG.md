@@ -2,6 +2,30 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.1] - 2026-02-14
+
+### Correções de HEIC/HEIF e Fluxo de Upload (v2.4.1)
+- **Corrigido fluxo de upload**: `/request` e `QuoteModal` agora usam POST `/api/leads` (streaming) em vez de `captureLeadWithAttachments()`
+- **Conversão HEIC/HEIF via heif-convert**: Worker agora usa `libheif-examples` como caminho principal para HEIC/HEIF (ffmpeg do Ubuntu não suporta)
+- **Instalação automática de libheif-examples**: Installer e update.sh agora instalam `libheif-examples` automaticamente
+- **Worker atualiza banco ao concluir**: Worker agora atualiza `Lead.attachments` no Postgres com status, tipo, tamanho, meta e erro
+- **Preview de HEIC convertido**: UI detecta imagem por `att.kind`/`att.type`/extensão de `att.url` (não por `att.name`)
+
+### Fixed Issues
+- HEIC/HEIF não eram convertidos porque o upload ia pelo caminho legado (`captureLeadWithAttachments`)
+- Worker falhava em converter HEIC porque ffmpeg no Ubuntu não tem decoder HEIF
+- Status de processamento não era atualizado no banco de dados
+- Preview de imagens convertidas mostrava ícone de arquivo em vez de thumbnail
+
+### Modified Files
+- `src/app/request/page.tsx` - Usa fetch POST /api/leads
+- `src/components/ui/QuoteModal.tsx` - Usa fetch POST /api/leads
+- `scripts/media-worker.mjs` - heif-convert para HEIC, atualização do Prisma
+- `install.sh` - Instala libheif-examples
+- `scripts/deploy/install.sh` e `update.sh` - Instalam libheif-examples
+
+---
+
 ## [2.4.0] - 2026-02-14
 
 ### Automatic Media Conversion (v2.4.0)

@@ -426,17 +426,29 @@ ensure_ffmpeg() {
     
     if command -v ffmpeg &> /dev/null && command -v ffprobe &> /dev/null; then
         log_success "FFmpeg já instalado: $(ffmpeg -version | head -1)"
-        return 0
+    else
+        log_info "Instalando FFmpeg..."
+        apt-get update -qq
+        apt-get install -y ffmpeg -qq || {
+            log_error "Falha ao instalar FFmpeg"
+            exit 1
+        }
+        log_success "FFmpeg instalado: $(ffmpeg -version | head -1)"
     fi
     
-    log_info "Instalando FFmpeg..."
-    apt-get update -qq
-    apt-get install -y ffmpeg -qq || {
-        log_error "Falha ao instalar FFmpeg"
-        exit 1
-    }
-    
-    log_success "FFmpeg instalado: $(ffmpeg -version | head -1)"
+    # Verificar/instalar libheif-examples para conversão HEIC/HEIF
+    log_info "Verificando suporte a HEIC/HEIF..."
+    if command -v heif-convert &> /dev/null; then
+        log_success "heif-convert já instalado"
+    else
+        log_info "Instalando libheif-examples para suporte a HEIC/HEIF..."
+        apt-get install -y libheif-examples -qq || {
+            log_warning "Falha ao instalar libheif-examples (HEIC pode não converter)"
+        }
+        if command -v heif-convert &> /dev/null; then
+            log_success "heif-convert instalado"
+        fi
+    fi
 }
 
 # ============================================

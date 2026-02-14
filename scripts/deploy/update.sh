@@ -52,7 +52,7 @@ systemctl stop "${SERVICE_NAME}-media-worker" 2>/dev/null || true
 # Salvar .env
 cp .env /tmp/socialbluepro-env-backup 2>/dev/null || true
 
-# Garantir FFmpeg (v2.4.0+)
+# Garantir FFmpeg e libheif (v2.4.0+)
 echo "📹 Verificando FFmpeg..."
 if ! command -v ffmpeg &> /dev/null || ! command -v ffprobe &> /dev/null; then
     echo "⬇️  Instalando FFmpeg..."
@@ -60,6 +60,17 @@ if ! command -v ffmpeg &> /dev/null || ! command -v ffprobe &> /dev/null; then
     apt-get install -y ffmpeg -qq
 fi
 echo -e "${GREEN}✓ FFmpeg:$(ffmpeg -version | head -1 | awk '{print $3}')${NC}"
+
+echo "🖼️  Verificando suporte a HEIC/HEIF..."
+if ! command -v heif-convert &> /dev/null; then
+    echo "⬇️  Instalando libheif-examples..."
+    apt-get install -y libheif-examples -qq || echo "⚠️  Aviso: Falha ao instalar libheif-examples"
+fi
+if command -v heif-convert &> /dev/null; then
+    echo -e "${GREEN}✓ heif-convert instalado${NC}"
+else
+    echo -e "${YELLOW}⚠️  heif-convert não disponível (HEIC pode não converter)${NC}"
+fi
 
 # Atualizar código
 echo "⬇️  Atualizando código..."
