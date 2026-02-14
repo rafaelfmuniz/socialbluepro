@@ -1,9 +1,9 @@
-# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.2)
+# AGENTS.md - SocialBluePro Agent Guidelines (v2.4.3)
 
 **Documento mandatório para todos os agents AI operando neste codebase.**
 
 > **Última atualização:** 2026-02-14  
-> **Versão:** 2.4.2  
+> **Versão:** 2.4.3  
 > **Projeto:** SocialBluePro - Sistema de Gestão de Leads e Marketing
 
 ---
@@ -63,6 +63,7 @@
 - ✅ v2.4.0 Automatic Media Conversion - CONCLUÍDO
 - ✅ v2.4.1 HEIC/HEIF Fix e Fluxo de Upload - CONCLUÍDO
 - ✅ v2.4.2 Fix Crítico do Worker Prisma - CONCLUÍDO
+- ✅ v2.4.3 Fix Path Absoluto no Worker - CONCLUÍDO
 
 ### Progresso v2.4.0
 - [x] Criar worker de processamento de mídia (scripts/media-worker.mjs)
@@ -77,19 +78,18 @@
 - [x] Atualizar scripts/deploy/
 - [x] Bump versão 2.4.0 e documentação
 
-### Progresso v2.4.2
-- [x] Corrigir inicialização do Prisma no worker (adicionar driver adapter)
-- [x] Adicionar validação de DATABASE_URL no worker
-- [x] Melhorar graceful shutdown (disconnect Prisma e pool)
+### Progresso v2.4.3
+- [x] Corrigir path absoluto no worker (salvar arquivos no lugar correto)
+- [x] Atualizar path e url no banco de dados após conversão
 - [x] Executar lint e build para validação
-- [x] Commit e push da versão 2.4.2
+- [x] Commit e push da versão 2.4.3
 
 ### Último Commit
-- Versão: 2.4.2
-- Fix: Worker de mídia inicializa Prisma corretamente com @prisma/adapter-pg
-- Impacto: Resolve crash-loop do worker e processamento de fila
+- Versão: 2.4.3
+- Fix: Worker de mídia usa path absoluto para salvar arquivos convertidos
+- Impacto: Resolve 404 "Attachment not found" - arquivos agora são encontrados pela API
 
-**Status:** ✅ v2.4.2 implementada e pronta para deploy
+**Status:** ✅ v2.4.3 implementada e pronta para deploy
 
 ---
 

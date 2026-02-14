@@ -364,7 +364,9 @@ async function updateLeadAttachment(job, result, isFailed = false) {
       return;
     }
     
-    // Update attachment
+    // Update attachment with absolute path
+    const outputFileName = job.outputPath.split('/').pop();
+    const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
     const updatedAttachment = {
       ...attachments[attachmentIndex],
       status: isFailed ? 'failed' : 'ready',
@@ -372,6 +374,8 @@ async function updateLeadAttachment(job, result, isFailed = false) {
       size: isFailed ? attachments[attachmentIndex].size : result.size,
       meta: isFailed ? undefined : result.meta,
       error: isFailed ? (result.error || 'Conversion failed') : undefined,
+      path: absoluteOutputPath,
+      url: `/api/uploads/leads/${job.leadId}/${outputFileName}`,
       processedAt: new Date().toISOString(),
     };
     
@@ -408,6 +412,14 @@ async function processJob(jobPath) {
     const job = JSON.parse(await fs.readFile(processingPath, 'utf-8'));
     
     log('info', 'Processing job', { jobId: job.jobId, kind: job.kind });
+    
+    // Fix: Ensure we use absolute path for output
+    // Extract filename from job.outputPath and reconstruct with absolute UPLOAD_DIR
+    const outputFileName = job.outputPath.split('/').pop();
+    const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
+    job.outputPath = absoluteOutputPath;
+    
+    log('info', 'Using absolute output path', { outputPath: absoluteOutputPath });
     
     // Ensure output directory exists
     await fs.mkdir(dirname(job.outputPath), { recursive: true });

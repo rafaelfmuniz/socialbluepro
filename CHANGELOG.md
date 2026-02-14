@@ -2,6 +2,25 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.3] - 2026-02-14
+
+### Correção Crítica: Path Absoluto no Worker (v2.4.3)
+- **Fix do path de saída**: Worker agora sempre usa caminho absoluto (`/opt/socialbluepro/public/uploads/...`) ao salvar arquivos convertidos
+- **Path relativo vs absoluto**: O job vinha com path relativo (`public/uploads/...`) e o worker salvava em lugar errado
+- **API agora encontra arquivos**: Arquivos convertidos são salvos no local correto onde a API procura
+- **Banco atualizado com path correto**: Worker atualiza `path` e `url` no banco com valores absolutos/corretos
+
+### Fixed Issues
+- Arquivos convertidos não apareciam na UI (404 "Attachment not found")
+- Worker salvava em diretório relativo ao invés do absoluto
+- Path no banco ficava relativo (`public/uploads/...`) ao invés de absoluto
+- Vídeos e imagens convertidos sumiam após processamento
+
+### Modified Files
+- `scripts/media-worker.mjs` - Usa path absoluto para salvar arquivos e atualizar banco
+
+---
+
 ## [2.4.2] - 2026-02-14
 
 ### Correção Crítica: Worker de Mídia (v2.4.2)
