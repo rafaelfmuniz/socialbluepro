@@ -201,7 +201,6 @@ export async function createMediaJob(
     };
   }
   
-  const ext = getExtension(originalName);
   const organizedTempPath = join(UPLOAD_TMP_DIR, 'leads', leadId, `${attachmentId}.${ext}`);
   await fs.mkdir(join(UPLOAD_TMP_DIR, 'leads', leadId), { recursive: true });
   await fs.rename(tempPath, organizedTempPath);
