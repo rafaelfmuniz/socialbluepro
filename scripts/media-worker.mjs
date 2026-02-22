@@ -186,9 +186,24 @@ async function convertImage(job) {
   
   try {
     await heifConvert(inputPath, outputPath);
-    const stats = await fs.stat(outputPath);
     
-    log('info', 'Image conversion complete', { jobId: job.jobId, outputSize: stats.size });
+    // Verificar se arquivo foi criado
+    let stats;
+    try {
+      stats = await fs.stat(outputPath);
+      log('info', 'Image file created successfully', { 
+        jobId: job.jobId, 
+        outputPath: outputPath,
+        outputSize: stats.size 
+      });
+    } catch (statError) {
+      log('error', 'Image file not found after conversion', { 
+        jobId: job.jobId, 
+        outputPath: outputPath,
+        error: statError.message
+      });
+      throw new Error(`Output file not found: ${outputPath}`);
+    }
     
     return {
       success: true,
@@ -208,7 +223,24 @@ async function convertImage(job) {
     ];
     
     await ffmpeg(args);
-    const stats = await fs.stat(outputPath);
+    
+    // Verificar se arquivo foi criado
+    let stats;
+    try {
+      stats = await fs.stat(outputPath);
+      log('info', 'Image file created with ffmpeg fallback', { 
+        jobId: job.jobId, 
+        outputPath: outputPath,
+        outputSize: stats.size 
+      });
+    } catch (statError) {
+      log('error', 'Image file not found after ffmpeg fallback', { 
+        jobId: job.jobId, 
+        outputPath: outputPath,
+        error: statError.message
+      });
+      throw new Error(`Output file not found: ${outputPath}`);
+    }
     
     return {
       success: true,
@@ -282,13 +314,25 @@ async function convertVideo(job) {
   }
   
   const result = await ffmpeg(args);
-  const stats = await fs.stat(outputPath);
   
-  log('info', 'Video conversion complete', { 
-    jobId: job.jobId, 
-    duration: result.duration,
-    outputSize: stats.size 
-  });
+  // Verificar se arquivo foi criado
+  let stats;
+  try {
+    stats = await fs.stat(outputPath);
+    log('info', 'Video file created successfully', { 
+      jobId: job.jobId, 
+      outputPath: outputPath,
+      outputSize: stats.size,
+      duration: result.duration
+    });
+  } catch (statError) {
+    log('error', 'Video file not found after conversion', { 
+      jobId: job.jobId, 
+      outputPath: outputPath,
+      error: statError.message
+    });
+    throw new Error(`Output file not found: ${outputPath}`);
+  }
   
   return {
     success: true,
@@ -338,15 +382,32 @@ async function updateLeadAttachment(job, result, isFailed = false) {
     const outputFileName = job.outputPath.split('/').pop();
     const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
     
+    // Verificar se arquivo existe antes de atualizar banco
+    let fileExists = false;
+    try {
+      await fs.stat(absoluteOutputPath);
+      fileExists = true;
+      log('info', 'File verified before DB update', { 
+        jobId: job.jobId,
+        absoluteOutputPath: absoluteOutputPath
+      });
+    } catch (e) {
+      log('error', 'File not found before DB update', { 
+        jobId: job.jobId,
+        absoluteOutputPath: absoluteOutputPath,
+        error: e.message
+      });
+    }
+    
     const updatedAttachment = {
       ...existingAtt,
       name: finalName,
-      status: isFailed ? 'failed' : 'ready',
+      status: isFailed ? 'failed' : (fileExists ? 'ready' : 'failed'),
       type: isFailed ? existingAtt.type : result.mime,
       size: isFailed ? existingAtt.size : result.size,
       kind: job.kind,
       meta: isFailed ? undefined : result.meta,
-      error: isFailed ? (result.error || 'Conversion failed') : undefined,
+      error: isFailed ? (result.error || 'Conversion failed') : (fileExists ? undefined : 'File not found after conversion'),
       path: absoluteOutputPath,
       url: `/api/uploads/leads/${job.leadId}/${outputFileName}`,
       processedAt: new Date().toISOString(),
@@ -363,7 +424,8 @@ async function updateLeadAttachment(job, result, isFailed = false) {
       leadId: job.leadId, 
       attachmentId: job.attachmentId,
       status: updatedAttachment.status,
-      finalName: finalName
+      finalName: finalName,
+      fileExists: fileExists
     });
   } catch (dbError) {
     log('error', 'Failed to update lead attachment', { 
@@ -383,11 +445,23 @@ async function processJob(jobPath) {
     
     const job = JSON.parse(await fs.readFile(processingPath, 'utf-8'));
     
-    log('info', 'Processing job', { jobId: job.jobId, kind: job.kind, originalName: job.originalName });
+    log('info', 'Processing job', { 
+      jobId: job.jobId, 
+      kind: job.kind, 
+      originalName: job.originalName,
+      inputPath: job.inputPath,
+      outputPath: job.outputPath 
+    });
     
     const outputFileName = job.outputPath.split('/').pop();
     const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
     job.outputPath = absoluteOutputPath;
+    
+    log('info', 'Resolved output path', { 
+      jobId: job.jobId,
+      outputFileName: outputFileName,
+      absoluteOutputPath: absoluteOutputPath
+    });
     
     await fs.mkdir(dirname(job.outputPath), { recursive: true });
     
