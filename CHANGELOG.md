@@ -2,6 +2,47 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.5] - 2026-02-21
+
+### Tracking Pixels & Bot Protection - Correções Críticas (v2.4.5)
+
+#### Tracking Pixels - Funcionalidade Implementada
+- **Injeção de pixels no frontend**: Criado componente `TrackingPixelsInjector` que injeta scripts de tracking ativos em todas as páginas
+- **API de pixels ativos**: Novo endpoint `/api/tracking-pixels` para buscar pixels habilitados
+- **Suporte completo para todos os tipos**:
+  - Google Analytics (GA4, UA)
+  - Google Ads (AW-)
+  - Facebook Pixel
+  - TikTok Pixel
+  - Custom HTML/Script
+
+#### Tracking Pixels - UI Corrigida
+- **Campo "Custom" agora usa textarea**: Permite inserir scripts HTML completos com redimensionamento
+- **Modal de edição liberado**: Tipo de pixel pode ser alterado durante edição
+- **Labels dinâmicos**: Interface adapta labels conforme tipo de pixel selecionado
+- **Textarea redimensionável**: Campo de código para "custom" é redimensionável e suporta múltiplas linhas
+
+#### Bot Protection - Status
+- **ReCAPTCHA funcional**: Sistema de validação já estava implementado e funcionando
+- **Suporte a múltiplos providers**: Google v2/v3, Cloudflare Turnstile, hCaptcha
+- **Validação server-side**: Tokens verificados corretamente no backend
+
+### Fixed Issues
+- Tracking Pixels não eram injetados no site (salvos mas não renderizados)
+- Campo "custom" usava input de uma linha (impossível editar scripts grandes)
+- Botão de editar tipo de pixel estava desabilitado
+- Experiência ruim em mobile ao editar pixels custom
+
+### New Files
+- `src/app/api/tracking-pixels/route.ts` - API para buscar pixels ativos
+- `src/components/TrackingPixelsInjector.tsx` - Componente de injeção de scripts
+
+### Modified Files
+- `src/app/layout.tsx` - Adiciona TrackingPixelsInjector
+- `src/app/admin/settings/page.tsx` - UI de Tracking Pixels corrigida
+
+---
+
 ## [2.4.3] - 2026-02-14
 
 ### Correção Crítica: Path Absoluto no Worker (v2.4.3)

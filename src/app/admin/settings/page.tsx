@@ -1355,16 +1355,32 @@ export default function SettingsPage() {
                           <option value="custom">Custom HTML/Script</option>
                         </select>
                       </div>
-                      <div>
-                        <label className="text-[11px] uppercase font-black text-slate-500 ml-1">Pixel Code / ID</label>
-                        <input 
-                          value={newPixel.code}
-                          onChange={(e) => setNewPixel({...newPixel, code: e.target.value})}
-                          placeholder="e.g. G-XXXXXXXXXX"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-medium text-slate-900 text-sm"
-                        />
-                        <p className="text-xs text-slate-400 mt-1 ml-1">Just the ID (e.g. G-12345) or full script tag if Custom.</p>
-                      </div>
+                       <div>
+                         <label className="text-[11px] uppercase font-black text-slate-500 ml-1">
+                           {newPixel.type === "custom" ? "Custom Script / HTML" : "Pixel Code / ID"}
+                         </label>
+                         {newPixel.type === "custom" ? (
+                           <textarea
+                             value={newPixel.code}
+                             onChange={(e) => setNewPixel({...newPixel, code: e.target.value})}
+                             placeholder="<!-- Paste your custom script here -->&#10;<script>&#10;  // Your tracking code&#10;</script>"
+                             rows={6}
+                             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-sm resize-y min-h-[120px]"
+                           />
+                         ) : (
+                           <input
+                             value={newPixel.code}
+                             onChange={(e) => setNewPixel({...newPixel, code: e.target.value})}
+                             placeholder="e.g. G-XXXXXXXXXX"
+                             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-medium text-slate-900 text-sm"
+                           />
+                         )}
+                         <p className="text-xs text-slate-400 mt-1 ml-1">
+                           {newPixel.type === "custom" 
+                             ? "Paste the full script tag or inline JavaScript code." 
+                             : "Just the ID (e.g. G-12345) or full script tag if Custom."}
+                         </p>
+                       </div>
                       <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
                         <input type="checkbox" 
                           id="new-pixel-enable"
@@ -1414,25 +1430,39 @@ export default function SettingsPage() {
                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-slate-900 text-sm"
                         />
                       </div>
-                      <div>
-                        <label className="text-[11px] uppercase font-black text-slate-500 ml-1">Pixel Type</label>
-                        <select
-                          value={editingPixel.type}
-                          onChange={(e) => setEditingPixel({...editingPixel, type: e.target.value as any})}
-                          disabled
-                          className="w-full px-4 py-3 rounded-xl bg-slate-100 border border-slate-200 focus:outline-none font-bold text-slate-500 text-sm appearance-none cursor-not-allowed"
-                        >
-                          <option value={editingPixel.type}>{editingPixel.type.replace('_', ' ')}</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-[11px] uppercase font-black text-slate-500 ml-1">Pixel Code</label>
-                        <input 
-                          value={editingPixel.code}
-                          onChange={(e) => setEditingPixel({...editingPixel, code: e.target.value})}
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-medium text-slate-900 text-sm"
-                        />
-                      </div>
+                       <div>
+                         <label className="text-[11px] uppercase font-black text-slate-500 ml-1">Pixel Type</label>
+                         <select
+                           value={editingPixel.type}
+                           onChange={(e) => setEditingPixel({...editingPixel, type: e.target.value as any})}
+                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-slate-900 text-sm appearance-none cursor-pointer"
+                         >
+                           <option value="google_analytics">Google Analytics</option>
+                           <option value="google_ads">Google Ads</option>
+                           <option value="facebook_pixel">Facebook Pixel</option>
+                           <option value="tiktok_pixel">TikTok Pixel</option>
+                           <option value="custom">Custom HTML/Script</option>
+                         </select>
+                       </div>
+                       <div>
+                         <label className="text-[11px] uppercase font-black text-slate-500 ml-1">
+                           {editingPixel.type === "custom" ? "Custom Script / HTML" : "Pixel Code"}
+                         </label>
+                         {editingPixel.type === "custom" ? (
+                           <textarea
+                             value={editingPixel.code}
+                             onChange={(e) => setEditingPixel({...editingPixel, code: e.target.value})}
+                             rows={6}
+                             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono text-sm resize-y min-h-[120px]"
+                           />
+                         ) : (
+                           <input
+                             value={editingPixel.code}
+                             onChange={(e) => setEditingPixel({...editingPixel, code: e.target.value})}
+                             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-medium text-slate-900 text-sm"
+                           />
+                         )}
+                       </div>
                       <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
                         <input type="checkbox" 
                           id="edit-pixel-enable"

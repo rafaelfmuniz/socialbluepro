@@ -64,32 +64,22 @@
 - ✅ v2.4.1 HEIC/HEIF Fix e Fluxo de Upload - CONCLUÍDO
 - ✅ v2.4.2 Fix Crítico do Worker Prisma - CONCLUÍDO
 - ✅ v2.4.3 Fix Path Absoluto no Worker - CONCLUÍDO
+- ✅ v2.4.5 Tracking Pixels & Bot Protection Fixes - CONCLUÍDO
 
-### Progresso v2.4.0
-- [x] Criar worker de processamento de mídia (scripts/media-worker.mjs)
-- [x] Implementar fila em disco (pending/processing/done/failed)
-- [x] Upload streaming com busboy (suporte a 1GB)
-- [x] Conversão HEIC/HEIF → JPEG
-- [x] Conversão vídeos → MP4 (720p, 30fps, H.264)
-- [x] Fast-path remux para vídeos compatíveis
-- [x] UI com status de processamento (processing/ready/failed)
-- [x] Atualizar install.sh com FFmpeg e env defaults
-- [x] Serviço systemd do worker (CPUQuota=40%, Nice=10)
-- [x] Atualizar scripts/deploy/
-- [x] Bump versão 2.4.0 e documentação
-
-### Progresso v2.4.3
-- [x] Corrigir path absoluto no worker (salvar arquivos no lugar correto)
-- [x] Atualizar path e url no banco de dados após conversão
-- [x] Executar lint e build para validação
-- [x] Commit e push da versão 2.4.3
+### Progresso v2.4.5
+- [x] Criar componente TrackingPixelsInjector para injetar pixels no frontend
+- [x] Criar API /api/tracking-pixels para buscar pixels ativos
+- [x] Corrigir UI do campo "custom" (input → textarea)
+- [x] Liberar edição do tipo de pixel no modal de edição
+- [x] Atualizar CHANGELOG.md
+- [x] Atualizar package.json para v2.4.5
 
 ### Último Commit
-- Versão: 2.4.3
-- Fix: Worker de mídia usa path absoluto para salvar arquivos convertidos
-- Impacto: Resolve 404 "Attachment not found" - arquivos agora são encontrados pela API
+- Versão: 2.4.5
+- Fix: Tracking Pixels agora são injetados no site, UI corrigida para custom scripts
+- Impacto: Pixels de tracking funcionam, campo custom usa textarea, edição liberada
 
-**Status:** ✅ v2.4.3 implementada e pronta para deploy
+**Status:** ✅ v2.4.5 implementada e pronta para deploy
 
 ---
 

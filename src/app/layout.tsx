@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "../globals.css";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import ToastProvider from "@/components/providers/ToastProvider";
+import { TrackingPixelsInjector } from "@/components/TrackingPixelsInjector";
 import React from "react";
 
 const inter = Inter({
@@ -58,6 +59,7 @@ export default function RootLayout({
          <link rel="apple-touch-icon" href="/favicon.ico" />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
+        <TrackingPixelsInjector />
         <ErrorBoundary>
           <ToastProvider>
             {children}
