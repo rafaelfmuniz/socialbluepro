@@ -2,6 +2,29 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.6] - 2026-02-21
+
+### Tracking Pixels - UI Corrigida (v2.4.6)
+
+#### Problemas Visuais Corrigidos
+- **Removido `overflow-hidden`** das seções que impedia interação com botões
+- **Layout responsivo melhorado**: Botões de ação agora são maiores e mais acessíveis
+- **Botões de ação**: Toggle, Edit e Delete agora são claramente visíveis e clicáveis
+- **Cursor pointer**: Adicionado cursor pointer para indicar elementos clicáveis
+- **Estrutura flexbox**: Layout reorganizado para melhor responsividade em mobile
+
+#### Mudanças Técnicas
+- Seção "Tracking Pixels" sem `overflow-hidden`
+- Seção "Bot Protection" sem `overflow-hidden`
+- Cards de pixel com `relative` positioning
+- Botões de ação com padding maior (`p-2 sm:p-2.5`)
+- Ícones maiores para melhor toque em mobile (`size={18}` → `sm:w-5 sm:h-5`)
+
+### Modified Files
+- `src/app/admin/settings/page.tsx` - UI de Tracking Pixels e Bot Protection corrigida
+
+---
+
 ## [2.4.5] - 2026-02-21
 
 ### Tracking Pixels & Bot Protection - Correções Críticas (v2.4.5)

@@ -65,21 +65,22 @@
 - ✅ v2.4.2 Fix Crítico do Worker Prisma - CONCLUÍDO
 - ✅ v2.4.3 Fix Path Absoluto no Worker - CONCLUÍDO
 - ✅ v2.4.5 Tracking Pixels & Bot Protection Fixes - CONCLUÍDO
+- ✅ v2.4.6 Tracking Pixels UI Visual Fix - CONCLUÍDO
 
-### Progresso v2.4.5
-- [x] Criar componente TrackingPixelsInjector para injetar pixels no frontend
-- [x] Criar API /api/tracking-pixels para buscar pixels ativos
-- [x] Corrigir UI do campo "custom" (input → textarea)
-- [x] Liberar edição do tipo de pixel no modal de edição
+### Progresso v2.4.6
+- [x] Remover overflow-hidden das seções (impedia interação)
+- [x] Melhorar layout responsivo dos botões de ação
+- [x] Adicionar cursor pointer aos botões
+- [x] Aumentar tamanho dos botões para melhor toque mobile
 - [x] Atualizar CHANGELOG.md
-- [x] Atualizar package.json para v2.4.5
+- [x] Atualizar package.json para v2.4.6
 
 ### Último Commit
-- Versão: 2.4.5
-- Fix: Tracking Pixels agora são injetados no site, UI corrigida para custom scripts
-- Impacto: Pixels de tracking funcionam, campo custom usa textarea, edição liberada
+- Versão: 2.4.6
+- Fix: UI de Tracking Pixels - botões agora são visíveis e clicáveis
+- Impacto: Removido overflow-hidden, melhorado layout responsivo
 
-**Status:** ✅ v2.4.5 implementada e pronta para deploy
+**Status:** ✅ v2.4.6 implementada e pronta para deploy
 
 ---
 

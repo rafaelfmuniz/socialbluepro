@@ -1121,9 +1121,9 @@ export default function SettingsPage() {
            {activeTab === "integrations" && (
              <div className="space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in">
                
-               {/* Bot Protection Card */}
-               <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                 <div className="p-4 sm:p-6 md:p-8 border-b border-slate-50">
+                {/* Bot Protection Card */}
+                <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl">
+                  <div className="p-4 sm:p-6 md:p-8 border-b border-slate-50">
                    <div className="flex items-center justify-between mb-2">
                      <div className="flex items-center gap-3 text-slate-800">
                        <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
@@ -1232,30 +1232,30 @@ export default function SettingsPage() {
                 </div>
               </section>
 
-               {/* Tracking Pixels Section */}
-               <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                 <div className="p-4 sm:p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
-                   <div className="flex items-center gap-3 text-slate-800">
-                     <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                       <Code size={20} className="sm:w-6 sm:h-6" />
-                     </div>
-                     <div>
-                       <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight">Tracking Pixels</h2>
-                       <p className="text-xs sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Analytics & Conversion Scripts</p>
-                     </div>
-                   </div>
-                   <button 
-                     onClick={() => {
-                       setShowAddPixel(true);
-                       setNewPixel({ name: "", type: "google_analytics", code: "", isEnabled: true });
-                     }}
-                     className="flex items-center gap-2 bg-slate-900 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95 w-full sm:w-auto justify-center"
-                   >
-                     <Plus size={14} className="sm:w-4 sm:h-4" /> <span className="sm:hidden">Add Pixel</span><span className="hidden sm:inline">Add New Pixel</span>
-                   </button>
-                 </div>
+                {/* Tracking Pixels Section */}
+                <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl">
+                  <div className="p-4 sm:p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                    <div className="flex items-center gap-3 text-slate-800">
+                      <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                        <Code size={20} className="sm:w-6 sm:h-6" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight">Tracking Pixels</h2>
+                        <p className="text-xs sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Analytics & Conversion Scripts</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setShowAddPixel(true);
+                        setNewPixel({ name: "", type: "google_analytics", code: "", isEnabled: true });
+                      }}
+                      className="flex items-center gap-2 bg-slate-900 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95 w-full sm:w-auto justify-center"
+                    >
+                      <Plus size={14} className="sm:w-4 sm:h-4" /> <span className="sm:hidden">Add Pixel</span><span className="hidden sm:inline">Add New Pixel</span>
+                    </button>
+                  </div>
 
-                 <div className="p-4 sm:p-6 md:p-8 bg-slate-50/50">
+                  <div className="p-4 sm:p-6 md:p-8 bg-slate-50/50 relative">
                    {pixels.length === 0 ? (
                      <div className="bg-white border-2 border-dashed border-slate-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center group hover:border-slate-300 transition-colors">
                       <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -1270,56 +1270,57 @@ export default function SettingsPage() {
                         Create your first pixel
                       </button>
                     </div>
-                  ) : (
-                     <div className="grid gap-3 sm:gap-4">
-                       {pixels.map(pixel => (
-                         <div key={pixel.id} className={`group bg-white rounded-lg sm:rounded-xl border ${pixel.is_enabled ? 'border-l-4 border-l-green-500 border-y-slate-100 border-r-slate-100' : 'border-l-4 border-l-slate-300 border-y-slate-100 border-r-slate-100'} p-4 sm:p-5 transition-all hover:shadow-lg hover:-translate-y-0.5`}>
-                           <div className="flex flex-col gap-3 sm:gap-4">
-                             <div className="flex items-start gap-3 sm:gap-4">
-                               <div className={`p-2.5 sm:p-3 rounded-lg shrink-0 ${pixel.is_enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
-                                 <Code size={18} className="sm:w-5 sm:h-5" />
-                               </div>
-                               <div className="min-w-0 flex-1">
-                                 <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 flex-wrap">
-                                   <span className="truncate">{pixel.name}</span>
-                                   {!pixel.is_enabled && <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full shrink-0">DISABLED</span>}
-                                 </h3>
-                                 <p className="text-xs text-slate-500 font-mono mt-0.5 truncate">{pixel.code}</p>
-                               </div>
-                             </div>
-                             
-                             <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end pt-2 border-t border-slate-100 sm:border-t-0">
-                               <span className={`text-xs font-black uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md ${getPixelTypeColor(pixel.type)}`}>
-                                 {pixel.type.replace('_', ' ')}
-                               </span>
-                               <div className="w-px h-8 bg-slate-100 mx-2 hidden sm:block"></div>
-                               <div className="flex gap-1 sm:gap-2">
-                                 <button 
-                                   onClick={() => handleTogglePixel(pixel.id, !pixel.is_enabled)}
-                                   className={`p-1.5 sm:p-2 rounded-lg transition-colors ${pixel.is_enabled ? 'text-slate-400 hover:text-orange-500 hover:bg-orange-50' : 'text-slate-400 hover:text-green-500 hover:bg-green-50'}`}
-                                   title={pixel.is_enabled ? "Disable" : "Enable"}
-                                 >
-                                   {pixel.is_enabled ? <ToggleRight size={16} className="sm:w-[18px] sm:h-[18px]" /> : <ToggleLeft size={16} className="sm:w-[18px] sm:h-[18px]" />}
-                                 </button>
-                                 <button 
-                                   onClick={() => handleEditPixel(pixel)}
-                                   className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-                                 >
-                                   <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                 </button>
-                                 <button 
-                                   onClick={() => handleDeletePixel(pixel.id)}
-                                   className="p-1.5 sm:p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                 >
-                                   <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                 </button>
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       ))}
-                     </div>
-                   )}
+                   ) : (
+                      <div className="grid gap-3 sm:gap-4">
+                        {pixels.map(pixel => (
+                          <div key={pixel.id} className={`group bg-white rounded-lg sm:rounded-xl border ${pixel.is_enabled ? 'border-l-4 border-l-green-500 border-y-slate-100 border-r-slate-100' : 'border-l-4 border-l-slate-300 border-y-slate-100 border-r-slate-100'} p-4 sm:p-5 transition-all hover:shadow-lg hover:-translate-y-0.5 relative`}>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                              <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                                <div className={`p-2.5 sm:p-3 rounded-lg shrink-0 ${pixel.is_enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
+                                  <Code size={18} className="sm:w-5 sm:h-5" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 flex-wrap">
+                                    <span className="truncate">{pixel.name}</span>
+                                    {!pixel.is_enabled && <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full shrink-0">DISABLED</span>}
+                                  </h3>
+                                  <p className="text-xs text-slate-500 font-mono mt-0.5 truncate">{pixel.code}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2 sm:gap-3 justify-between sm:justify-end pt-2 sm:pt-0 border-t border-slate-100 sm:border-t-0 flex-shrink-0">
+                                <span className={`text-xs font-black uppercase tracking-widest px-2 sm:px-3 py-1 rounded-md ${getPixelTypeColor(pixel.type)}`}>
+                                  {pixel.type.replace('_', ' ')}
+                                </span>
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <button 
+                                    onClick={() => handleTogglePixel(pixel.id, !pixel.is_enabled)}
+                                    className={`p-2 sm:p-2.5 rounded-lg transition-colors ${pixel.is_enabled ? 'text-slate-400 hover:text-orange-500 hover:bg-orange-50' : 'text-slate-400 hover:text-green-500 hover:bg-green-50'} cursor-pointer`}
+                                    title={pixel.is_enabled ? "Disable" : "Enable"}
+                                  >
+                                    {pixel.is_enabled ? <ToggleRight size={18} className="sm:w-5 sm:h-5" /> : <ToggleLeft size={18} className="sm:w-5 sm:h-5" />}
+                                  </button>
+                                  <button 
+                                    onClick={() => handleEditPixel(pixel)}
+                                    className="p-2 sm:p-2.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                    title="Edit"
+                                  >
+                                    <Edit size={18} className="sm:w-5 sm:h-5" />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDeletePixel(pixel.id)}
+                                    className="p-2 sm:p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={18} className="sm:w-5 sm:h-5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                  </div>
                </section>
 
