@@ -9,6 +9,11 @@ const MEDIA_QUEUE_DIR = resolve(process.env.MEDIA_QUEUE_DIR || '/opt/socialbluep
 const UPLOAD_TMP_DIR = resolve(process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp');
 const UPLOAD_DIR = resolve(process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads');
 
+export const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'heic', 'heif'];
+export const ALLOWED_VIDEO_EXTENSIONS = ['mp4', 'mov'];
+export const ALLOWED_IMAGE_MIMES = ['image/jpeg', 'image/heic', 'image/heif'];
+export const ALLOWED_VIDEO_MIMES = ['video/mp4', 'video/quicktime'];
+
 export interface MediaJob {
   jobId: string;
   leadId: string;
@@ -71,7 +76,6 @@ const QUEUE_DIRS = {
   failed: join(MEDIA_QUEUE_DIR, 'failed'),
 };
 
-// Ensure queue directories exist
 export async function ensureQueueDirectories(): Promise<void> {
   const dirs = [
     MEDIA_QUEUE_DIR,
@@ -85,52 +89,51 @@ export async function ensureQueueDirectories(): Promise<void> {
   }
 }
 
-// Get file extension
 function getExtension(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase() || '';
-  return ext;
+  return filename.split('.').pop()?.toLowerCase() || '';
 }
 
-// Determine file kind based on mime type and extension
+export function isValidMediaType(mimeType: string, filename: string): { valid: boolean; error?: string } {
+  const ext = getExtension(filename);
+  const mime = mimeType.toLowerCase();
+  
+  const isImage = ALLOWED_IMAGE_EXTENSIONS.includes(ext) && ALLOWED_IMAGE_MIMES.includes(mime);
+  const isVideo = ALLOWED_VIDEO_EXTENSIONS.includes(ext) && ALLOWED_VIDEO_MIMES.includes(mime);
+  
+  if (!isImage && !isVideo) {
+    return {
+      valid: false,
+      error: `Formato não suportado: .${ext}. Use JPG, HEIC (fotos) ou MP4, MOV (vídeos).`
+    };
+  }
+  
+  return { valid: true };
+}
+
 export function getFileKind(mimeType: string, filename: string): 'image' | 'video' | null {
   const ext = getExtension(filename);
   
-  // Image types (including HEIC/HEIF)
-  if (mimeType.startsWith('image/') || ['heic', 'heif'].includes(ext)) {
+  if (ALLOWED_IMAGE_EXTENSIONS.includes(ext)) {
     return 'image';
   }
   
-  // Video types
-  if (mimeType.startsWith('video/') || ['mov', 'mp4', 'avi', 'mkv', 'webm'].includes(ext)) {
-    return 'video';
-  }
-  
-  // Default based on extension
-  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) {
-    return 'image';
-  }
-  
-  if (['mov', 'mp4', 'avi', 'mkv', 'webm', 'm4v', '3gp'].includes(ext)) {
+  if (ALLOWED_VIDEO_EXTENSIONS.includes(ext)) {
     return 'video';
   }
   
   return null;
 }
 
-// Check if image needs conversion (only HEIC/HEIF)
 export function needsImageConversion(filename: string): boolean {
   const ext = getExtension(filename);
   return ['heic', 'heif'].includes(ext);
 }
 
-// Check if video needs processing (always convert to MP4)
 export function needsVideoProcessing(filename: string): boolean {
   const ext = getExtension(filename);
-  // Always process to ensure MP4 format and 720p limit
-  return true;
+  return ext === 'mov';
 }
 
-// Create a new processing job
 export async function createMediaJob(
   leadId: string,
   tempPath: string,
@@ -139,6 +142,11 @@ export async function createMediaJob(
   originalMime: string
 ): Promise<ProcessingAttachment> {
   await ensureQueueDirectories();
+  
+  const validation = isValidMediaType(originalMime, originalName);
+  if (!validation.valid) {
+    throw new Error(validation.error || `Unsupported file type: ${originalMime} / ${originalName}`);
+  }
   
   const kind = getFileKind(originalMime, originalName);
   
@@ -149,7 +157,6 @@ export async function createMediaJob(
   const attachmentId = randomUUID();
   const jobId = randomUUID();
   
-  // Determine output extension
   let outputExt: string;
   if (kind === 'image') {
     outputExt = needsImageConversion(originalName) ? '.jpg' : `.${getExtension(originalName)}`;
@@ -157,26 +164,33 @@ export async function createMediaJob(
     outputExt = '.mp4';
   }
   
-  // If no conversion needed for image, just move it
-  if (kind === 'image' && !needsImageConversion(originalName)) {
+  const needsProcessing = (kind === 'image' && needsImageConversion(originalName)) || 
+                          (kind === 'video' && needsVideoProcessing(originalName));
+  
+  const ext = getExtension(originalName);
+  
+  if (!needsProcessing) {
     const finalPath = join(UPLOAD_DIR, 'leads', leadId, `${attachmentId}${outputExt}`);
     const finalUrl = `/api/uploads/leads/${leadId}/${attachmentId}${outputExt}`;
     
-    // Move file to final location
     await fs.mkdir(join(UPLOAD_DIR, 'leads', leadId), { recursive: true });
     await fs.rename(tempPath, finalPath);
     
     const stats = await fs.stat(finalPath);
     
+    const finalName = kind === 'video' && ext === 'mov' 
+      ? originalName.replace(/\.mov$/i, '.mp4')
+      : originalName;
+    
     return {
       id: attachmentId,
-      name: originalName,
+      name: finalName,
       url: finalUrl,
       path: finalPath,
       size: stats.size,
-      type: originalMime,
+      type: kind === 'image' ? 'image/jpeg' : 'video/mp4',
       status: 'ready',
-      kind: 'image',
+      kind,
       original: {
         name: originalName,
         size: originalSize,
@@ -187,16 +201,18 @@ export async function createMediaJob(
     };
   }
   
-  // Move temp file to organized location
-  const organizedTempPath = join(UPLOAD_TMP_DIR, 'leads', leadId, `${attachmentId}.${getExtension(originalName)}`);
+  const ext = getExtension(originalName);
+  const organizedTempPath = join(UPLOAD_TMP_DIR, 'leads', leadId, `${attachmentId}.${ext}`);
   await fs.mkdir(join(UPLOAD_TMP_DIR, 'leads', leadId), { recursive: true });
   await fs.rename(tempPath, organizedTempPath);
   
-  // Determine output paths
   const outputPath = join(UPLOAD_DIR, 'leads', leadId, `${attachmentId}${outputExt}`);
   const outputUrl = `/api/uploads/leads/${leadId}/${attachmentId}${outputExt}`;
   
-  // Create job
+  const finalName = kind === 'video' 
+    ? originalName.replace(/\.mov$/i, '.mp4')
+    : originalName.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
+  
   const job: MediaJob = {
     jobId,
     leadId,
@@ -212,7 +228,6 @@ export async function createMediaJob(
     createdAt: new Date().toISOString(),
   };
   
-  // Write job to pending queue
   await fs.writeFile(
     join(QUEUE_DIRS.pending, `${jobId}.json`),
     JSON.stringify(job, null, 2)
@@ -220,8 +235,8 @@ export async function createMediaJob(
   
   return {
     id: attachmentId,
-    name: originalName,
-    url: outputUrl, // URL where it WILL be after processing
+    name: finalName,
+    url: outputUrl,
     path: outputPath,
     size: originalSize,
     type: kind === 'image' ? 'image/jpeg' : 'video/mp4',
@@ -236,17 +251,28 @@ export async function createMediaJob(
   };
 }
 
-// Update attachment from completed job
 export function updateAttachmentFromJob(
   attachment: ProcessingAttachment,
   job: MediaJob
 ): ProcessingAttachment {
   if (job.status === 'completed' && job.result) {
+    const finalExt = job.result.ext;
+    const originalName = attachment.original?.name || attachment.name;
+    let finalName = originalName;
+    
+    if (job.kind === 'video') {
+      finalName = originalName.replace(/\.(mov|mp4)$/i, finalExt);
+    } else if (job.kind === 'image') {
+      finalName = originalName.replace(/\.(heic|heif|jpg|jpeg)$/i, finalExt);
+    }
+    
     return {
       ...attachment,
+      name: finalName,
       status: 'ready',
       size: job.result.size,
       type: job.result.mime,
+      kind: job.kind,
       meta: job.result.meta,
       processedAt: job.completedAt,
     };
@@ -264,7 +290,6 @@ export function updateAttachmentFromJob(
   return attachment;
 }
 
-// Cleanup temp files for a lead
 export async function cleanupLeadTempFiles(leadId: string): Promise<void> {
   const leadTempDir = join(UPLOAD_TMP_DIR, 'leads', leadId);
   
@@ -275,7 +300,6 @@ export async function cleanupLeadTempFiles(leadId: string): Promise<void> {
   }
 }
 
-// Cleanup pending jobs for a lead
 export async function cleanupLeadJobs(leadId: string): Promise<void> {
   const dirs = [QUEUE_DIRS.pending, QUEUE_DIRS.processing];
   
@@ -290,10 +314,8 @@ export async function cleanupLeadJobs(leadId: string): Promise<void> {
         const job = JSON.parse(await fs.readFile(jobPath, 'utf-8'));
         
         if (job.leadId === leadId) {
-          // Delete job file
           await fs.unlink(jobPath);
           
-          // Try to delete temp file
           try {
             await fs.unlink(job.inputPath);
           } catch {}

@@ -1,6 +1,6 @@
 // Media Processing Worker for SocialBluePro
-// Handles conversion of HEIC/HEIF images to JPEG and videos to MP4 (720p, 30fps)
-// Runs as separate process with controlled CPU usage
+// Handles conversion of HEIC/HEIF images to JPEG and MOV to MP4
+// Runs as separate process
 
 import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
@@ -13,19 +13,16 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Validate DATABASE_URL
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
   console.error('[ERROR] DATABASE_URL environment variable is required');
   process.exit(1);
 }
 
-// Initialize Prisma Client with driver adapter (required for Prisma v7.2+ with @prisma/adapter-pg)
 const pool = new Pool({ connectionString: databaseUrl });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-// Environment configuration - ensure all paths are absolute
 const CONFIG = {
   UPLOAD_TMP_DIR: resolve(process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp'),
   MEDIA_QUEUE_DIR: resolve(process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue'),
@@ -33,14 +30,12 @@ const CONFIG = {
   MAX_VIDEO_DURATION_SECONDS: parseInt(process.env.MAX_VIDEO_DURATION_SECONDS || '360', 10),
   VIDEO_OUTPUT_MAX_HEIGHT: parseInt(process.env.VIDEO_OUTPUT_MAX_HEIGHT || '720', 10),
   VIDEO_OUTPUT_FPS: parseInt(process.env.VIDEO_OUTPUT_FPS || '30', 10),
-  FFMPEG_THREADS: parseInt(process.env.FFMPEG_THREADS || '2', 10),
-  FFMPEG_PRESET: process.env.FFMPEG_PRESET || 'veryfast',
-  FFMPEG_CRF: parseInt(process.env.FFMPEG_CRF || '23', 10),
-  FFMPEG_MAXRATE: process.env.FFMPEG_MAXRATE || '3.5M',
-  FFMPEG_BUFSIZE: process.env.FFMPEG_BUFSIZE || '7M',
+  VIDEO_MAXRATE: process.env.VIDEO_MAXRATE || '3.5M',
+  VIDEO_BUFSIZE: process.env.VIDEO_BUFSIZE || '7M',
+  VIDEO_CRF: parseInt(process.env.VIDEO_CRF || '23', 10),
   JOB_TIMEOUT_MS: parseInt(process.env.JOB_TIMEOUT_MS || '1200000', 10),
   MAX_RETRIES: parseInt(process.env.MAX_RETRIES || '1', 10),
-  LOOP_INTERVAL_MS: parseInt(process.env.LOOP_INTERVAL_MS || '2000', 10),
+  LOOP_INTERVAL_MS: parseInt(process.env.LOOP_INTERVAL_MS || '1000', 10),
 };
 
 const QUEUE_DIRS = {
@@ -50,14 +45,12 @@ const QUEUE_DIRS = {
   failed: join(CONFIG.MEDIA_QUEUE_DIR, 'failed'),
 };
 
-// Logger
 function log(level, message, meta = {}) {
   const timestamp = new Date().toISOString();
   const metaStr = Object.keys(meta).length ? ' ' + JSON.stringify(meta) : '';
   console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`);
 }
 
-// Ensure directories exist
 async function ensureDirectories() {
   const dirs = [
     CONFIG.UPLOAD_TMP_DIR,
@@ -71,13 +64,12 @@ async function ensureDirectories() {
   }
 }
 
-// Execute ffprobe to get video info
 async function ffprobe(inputPath) {
   return new Promise((resolve, reject) => {
     const args = [
       '-v', 'error',
       '-show_entries', 'format=duration',
-      '-show_entries', 'stream=codec_name,width,height,r_frame_rate',
+      '-show_entries', 'stream=codec_name,width,height,r_frame_rate,codec_type',
       '-of', 'json',
       inputPath,
     ];
@@ -103,7 +95,6 @@ async function ffprobe(inputPath) {
   });
 }
 
-// Execute ffmpeg
 async function ffmpeg(args, timeoutMs = CONFIG.JOB_TIMEOUT_MS) {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
@@ -118,9 +109,7 @@ async function ffmpeg(args, timeoutMs = CONFIG.JOB_TIMEOUT_MS) {
     
     const cleanup = () => {
       if (timeoutId) clearTimeout(timeoutId);
-      try {
-        proc.kill('SIGTERM');
-      } catch {}
+      try { proc.kill('SIGTERM'); } catch {}
     };
     
     timeoutId = setTimeout(() => {
@@ -146,7 +135,6 @@ async function ffmpeg(args, timeoutMs = CONFIG.JOB_TIMEOUT_MS) {
   });
 }
 
-// Execute heif-convert
 async function heifConvert(inputPath, outputPath) {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
@@ -161,12 +149,9 @@ async function heifConvert(inputPath, outputPath) {
     
     const cleanup = () => {
       if (timeoutId) clearTimeout(timeoutId);
-      try {
-        proc.kill('SIGTERM');
-      } catch {}
+      try { proc.kill('SIGTERM'); } catch {}
     };
     
-    // heif-convert é rápido, timeout menor (5 min)
     timeoutId = setTimeout(() => {
       cleanup();
       reject(new Error('heif-convert timeout after 5min'));
@@ -194,77 +179,46 @@ async function heifConvert(inputPath, outputPath) {
   });
 }
 
-// Check if file is HEIC/HEIF
-function isHeicHeif(filename) {
-  const ext = filename.toLowerCase().split('.').pop();
-  return ext === 'heic' || ext === 'heif';
-}
-
-// Convert HEIC/HEIF to JPEG
 async function convertImage(job) {
   const { inputPath, outputPath, originalName } = job;
   
-  log('info', 'Converting image', { jobId: job.jobId, input: inputPath, originalName });
+  log('info', 'Converting HEIC/HEIF to JPEG', { jobId: job.jobId, originalName });
   
-  const isHeic = isHeicHeif(originalName || inputPath);
-  
-  if (isHeic) {
-    // Tentar heif-convert primeiro (melhor suporte para HEIC no Ubuntu)
-    try {
-      log('info', 'Using heif-convert for HEIC/HEIF', { jobId: job.jobId });
-      await heifConvert(inputPath, outputPath);
-      
-      const stats = await fs.stat(outputPath);
-      return {
-        success: true,
-        size: stats.size,
-        mime: 'image/jpeg',
-        ext: '.jpg',
-      };
-    } catch (heifError) {
-      log('warn', 'heif-convert failed, trying ffmpeg fallback', { jobId: job.jobId, error: heifError.message });
-      // Fallback para ffmpeg
-    }
+  try {
+    await heifConvert(inputPath, outputPath);
+    const stats = await fs.stat(outputPath);
+    
+    log('info', 'Image conversion complete', { jobId: job.jobId, outputSize: stats.size });
+    
+    return {
+      success: true,
+      size: stats.size,
+      mime: 'image/jpeg',
+      ext: '.jpg',
+    };
+  } catch (heifError) {
+    log('warn', 'heif-convert failed, trying ffmpeg fallback', { jobId: job.jobId, error: heifError.message });
+    
+    const args = [
+      '-y',
+      '-i', inputPath,
+      '-frames:v', '1',
+      '-q:v', '2',
+      outputPath,
+    ];
+    
+    await ffmpeg(args);
+    const stats = await fs.stat(outputPath);
+    
+    return {
+      success: true,
+      size: stats.size,
+      mime: 'image/jpeg',
+      ext: '.jpg',
+    };
   }
-  
-  // Usar ffmpeg para outros formatos ou como fallback
-  const args = [
-    '-y',
-    '-threads', String(CONFIG.FFMPEG_THREADS),
-    '-i', inputPath,
-    '-frames:v', '1',
-    '-q:v', '2',
-    outputPath,
-  ];
-  
-  await ffmpeg(args);
-  
-  const stats = await fs.stat(outputPath);
-  
-  return {
-    success: true,
-    size: stats.size,
-    mime: 'image/jpeg',
-    ext: '.jpg',
-  };
 }
 
-// Check if video can use fast remux
-async function canFastRemux(probeData) {
-  const videoStream = probeData.streams?.find(s => s.codec_type === 'video');
-  const audioStream = probeData.streams?.find(s => s.codec_type === 'audio');
-  
-  if (!videoStream) return false;
-  
-  const isH264 = videoStream.codec_name === 'h264';
-  const height = videoStream.height || 0;
-  const is720OrLess = height <= CONFIG.VIDEO_OUTPUT_MAX_HEIGHT;
-  const isAudioOk = !audioStream || audioStream.codec_name === 'aac';
-  
-  return isH264 && is720OrLess && isAudioOk;
-}
-
-// Convert video to MP4
 async function convertVideo(job) {
   const { inputPath, outputPath } = job;
   
@@ -278,15 +232,23 @@ async function convertVideo(job) {
   }
   
   const videoStream = probeData.streams?.find(s => s.codec_type === 'video');
-  const width = videoStream?.width || 1920;
-  const height = videoStream?.height || 1080;
+  const audioStream = probeData.streams?.find(s => s.codec_type === 'audio');
   
-  const canRemux = await canFastRemux(probeData);
+  if (!videoStream) {
+    throw new Error('No video stream found');
+  }
+  
+  const width = videoStream.width || 1920;
+  const height = videoStream.height || 1080;
+  const isH264 = videoStream.codec_name === 'h264';
+  const isH265 = videoStream.codec_name === 'hevc' || videoStream.codec_name === 'h265';
+  const isAac = !audioStream || audioStream.codec_name === 'aac';
+  const is720OrLess = height <= CONFIG.VIDEO_OUTPUT_MAX_HEIGHT;
   
   let args;
   
-  if (canRemux) {
-    log('info', 'Fast remux (no re-encode)', { jobId: job.jobId });
+  if (isH264 && isAac && is720OrLess) {
+    log('info', 'Fast remux (H.264+AAC, no re-encode)', { jobId: job.jobId });
     args = [
       '-y',
       '-i', inputPath,
@@ -295,7 +257,7 @@ async function convertVideo(job) {
       outputPath,
     ];
   } else {
-    log('info', 'Transcoding to H.264/AAC', { jobId: job.jobId, width, height });
+    log('info', 'Transcoding to H.264/AAC 720p', { jobId: job.jobId, codec: videoStream.codec_name, width, height });
     
     const scaleFilter = height > CONFIG.VIDEO_OUTPUT_MAX_HEIGHT
       ? `scale=-2:${CONFIG.VIDEO_OUTPUT_MAX_HEIGHT}`
@@ -303,14 +265,13 @@ async function convertVideo(job) {
     
     args = [
       '-y',
-      '-threads', String(CONFIG.FFMPEG_THREADS),
       '-i', inputPath,
       '-vf', `${scaleFilter},fps=${CONFIG.VIDEO_OUTPUT_FPS}`,
       '-c:v', 'libx264',
-      '-preset', CONFIG.FFMPEG_PRESET,
-      '-crf', String(CONFIG.FFMPEG_CRF),
-      '-maxrate', CONFIG.FFMPEG_MAXRATE,
-      '-bufsize', CONFIG.FFMPEG_BUFSIZE,
+      '-preset', 'ultrafast',
+      '-crf', String(CONFIG.VIDEO_CRF),
+      '-maxrate', CONFIG.VIDEO_MAXRATE,
+      '-bufsize', CONFIG.VIDEO_BUFSIZE,
       '-pix_fmt', 'yuv420p',
       '-c:a', 'aac',
       '-b:a', '128k',
@@ -335,15 +296,13 @@ async function convertVideo(job) {
     mime: 'video/mp4',
     ext: '.mp4',
     meta: {
-      width: canRemux ? width : Math.min(width, Math.round(CONFIG.VIDEO_OUTPUT_MAX_HEIGHT * (width / height))),
+      width: isH264 && is720OrLess ? width : Math.min(width, Math.round(CONFIG.VIDEO_OUTPUT_MAX_HEIGHT * (width / height))),
       height: Math.min(height, CONFIG.VIDEO_OUTPUT_MAX_HEIGHT),
       duration,
-      fps: CONFIG.VIDEO_OUTPUT_FPS,
     },
   };
 }
 
-// Update lead attachment in database
 async function updateLeadAttachment(job, result, isFailed = false) {
   try {
     const lead = await prisma.lead.findUnique({
@@ -364,14 +323,28 @@ async function updateLeadAttachment(job, result, isFailed = false) {
       return;
     }
     
-    // Update attachment with absolute path
+    const existingAtt = attachments[attachmentIndex];
+    const originalName = existingAtt.original?.name || existingAtt.name || job.originalName;
+    
+    let finalName = originalName;
+    if (!isFailed && result) {
+      if (job.kind === 'video') {
+        finalName = originalName.replace(/\.(mov|mp4|avi|mkv|webm)$/i, '.mp4');
+      } else if (job.kind === 'image') {
+        finalName = originalName.replace(/\.(heic|heif|png|gif|bmp|webp)$/i, '.jpg');
+      }
+    }
+    
     const outputFileName = job.outputPath.split('/').pop();
     const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
+    
     const updatedAttachment = {
-      ...attachments[attachmentIndex],
+      ...existingAtt,
+      name: finalName,
       status: isFailed ? 'failed' : 'ready',
-      type: isFailed ? attachments[attachmentIndex].type : result.mime,
-      size: isFailed ? attachments[attachmentIndex].size : result.size,
+      type: isFailed ? existingAtt.type : result.mime,
+      size: isFailed ? existingAtt.size : result.size,
+      kind: job.kind,
       meta: isFailed ? undefined : result.meta,
       error: isFailed ? (result.error || 'Conversion failed') : undefined,
       path: absoluteOutputPath,
@@ -389,7 +362,8 @@ async function updateLeadAttachment(job, result, isFailed = false) {
     log('info', 'Updated lead attachment in database', { 
       leadId: job.leadId, 
       attachmentId: job.attachmentId,
-      status: updatedAttachment.status 
+      status: updatedAttachment.status,
+      finalName: finalName
     });
   } catch (dbError) {
     log('error', 'Failed to update lead attachment', { 
@@ -400,31 +374,23 @@ async function updateLeadAttachment(job, result, isFailed = false) {
   }
 }
 
-// Process a single job
 async function processJob(jobPath) {
   const jobFile = jobPath.split('/').pop();
   const processingPath = join(QUEUE_DIRS.processing, jobFile);
   
   try {
-    // Atomic claim: move to processing
     await fs.rename(jobPath, processingPath);
     
     const job = JSON.parse(await fs.readFile(processingPath, 'utf-8'));
     
-    log('info', 'Processing job', { jobId: job.jobId, kind: job.kind });
+    log('info', 'Processing job', { jobId: job.jobId, kind: job.kind, originalName: job.originalName });
     
-    // Fix: Ensure we use absolute path for output
-    // Extract filename from job.outputPath and reconstruct with absolute UPLOAD_DIR
     const outputFileName = job.outputPath.split('/').pop();
     const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
     job.outputPath = absoluteOutputPath;
     
-    log('info', 'Using absolute output path', { outputPath: absoluteOutputPath });
-    
-    // Ensure output directory exists
     await fs.mkdir(dirname(job.outputPath), { recursive: true });
     
-    // Convert based on kind
     let result;
     if (job.kind === 'image') {
       result = await convertImage(job);
@@ -434,19 +400,15 @@ async function processJob(jobPath) {
       throw new Error(`Unknown kind: ${job.kind}`);
     }
     
-    // Update job with result
     job.result = result;
     job.completedAt = new Date().toISOString();
     job.status = 'completed';
     
-    // Update database
     await updateLeadAttachment(job, result, false);
     
-    // Move to done
     await fs.writeFile(join(QUEUE_DIRS.done, jobFile), JSON.stringify(job, null, 2));
     await fs.unlink(processingPath);
     
-    // Clean up temp file
     try {
       await fs.unlink(job.inputPath);
       log('info', 'Cleaned up temp file', { inputPath: job.inputPath });
@@ -466,7 +428,6 @@ async function processJob(jobPath) {
       job.failedAt = new Date().toISOString();
       job.attempt = (job.attempt || 0) + 1;
       
-      // Update database with failure
       await updateLeadAttachment(job, { error: error.message }, true);
       
       if (job.attempt >= CONFIG.MAX_RETRIES) {
@@ -474,12 +435,8 @@ async function processJob(jobPath) {
         await fs.writeFile(join(QUEUE_DIRS.failed, jobFile), JSON.stringify(job, null, 2));
         await fs.unlink(processingPath);
         
-        // Cleanup temp
-        try {
-          await fs.unlink(job.inputPath);
-        } catch {}
+        try { await fs.unlink(job.inputPath); } catch {}
       } else {
-        // Retry: move back to pending
         job.status = 'pending';
         await fs.writeFile(join(QUEUE_DIRS.pending, jobFile), JSON.stringify(job, null, 2));
         await fs.unlink(processingPath);
@@ -492,7 +449,6 @@ async function processJob(jobPath) {
   }
 }
 
-// Scan for pending jobs
 async function scanJobs() {
   try {
     const files = await fs.readdir(QUEUE_DIRS.pending);
@@ -502,7 +458,6 @@ async function scanJobs() {
       return [];
     }
     
-    // Sort by creation time (oldest first)
     const jobsWithStats = await Promise.all(
       jobFiles.map(async (f) => {
         const stat = await fs.stat(join(QUEUE_DIRS.pending, f));
@@ -518,11 +473,9 @@ async function scanJobs() {
   }
 }
 
-// Main worker loop
 async function main() {
   log('info', 'Media Worker starting', { config: { ...CONFIG, DATABASE_URL: undefined } });
   
-  // Ensure directories
   await ensureDirectories();
   
   log('info', 'Worker ready');
@@ -538,7 +491,6 @@ async function main() {
       
       log('info', `Found ${jobs.length} pending job(s)`);
       
-      // Process one job at a time
       for (const jobPath of jobs) {
         await processJob(jobPath);
       }
@@ -550,7 +502,6 @@ async function main() {
   }
 }
 
-// Handle graceful shutdown
 process.on('SIGTERM', async () => {
   log('info', 'SIGTERM received, shutting down');
   await prisma.$disconnect().catch(() => {});
@@ -565,7 +516,6 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Start worker
 main().catch(error => {
   log('error', 'Worker failed to start', { error: error.message });
   process.exit(1);

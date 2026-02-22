@@ -2,6 +2,43 @@
 
 Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
+## [2.4.7] - 2026-02-22
+
+### Upload de Mídia - Otimização e Correção de Formatos (v2.4.7)
+
+#### Validação de Formatos (Whitelist)
+- **Frontend**: Validação no cliente antes do upload (JPG, HEIC, HEIF para fotos / MP4, MOV para vídeos)
+- **Backend**: Validação server-side para segurança adicional
+- **Mensagem de erro clara**: Usuário é informado sobre formatos aceitos
+
+#### Otimização de Performance
+- **MP4 H.264 já compatível**: Não é mais convertido, apenas copiado (instantâneo)
+- **MOV H.264**: Remux para MP4 (sem re-encode)
+- **HEVC/H.265**: Transcode para H.264 720p com preset `ultrafast`
+- **Removidos limites de threads**: Agora usa todos os núcleos disponíveis
+- **Loop interval**: Reduzido de 2000ms para 1000ms
+
+#### Metadados Corrigidos
+- **Nome do arquivo atualizado**: Após conversão, `video.mov` → `video.mp4`
+- **Preview funcionando**: Admin agora usa `att.kind` e `att.type` para detectar tipo
+- **Campo `kind` atualizado**: Garantido que tipo está correto no banco
+
+#### Formatos Aceitos
+| Tipo | Extensões | Conversão |
+|------|-----------|-----------|
+| Fotos | .jpg, .jpeg, .heic, .heif | HEIC/HEIF → JPG |
+| Vídeos | .mp4, .mov | MOV → MP4, HEVC → H.264 |
+
+### Modified Files
+- `src/components/ui/QuoteModal.tsx` - Validação frontend
+- `src/app/request/page.tsx` - Validação frontend
+- `src/lib/media-queue.ts` - Validação backend + lógica de conversão
+- `src/app/api/leads/route.ts` - Filtro de arquivos inválidos
+- `scripts/media-worker.mjs` - Otimização de performance + atualização de metadados
+- `src/components/ui/LeadDetailModal.tsx` - Preview baseado em kind/type
+
+---
+
 ## [2.4.6] - 2026-02-21
 
 ### Tracking Pixels - UI Corrigida (v2.4.6)

@@ -243,22 +243,27 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
     URL.revokeObjectURL(url);
   };
 
-  const isImageFile = (fileName: string) => {
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
-    return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
-  };
-
   const getAttachmentStatus = (att: Attachment) => {
-    // Handle legacy attachments (backward compatibility)
     if (!('status' in att)) {
       return 'ready';
     }
     return att.status;
   };
 
-  const isVideoFile = (fileName: string) => {
+  const isImageAttachment = (att: Attachment): boolean => {
+    if (att.kind === 'image') return true;
+    if (att.type?.startsWith('image/')) return true;
+    const url = att.url || '';
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+    return imageExtensions.some(ext => url.toLowerCase().endsWith(ext));
+  };
+
+  const isVideoAttachment = (att: Attachment): boolean => {
+    if (att.kind === 'video') return true;
+    if (att.type?.startsWith('video/')) return true;
+    const url = att.url || '';
     const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
-    return videoExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
+    return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
   };
 
   const formatDate = (dateString: string) => {
@@ -478,12 +483,12 @@ export default function LeadDetailModal({ isOpen, onClose, lead, onStatusChange,
                            )}
                          </div>
                        </div>
-                         <div className="grid grid-cols-4 gap-3">
-                           {lead.attachments.map((att, idx) => {
-                             const attachmentUrl = resolveAttachmentUrl(att.url);
-                             const isImage = isImageFile(att.name);
-                             const isVideo = isVideoFile(att.name);
-                             const status = getAttachmentStatus(att);
+                          <div className="grid grid-cols-4 gap-3">
+                            {lead.attachments.map((att, idx) => {
+                              const attachmentUrl = resolveAttachmentUrl(att.url);
+                              const isImage = isImageAttachment(att);
+                              const isVideo = isVideoAttachment(att);
+                              const status = getAttachmentStatus(att);
                              
                              // Processing state
                              if (status === 'processing') {

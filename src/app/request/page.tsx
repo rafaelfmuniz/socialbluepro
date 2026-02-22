@@ -195,26 +195,36 @@ function RequestFormContent() {
       let currentTotalSize = files.reduce((acc, file) => acc + file.size, 0);
       const MAX_TOTAL_SIZE = 1024 * 1024 * 1024; // 1GB
 
+      const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'heic', 'heif'];
+      const ALLOWED_VIDEO_EXTENSIONS = ['mp4', 'mov'];
+      const ALLOWED_IMAGE_MIMES = ['image/jpeg', 'image/heic', 'image/heif'];
+      const ALLOWED_VIDEO_MIMES = ['video/mp4', 'video/quicktime'];
+
       for (const file of selectedFiles) {
-        // Check per-file limits
-        if (file.type.startsWith("image/")) {
-          if (file.size > 25 * 1024 * 1024) {
-            setFileError(`Image ${file.name} is too large (max 25MB).`);
-            continue;
-          }
-        } else if (file.type.startsWith("video/")) {
-          if (file.size > 500 * 1024 * 1024) {
-            setFileError(`Video ${file.name} is too large (max 500MB).`);
-            continue;
-          }
-        } else {
-          setFileError("Only images and videos are allowed.");
+        const ext = file.name.split('.').pop()?.toLowerCase() || '';
+        const mime = file.type.toLowerCase();
+        
+        const isImage = ALLOWED_IMAGE_EXTENSIONS.includes(ext) && ALLOWED_IMAGE_MIMES.includes(mime);
+        const isVideo = ALLOWED_VIDEO_EXTENSIONS.includes(ext) && ALLOWED_VIDEO_MIMES.includes(mime);
+        
+        if (!isImage && !isVideo) {
+          const allowedFormats = 'JPG, JPEG, HEIC, HEIF (fotos) ou MP4, MOV (vídeos)';
+          setFileError(`Formato não suportado: .${ext}. Use ${allowedFormats}.`);
+          continue;
+        }
+        
+        if (isImage && file.size > 25 * 1024 * 1024) {
+          setFileError(`Imagem ${file.name} muito grande (máx 25MB).`);
+          continue;
+        }
+        
+        if (isVideo && file.size > 1024 * 1024 * 1024) {
+          setFileError(`Vídeo ${file.name} muito grande (máx 1GB).`);
           continue;
         }
 
-        // Check total size limit
         if (currentTotalSize + file.size > MAX_TOTAL_SIZE) {
-          setFileError(`Total file size cannot exceed 1GB.`);
+          setFileError(`Tamanho total dos arquivos não pode exceder 1GB.`);
           continue;
         }
 
@@ -625,7 +635,7 @@ function RequestFormContent() {
                     name="photos" 
                     className="absolute inset-0 opacity-0 cursor-pointer z-10" 
                     multiple 
-                    accept="image/*,video/*"
+                    accept=".jpg,.jpeg,.heic,.heif,.mp4,.mov,image/jpeg,image/heic,image/heif,video/mp4,video/quicktime"
                     onChange={handleFileChange}
                   />
                   <div className="flex flex-col items-center gap-2 group-hover:scale-105 transition-transform">
@@ -634,7 +644,7 @@ function RequestFormContent() {
                     </div>
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
                       Click to upload photos/video<br/>
-                      <span className="text-[8px] font-bold text-slate-300 normal-case">Max 25MB (Images) / 500MB (Videos) • Max 1GB Total</span>
+                      <span className="text-[8px] font-bold text-slate-300 normal-case">JPG, HEIC (fotos) • MP4, MOV (vídeos) • Max 1GB</span>
                     </span>
                   </div>
                 </div>

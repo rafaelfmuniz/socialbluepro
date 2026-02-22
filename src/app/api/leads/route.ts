@@ -6,7 +6,7 @@ import { join } from "path";
 import { tmpdir } from "os";
 import { randomUUID } from "crypto";
 import { captureLead } from "@/actions/leads";
-import { createMediaJob, ProcessingAttachment } from "@/lib/media-queue";
+import { createMediaJob, ProcessingAttachment, isValidMediaType } from "@/lib/media-queue";
 import { Prisma } from "@prisma/client";
 
 const MAX_VIDEO_UPLOAD_BYTES = parseInt(process.env.MAX_VIDEO_UPLOAD_BYTES || "1073741824", 10); // 1GB default
@@ -257,8 +257,17 @@ export async function POST(request: NextRequest) {
 
     // Create media jobs for each file
     const attachments: ProcessingAttachment[] = [];
+    const validFiles = files.filter(file => {
+      const validation = isValidMediaType(file.mimeType, file.originalName);
+      if (!validation.valid) {
+        console.warn("[API/leads] Rejecting file:", file.originalName, validation.error);
+        import("fs/promises").then(fs => fs.unlink(file.tempPath).catch(() => {}));
+        return false;
+      }
+      return true;
+    });
     
-    for (const file of files) {
+    for (const file of validFiles) {
       try {
         console.log("[API/leads] Creating media job for:", file.originalName);
         const attachment = await createMediaJob(
@@ -271,7 +280,6 @@ export async function POST(request: NextRequest) {
         attachments.push(attachment);
       } catch (error) {
         console.error("[API/leads] Failed to create media job:", error);
-        // Try to cleanup the temp file
         try {
           await import("fs/promises").then(fs => fs.unlink(file.tempPath));
         } catch {}
