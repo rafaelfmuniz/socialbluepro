@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createReadStream, statSync } from "fs";
+import { createReadStream, statSync, existsSync } from "fs";
 import { open } from "fs/promises";
 import { join, normalize, extname, resolve } from "path";
 import { Readable } from "stream";
@@ -66,6 +66,9 @@ export async function GET(
   const segments = params?.path;
 
   console.log("[API/Uploads] Request segments:", segments);
+  console.log("[API/Uploads] UPLOAD_BASE:", UPLOAD_BASE);
+  console.log("[API/Uploads] ALLOWED_PATH_PREFIX:", ALLOWED_PATH_PREFIX);
+  console.log("[API/Uploads] Environment UPLOAD_DIR:", process.env.UPLOAD_DIR);
 
   if (!segments || segments.length === 0) {
     console.error("[API/Uploads] Missing path segments");
@@ -74,8 +77,10 @@ export async function GET(
 
   const requestedPath = join(UPLOAD_BASE, ...segments);
   console.log("[API/Uploads] Requested path:", requestedPath);
+  console.log("[API/Uploads] File exists?", existsSync(requestedPath));
 
   const safePath = ensureWithinUploadDir(requestedPath);
+  console.log("[API/Uploads] Safe path:", safePath);
 
   if (!safePath) {
     console.error("[API/Uploads] Invalid/Unsafe path:", requestedPath);

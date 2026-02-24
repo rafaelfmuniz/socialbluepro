@@ -4,10 +4,11 @@
 import { promises as fs } from 'fs';
 import { join, resolve } from 'path';
 import { randomUUID } from 'crypto';
+import { PATHS } from './paths';
 
-const MEDIA_QUEUE_DIR = resolve(process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue');
-const UPLOAD_TMP_DIR = resolve(process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp');
-const UPLOAD_DIR = resolve(process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads');
+const MEDIA_QUEUE_DIR = PATHS.MEDIA_QUEUE_DIR;
+const UPLOAD_TMP_DIR = PATHS.UPLOAD_TMP_DIR;
+const UPLOAD_DIR = PATHS.UPLOAD_DIR;
 
 export const ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'heic', 'heif'];
 export const ALLOWED_VIDEO_EXTENSIONS = ['mp4', 'mov'];

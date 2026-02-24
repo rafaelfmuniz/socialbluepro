@@ -3,7 +3,7 @@
 // Runs as separate process
 
 import { spawn } from 'child_process';
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
@@ -23,10 +23,17 @@ const pool = new Pool({ connectionString: databaseUrl });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+// Detect production environment
+const isProduction = existsSync('/opt/socialbluepro');
+const baseDir = isProduction ? '/opt/socialbluepro' : resolve(__dirname, '..');
+
+console.log(`[CONFIG] Environment: ${isProduction ? 'production' : 'development'}`);
+console.log(`[CONFIG] Base directory: ${baseDir}`);
+
 const CONFIG = {
-  UPLOAD_TMP_DIR: resolve(process.env.UPLOAD_TMP_DIR || '/opt/socialbluepro/var/uploads-tmp'),
-  MEDIA_QUEUE_DIR: resolve(process.env.MEDIA_QUEUE_DIR || '/opt/socialbluepro/var/media-queue'),
-  UPLOAD_DIR: resolve(process.env.UPLOAD_DIR || '/opt/socialbluepro/public/uploads'),
+  UPLOAD_TMP_DIR: resolve(process.env.UPLOAD_TMP_DIR || join(baseDir, isProduction ? 'var/uploads-tmp' : 'tmp/uploads')),
+  MEDIA_QUEUE_DIR: resolve(process.env.MEDIA_QUEUE_DIR || join(baseDir, isProduction ? 'var/media-queue' : 'tmp/queue')),
+  UPLOAD_DIR: resolve(process.env.UPLOAD_DIR || join(baseDir, 'public/uploads')),
   MAX_VIDEO_DURATION_SECONDS: parseInt(process.env.MAX_VIDEO_DURATION_SECONDS || '360', 10),
   VIDEO_OUTPUT_MAX_HEIGHT: parseInt(process.env.VIDEO_OUTPUT_MAX_HEIGHT || '720', 10),
   VIDEO_OUTPUT_FPS: parseInt(process.env.VIDEO_OUTPUT_FPS || '30', 10),
@@ -380,7 +387,7 @@ async function updateLeadAttachment(job, result, isFailed = false) {
     }
     
     const outputFileName = job.outputPath.split('/').pop();
-    const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
+    const absoluteOutputPath = job.outputPath;
     
     // Verificar se arquivo existe antes de atualizar banco
     let fileExists = false;
@@ -454,13 +461,12 @@ async function processJob(jobPath) {
     });
     
     const outputFileName = job.outputPath.split('/').pop();
-    const absoluteOutputPath = join(CONFIG.UPLOAD_DIR, 'leads', job.leadId, outputFileName);
-    job.outputPath = absoluteOutputPath;
     
-    log('info', 'Resolved output path', { 
+    log('info', 'Using original output path', { 
       jobId: job.jobId,
       outputFileName: outputFileName,
-      absoluteOutputPath: absoluteOutputPath
+      outputPath: job.outputPath,
+      configUploadDir: CONFIG.UPLOAD_DIR
     });
     
     await fs.mkdir(dirname(job.outputPath), { recursive: true });

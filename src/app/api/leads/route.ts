@@ -3,14 +3,14 @@ import Busboy from "busboy";
 import { createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import { join } from "path";
-import { tmpdir } from "os";
 import { randomUUID } from "crypto";
 import { captureLead } from "@/actions/leads";
 import { createMediaJob, ProcessingAttachment, isValidMediaType } from "@/lib/media-queue";
 import { Prisma } from "@prisma/client";
+import { PATHS } from "@/lib/paths";
 
 const MAX_VIDEO_UPLOAD_BYTES = parseInt(process.env.MAX_VIDEO_UPLOAD_BYTES || "1073741824", 10); // 1GB default
-const UPLOAD_TMP_DIR = process.env.UPLOAD_TMP_DIR || join(tmpdir(), "socialbluepro-uploads");
+const UPLOAD_TMP_DIR = PATHS.UPLOAD_TMP_DIR;
 
 interface ParsedForm {
   fields: Record<string, string>;
